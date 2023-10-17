@@ -1,0 +1,85 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Map\**" />
+      <EmbeddedResource Remove="Map\**" />
+      <None Remove="Map\**" />
+      <Compile Update="Objects\Hole.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <PackageReference Include="joshika39.Core" Version="1.1.9" />
+      <PackageReference Include="joshika39.GameFramework" Version="1.1.0" />
+      <PackageReference Include="joshika39.UiFramework.Forms" Version="1.0.1-pre0001" />
+    </ItemGroup>
+
+
+
+
+    <ItemGroup>
+      <Compile Update="Main\MainWindow.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Objects\MapWallTile.cs" />
+      <Compile Update="MapGenerator\MapGeneratorWindow.cs">
+        <SubType>Form</SubType>
+      </Compile>
+      <Compile Update="Objects\PlaceHolderTile.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Objects\Player.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+      <Compile Update="Views\Entities\EnemyView.cs">
+        <SubType>UserControl</SubType>
+      </Compile>
+    </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\Bomber.BL.Impl\Bomber.BL.Impl.csproj" />
+      <ProjectReference Include="..\Bomber.BL\Bomber.BL.csproj" />
+      <ProjectReference Include="..\Bomber.UI.Shared\Bomber.UI.Shared.csproj" />
+    </ItemGroup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</Project>

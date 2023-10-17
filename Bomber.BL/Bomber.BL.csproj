@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="joshika39.Core" Version="1.1.9" />
+        <PackageReference Include="joshika39.GameFramework" Version="1.1.0" />
+    </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Bomber.UI.Shared\Bomber.UI.Shared.csproj" />
+    </ItemGroup>
+</Project>

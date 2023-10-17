@@ -1,0 +1,169 @@
+@startuml Bomber
+
+namespace GameFramework {
+
+interface IMapObject2D {
+	+ <<get>> Position: IPosition2D
+	+ <<get>> IsObstacle: bool
+	+ SteppedOn(unit2D: IUnit2D): void
+}
+
+interface IUnit2D extends IMapObject2D {
+	+ Step(mapObject: IMapObject2D): void
+}
+
+interface IPlayer2D extends IUnit2D {
+	+ <<get>> Position: IPosition2D
+	+ <<get>> IsObstacle: bool
+	+ SteppedOn(unit2D: IUnit2D): void
+	+ Step(mapObject: IMapObject2D): void
+}
+
+}
+
+namespace UI.Shared {
+
+
+interface IBomberMapEntityView {
+
+}
+
+interface IBombView extends IBomberMapEntityView {
+
+}
+
+interface IEnemyView extends IBomberMapEntityView {
+
+}
+
+interface IPlayerView extends IBomberMapEntityView {
+
+}
+
+interface IBomberMapTileView {
+
+}
+
+}
+
+namespace UI.Forms {
+	
+interface IMainWindow{
+
+}
+
+interface IMainWindowPresenter {
+
+}
+
+class MainWindow implements IMainWindow {
+
+}
+
+class MainWindowPresenter implements IMainWindowPresenter {
+
+}
+
+class PlayerView implements UI.Shared.IPlayerView {
+
+}
+
+class EnemyView implements UI.Shared.IEnemyView {
+	
+}
+
+class BombView implements UI.Shared.IBombView {
+	
+}
+
+class Hole implements IDeadlyTile {
+
+}
+
+class Ground implements GameFramework.IMapObject2D {
+
+}
+
+class Wall implements GameFramework.IMapObject2D {
+
+}
+
+IMainWindow *-- IMainWindowPresenter
+
+}
+
+namespace UI.WPF {
+
+}
+
+namespace BL {
+
+enum TileType {
+	Ground
+	Wall
+	Hole
+}
+
+interface IBomberMap {
+	+ <<get>> NPCs: ICollection<INpc>
+        
+	+ HasEnemy(position: IPosition2D): bool
+	+ MapPortion(topLeft, bottomRight: IPosition2D): IEnumerable<IMapObject2D>
+	+ MapPortion(center: IPosition2D, radius: int): IEnumerable<IMapObject2D>
+}
+
+interface ITileFactory {
+	+ CreatePlaceHolder(position: IPosition2D, configurationService :IConfigurationService2D, tileType: TileType): IPlaceHolder
+	+ CreateGround(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
+	+ CreateWall(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
+	+ CreateHole(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
+}
+
+interface IDeadlyTile extends GameFramework.IMapObject2D {
+
+}
+
+interface IPlaceHolder {
+	+ <<get>> Type: TileType
+	+ <<get>> Position: IPosition2D
+}
+
+interface IBomb extends GameFramework.IMapObject2D {
+	+ <<get>> Radius: int
+	+ <<async>> Detonate(): Task
+}
+
+interface IBomber extends GameFramework.IPlayer2D {
+	+ PutBomb(bombView: IBombView): void
+}
+
+interface INpc extends GameFramework.IUnit2D {
+
+}
+
+
+class PlayerModel implements IBomber {
+	- _view: IPlayerView
+	-  _configurationService2D: IConfigurationService2D
+	- _cancellationToken: CancellationToken
+	- _isAlive: bool
+}
+
+class Enemy implements INpc {
+
+}
+
+class Bomb implements IBomb {
+
+}
+
+}
+
+class UI.Forms.FormsTileFactory implements BL.ITileFactory {
+	
+}
+
+UI.Forms.PlayerView *-- BL.PlayerModel
+UI.Forms.BombView *-- BL.Bomb
+UI.Forms.EnemyView *-- BL.Enemy
+@enduml
