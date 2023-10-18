@@ -11,8 +11,8 @@
       <PackageReference Include="joshika39.Core" Version="1.1.9" />
       <PackageReference Include="joshika39.GameFramework" Version="1.1.0" />
     </ItemGroup>
-
     <ItemGroup>
+      <Folder Include="Tiles\" />
       <ProjectReference Include="..\Bomber.BL.Impl\Bomber.BL.Impl.csproj" />
     </ItemGroup>
 
@@ -21,6 +21,7 @@
 
 
     <ItemGroup>
+      <Compile Remove="Tiles\BombTile.cs" />
       <Reference Include="System.Drawing.Common">
         <HintPath>C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App\6.0.15\System.Drawing.Common.dll</HintPath>
       </Reference>
