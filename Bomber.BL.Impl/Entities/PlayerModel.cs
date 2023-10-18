@@ -64,7 +64,7 @@ namespace Bomber.BL.Impl.Entities
             Name = name;
             Email = email;
             Id = Guid.NewGuid();
-            _view.Load += OnViewLoad;
+            _view.EntityLoaded += OnViewLoad;
             PlantedBombs = new ObservableCollection<IBomb>();
         }
         
@@ -72,7 +72,7 @@ namespace Bomber.BL.Impl.Entities
         {
             _view.UpdatePosition(Position);
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed)

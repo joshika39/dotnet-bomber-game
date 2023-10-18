@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.UI.Forms.Views.Main
 {
-    public class MainWindowPresenter : AMainWindowModel, IMainWindowPresenter
+    internal class MainWindowPresenter : AMainWindowModel, IMainWindowPresenter
     {
         private readonly IServiceProvider _provider;
         public MainWindowPresenter(IServiceProvider provider, IConfigurationService2D configurationService) : base(provider, configurationService)

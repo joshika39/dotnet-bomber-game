@@ -11,7 +11,6 @@ namespace Bomber.UI.Forms.Core
 {
     public class BomberModule
     {
-
         public void LoadModules(IServiceCollection collection)
         {
             collection.AddSingleton<IMainWindow, MainWindow>();

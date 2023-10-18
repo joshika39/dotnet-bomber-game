@@ -16,6 +16,12 @@ namespace Bomber.UI.Forms.Views.Entities
             Height = _configurationService.Dimension - 4;
         }
 
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            EntityLoaded?.Invoke(this, EventArgs.Empty);
+        }
+        
         public void UpdatePosition(IPosition2D position)
         {
             if (IsDisposed)
@@ -27,5 +33,7 @@ namespace Bomber.UI.Forms.Views.Entities
             Left = position.X * _configurationService.Dimension + 2;
             BringToFront();
         }
+        
+        public event EventHandler? EntityLoaded;
     }
 }

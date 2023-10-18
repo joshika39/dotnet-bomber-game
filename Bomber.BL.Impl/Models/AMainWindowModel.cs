@@ -12,12 +12,8 @@ namespace Bomber.BL.Impl.Models
     {
         private readonly IServiceProvider _provider;
         private readonly IPositionFactory _factory;
-
         private readonly IConfigurationService2D _configurationService;
         
-        public IMainWindow? View { get; }
-
-
         protected AMainWindowModel(IServiceProvider provider, IConfigurationService2D configurationService)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));

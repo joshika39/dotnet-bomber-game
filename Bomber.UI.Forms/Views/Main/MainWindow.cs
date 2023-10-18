@@ -66,7 +66,7 @@ namespace Bomber.UI.Forms.Views.Main
         {
             bomberMap.Controls.Clear();
             var openDialog = new OpenFileDialog();
-            openDialog.Filter = "BoB files (*.bob)|*.bob";
+            openDialog.Filter = @"BoB files (*.bob)|*.bob";
             openDialog.InitialDirectory = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "joshik39", "Bomber", "maps");
             if (openDialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
             {
@@ -83,11 +83,11 @@ namespace Bomber.UI.Forms.Views.Main
             {
                 if (mapMapObject is Control control)
                 {
-#if DEBUG
+                    #if DEBUG
                     var label = new Label();
-                    label.Text = $"{mapMapObject.Position.X}, {mapMapObject.Position.Y}";
+                    label.Text = $@"{mapMapObject.Position.X}, {mapMapObject.Position.Y}";
                     control.Controls.Add(label);
-#endif
+                    #endif
                     bomberMap.Controls.Add(control);
                 }
             }

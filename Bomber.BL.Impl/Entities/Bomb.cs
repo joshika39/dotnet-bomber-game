@@ -36,7 +36,7 @@ namespace Bomber.BL.Impl.Entities
 
             var map = configurationService.GetActiveMap<IBomberMap>();
             _affectedObjects = map!.MapPortion(position, radius);
-            _view.Load += OnViewLoaded;
+            _view.EntityLoaded += OnViewLoaded;
         }
 
         private void OnViewLoaded(object? sender, EventArgs e)
