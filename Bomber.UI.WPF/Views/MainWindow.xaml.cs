@@ -59,7 +59,7 @@ namespace Bomber.UI.WPF.Views
 
             var map = _viewModel.OpenMap(openDialog.FileName);
 
-            var view = new PlayerControl(_configService);
+            var view = new PlayerControl(_configService, mainCanvas);
             _player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configService, "TestPlayer", "test@email.com", CancellationToken.None);
             map.Entities.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
@@ -128,9 +128,9 @@ namespace Bomber.UI.WPF.Views
 
             if (e.Key == Key.B)
             {
-                // var view = new BombView(_service);
-                // _player.PutBomb(view, this);
-                // bomberMap.Controls.Add(view);
+                var view = new BombControl(_service);
+                _player.PutBomb(view, this);
+                bomberMap.Controls.Add(view);
             }
         }
     }

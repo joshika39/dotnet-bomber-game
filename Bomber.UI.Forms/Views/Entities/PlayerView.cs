@@ -34,6 +34,11 @@ namespace Bomber.UI.Forms.Views.Entities
             BringToFront();
         }
         
+        public void ViewAddedToMap()
+        {
+            throw new NotImplementedException();
+        }
+
         public event EventHandler? EntityLoaded;
     }
 }
