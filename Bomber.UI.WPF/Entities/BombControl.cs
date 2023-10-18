@@ -16,9 +16,16 @@ namespace Bomber.UI.WPF.Entities
         {
             _canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
         }
+
+        ~BombControl()
+        {
+            Dispose(true);
+        }
+        
         public void UpdatePosition(IPosition2D position)
         {
-            throw new NotImplementedException();
+            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
+            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
         }
         
         public void ViewAddedToMap()
@@ -27,8 +34,8 @@ namespace Bomber.UI.WPF.Entities
         }
         
         public event EventHandler? EntityLoaded;
-        
-        protected virtual void Dispose(bool disposing)
+
+        private void Dispose(bool disposing)
         {
             if (_disposed)
             {

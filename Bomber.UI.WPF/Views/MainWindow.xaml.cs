@@ -122,15 +122,16 @@ namespace Bomber.UI.WPF.Views
                     {
                         continue;
                     }
-                    map?.Entities.Remove(enemy);
+                    map.Entities.Remove(enemy);
                 }
             }
 
             if (e.Key == Key.B)
             {
-                var view = new BombControl(_service);
+                var view = new BombControl(_configService, mainCanvas);
                 _player.PutBomb(view, this);
-                bomberMap.Controls.Add(view);
+                view.ViewAddedToMap();
+                mainCanvas.Children.Add(view);
             }
         }
     }
