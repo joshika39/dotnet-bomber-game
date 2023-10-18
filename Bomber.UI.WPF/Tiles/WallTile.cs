@@ -14,6 +14,7 @@ namespace Bomber.UI.WPF.Tiles
             Fill = new SolidColorBrush(Colors.Gray);
         }
 
+        public override bool IsObstacle => true;
         public override void SteppedOn(IUnit2D unit2D)
         {
             if (ConfigurationService.GameIsRunning)

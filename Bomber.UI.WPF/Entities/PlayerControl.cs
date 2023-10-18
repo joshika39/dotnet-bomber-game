@@ -12,6 +12,7 @@ namespace Bomber.UI.WPF.Entities
     {
         private readonly Canvas _canvas;
         private bool _disposed;
+        
         public void ViewAddedToMap()
         {
             EntityLoaded?.Invoke(this, EventArgs.Empty);
@@ -26,8 +27,8 @@ namespace Bomber.UI.WPF.Entities
         
         public void UpdatePosition(IPosition2D position)
         {
-            Rect.X = position.X * ConfigurationService.Dimension;
-            Rect.Y = position.Y * ConfigurationService.Dimension;
+            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
+            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
         }
 
         private void Dispose(bool disposing)

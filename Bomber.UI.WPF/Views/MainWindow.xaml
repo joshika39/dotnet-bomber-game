@@ -3,8 +3,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Bomber.UI.WPF.ViewModels"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        d:DataContext="{d:DesignInstance {d:Type viewModels:MainWindowViewModel}}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -14,6 +16,6 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Content="Open New Map" Click="ButtonBase_OnClick"></Button>
         </StackPanel>
-        <Canvas Grid.Row="1" x:Name="mainCanvas" />
+        <Canvas HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" x:Name="MainCanvas" Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" />
     </Grid>
 </Window>

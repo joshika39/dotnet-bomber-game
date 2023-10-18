@@ -41,12 +41,12 @@ namespace Bomber.UI.WPF.Views
             DataContext = _viewModel.DataContext;
             _positionFactory = provider.GetRequiredService<IPositionFactory>();
             _configService = provider.GetRequiredService<IConfigurationService2D>();
-            mainCanvas.Background = new SolidColorBrush(Colors.Coral);
+            MainCanvas.Background = new SolidColorBrush(Colors.Coral);
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
-            mainCanvas.Children.Clear();
+            MainCanvas.Children.Clear();
             var openDialog = new OpenFileDialog
             {
                 Filter = @"BoB files (*.bob)|*.bob",
@@ -59,22 +59,23 @@ namespace Bomber.UI.WPF.Views
 
             var map = _viewModel.OpenMap(openDialog.FileName);
 
-            var view = new PlayerControl(_configService, mainCanvas);
+            var view = new PlayerControl(_configService, MainCanvas);
             _player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configService, "TestPlayer", "test@email.com", CancellationToken.None);
+            view.ViewAddedToMap();
             map.Entities.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
             {
                 if (mapMapObject is Shape control)
                 {
-                    mainCanvas.Children.Add(control);
+                    MainCanvas.Children.Add(control);
                 }
             }
-            mainCanvas.Children.Add(view);
+            MainCanvas.Children.Add(view);
         }
 
         public void BombExploded(IBomb bomb)
         {
-            throw new NotImplementedException();
+           
         }
 
         public DialogResult ShowOnTop()
@@ -128,10 +129,10 @@ namespace Bomber.UI.WPF.Views
 
             if (e.Key == Key.B)
             {
-                var view = new BombControl(_configService, mainCanvas);
+                var view = new BombControl(_configService, MainCanvas);
                 _player.PutBomb(view, this);
                 view.ViewAddedToMap();
-                mainCanvas.Children.Add(view);
+                MainCanvas.Children.Add(view);
             }
         }
     }

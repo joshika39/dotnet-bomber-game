@@ -15,6 +15,8 @@ namespace Bomber.UI.WPF.Entities
         public BombControl(IConfigurationService2D configurationService, Canvas canvas) : base(configurationService)
         {
             _canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
+            Width = (double)ConfigurationService.Dimension / 2;
+            Height = (double)ConfigurationService.Dimension / 2;
         }
 
         ~BombControl()
@@ -24,13 +26,13 @@ namespace Bomber.UI.WPF.Entities
         
         public void UpdatePosition(IPosition2D position)
         {
-            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
-            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
+            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
+            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
         }
         
         public void ViewAddedToMap()
         {
-            throw new NotImplementedException();
+            EntityLoaded?.Invoke(this, EventArgs.Empty);
         }
         
         public event EventHandler? EntityLoaded;
