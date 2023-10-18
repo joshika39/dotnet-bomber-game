@@ -8,6 +8,8 @@ namespace Bomber.UI.WPF.Tiles
 {
     internal class HoleTile : ATile, IDeadlyTile
     {
+        public override bool IsObstacle => false;
+
         public HoleTile(IPosition2D position, IConfigurationService2D configurationService) : base(position, configurationService)
         {
             Fill = new SolidColorBrush(Colors.Black);
@@ -17,7 +19,8 @@ namespace Bomber.UI.WPF.Tiles
         {
             if (ConfigurationService.GameIsRunning)
             {
-                
+                ConfigurationService.GameIsRunning = false;
+                unit2D.Step(this);
             }
         }
     }

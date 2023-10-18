@@ -1,12 +1,17 @@
-﻿using System.Windows.Media;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows.Media;
+using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
 
 namespace Bomber.UI.WPF.Tiles
 {
-    internal class GroundTile : ATile
+    internal class GroundTile : ATile, IBomberMapTileView
     {
+        public override bool IsObstacle => false;
+
         public GroundTile(IPosition2D position, IConfigurationService2D configurationService) : base(position, configurationService)
         {
             Fill = new SolidColorBrush(Colors.Green);
@@ -16,8 +21,21 @@ namespace Bomber.UI.WPF.Tiles
         {
             if (ConfigurationService.GameIsRunning)
             {
-                
+                unit2D.Step(this);
             }
         }
+
+        public async void IndicateBomb(double waitTime)
+        {
+            await SetBack(waitTime);
+        }
+        
+        private async Task SetBack(double waitTime)
+        {
+            Fill = new SolidColorBrush(Colors.Yellow);
+            await Task.Delay(TimeSpan.FromSeconds(waitTime));
+            Fill = new SolidColorBrush(Colors.Green);
+        }
+        
     }
 }

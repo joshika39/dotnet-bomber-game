@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Bomber.UI.Shared.Entities;
 using Bomber.UI.WPF.Tiles;
@@ -7,25 +8,48 @@ using GameFramework.Core;
 
 namespace Bomber.UI.WPF.Entities
 {
-    internal class PlayerControl : ACustomShape, IPlayerView
+    internal sealed class PlayerControl : ACustomShape, IPlayerView
     {
-        public event EventHandler? EntityLoaded;
-        public PlayerControl(IConfigurationService2D configurationService) : base(configurationService)
+        private readonly Canvas _canvas;
+        private bool _disposed;
+        
+        public void ViewAddedToMap()
         {
-            Fill = new SolidColorBrush(Colors.Fuchsia);
             EntityLoaded?.Invoke(this, EventArgs.Empty);
-            GeometryTransform.Cl
         }
         
-        public void Dispose()
+        public event EventHandler? EntityLoaded;
+        public PlayerControl(IConfigurationService2D configurationService, Canvas canvas) : base(configurationService)
         {
-            // TODO release managed resources here
+            _canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
+            Fill = new SolidColorBrush(Colors.Fuchsia);
         }
         
         public void UpdatePosition(IPosition2D position)
         {
-            Rect.X = position.X * ConfigurationService.Dimension;
-            Rect.Y = position.Y * ConfigurationService.Dimension;
+            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
+            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _canvas.Children.Remove(this);
+            }
+
+            _disposed = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

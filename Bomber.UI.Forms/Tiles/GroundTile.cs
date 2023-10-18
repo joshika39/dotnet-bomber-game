@@ -11,15 +11,16 @@ namespace Bomber.UI.Forms.Tiles
         {
             unit2D.Step(this);
         }
+        
         public IPosition2D Position { get; }
         public bool IsObstacle => false;
         
-        public void IndicateBomb(double waitTime)
+        public async void IndicateBomb(double waitTime)
         {
-            SetBack(waitTime);
+            await SetBack(waitTime);
         }
         
-        private async void SetBack(double waitTime)
+        private async Task SetBack(double waitTime)
         {
             BackColor = Color.Yellow;
             await Task.Delay(TimeSpan.FromSeconds(waitTime));

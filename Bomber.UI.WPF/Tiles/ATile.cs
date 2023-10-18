@@ -11,8 +11,8 @@ namespace Bomber.UI.WPF.Tiles
     internal abstract class ATile : ACustomShape, IMapObject2D
     {
         public IPosition2D Position { get; }
-        public bool IsObstacle => false;
-
+        public abstract bool IsObstacle { get; }
+        
         protected ATile(IPosition2D position, IConfigurationService2D configurationService) : base(configurationService)
         {
             Position = position ?? throw new ArgumentNullException(nameof(position));

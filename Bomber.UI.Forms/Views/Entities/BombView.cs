@@ -59,6 +59,12 @@ namespace Bomber.UI.Forms.Views.Entities
             Top = position.Y * _configurationService.Dimension + 1;
             Left = position.X * _configurationService.Dimension + 1;
         }
+        
+        public void ViewAddedToMap()
+        {
+            throw new NotImplementedException();
+        }
+        
         public event EventHandler? EntityLoaded;
 
         protected override void OnLoad(EventArgs e)

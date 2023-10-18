@@ -1,3 +1,4 @@
+using Bomber.UI.Shared.Entities;
 using GameFramework.Core;
 using GameFramework.Map.MapObject;
 
@@ -7,5 +8,6 @@ namespace Bomber.BL.Entities
     {
         int Radius { get; }
         Task Detonate();
+        IBombView View { get; }
     }
 }
