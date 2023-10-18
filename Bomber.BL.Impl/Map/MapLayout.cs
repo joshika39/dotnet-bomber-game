@@ -2,7 +2,6 @@
 using Bomber.BL.Map;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.Tiles.Factories;
-using GameFramework.Configuration;
 using GameFramework.Core.Factories;
 using GameFramework.Map.MapObject;
 using Infrastructure.Configuration;
@@ -15,7 +14,6 @@ namespace Bomber.BL.Impl.Map
     public class MapLayout : IMapLayout
     {
         private readonly IConfigurationQuery _query;
-        private readonly IConfigurationService2D _configurationService;
         private readonly ITileFactory _tileFactory;
         private readonly IReader _reader;
         private readonly string _mapDataBase64;
@@ -34,7 +32,6 @@ namespace Bomber.BL.Impl.Map
             Id = Guid.NewGuid();
             var queryFactory = provider.GetRequiredService<IConfigurationQueryFactory>();
             var filePath1 = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            _configurationService = provider.GetRequiredService<IConfigurationService2D>();
             _query = queryFactory.CreateConfigurationQuery(filePath1);
             _tileFactory = provider.GetRequiredService<ITileFactory>();
             _positionFactory = provider.GetRequiredService<IPositionFactory>();
@@ -56,7 +53,6 @@ namespace Bomber.BL.Impl.Map
             Id = Guid.NewGuid();
             var queryFactory = provider.GetRequiredService<IConfigurationQueryFactory>();
             var filePath1 = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            _configurationService = provider.GetRequiredService<IConfigurationService2D>();
             _query = queryFactory.CreateConfigurationQuery(filePath1);
             _tileFactory = provider.GetRequiredService<ITileFactory>();
             _positionFactory = provider.GetRequiredService<IPositionFactory>();
@@ -90,9 +86,9 @@ namespace Bomber.BL.Impl.Map
 
                     var tile = type switch
                     {
-                        TileType.Ground => _tileFactory.CreateGround(position, _configurationService),
-                        TileType.Wall => _tileFactory.CreateWall(position, _configurationService),
-                        TileType.Hole => _tileFactory.CreateHole(position, _configurationService),
+                        TileType.Ground => _tileFactory.CreateGround(position),
+                        TileType.Wall => _tileFactory.CreateWall(position),
+                        TileType.Hole => _tileFactory.CreateHole(position),
                         _ => throw new ArgumentException($"Unknown tile type: {value}")
                     };
                     list.Add(tile);

@@ -11,7 +11,6 @@ namespace Bomber.BL.Impl.Entities
 {
     public sealed class Bomb : IBomb
     {
-        private readonly IBombView _view;
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
         private readonly CancellationToken _stoppingToken;
         private PeriodicTimer? _timer;
@@ -20,10 +19,12 @@ namespace Bomber.BL.Impl.Entities
         public IPosition2D Position { get; }
         public bool IsObstacle => false;
         public int Radius { get; }
+        public IBombView View { get; }
+
 
         public Bomb(IBombView view, IPosition2D position, IConfigurationService2D configurationService, IEnumerable<IBombWatcher> bombWatchers, int radius,  CancellationToken stoppingToken)
         {
-            _view = view ?? throw new ArgumentNullException(nameof(view));
+            View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
             _stoppingToken = stoppingToken;
             Position = position ?? throw new ArgumentNullException(nameof(position));
@@ -36,12 +37,12 @@ namespace Bomber.BL.Impl.Entities
 
             var map = configurationService.GetActiveMap<IBomberMap>();
             _affectedObjects = map!.MapPortion(position, radius);
-            _view.Load += OnViewLoaded;
+            View.EntityLoaded += OnViewLoaded;
         }
 
         private void OnViewLoaded(object? sender, EventArgs e)
         {
-            _view.UpdatePosition(Position);
+            View.UpdatePosition(Position);
         }
 
         public async Task Detonate()
@@ -100,7 +101,7 @@ namespace Bomber.BL.Impl.Entities
             if (disposing)
             {
                 _timer?.Dispose();
-                _view.Dispose();
+                View.Dispose();
             }
 
             _disposed = true;

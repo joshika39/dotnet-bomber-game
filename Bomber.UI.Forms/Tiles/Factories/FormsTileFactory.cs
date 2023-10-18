@@ -9,24 +9,31 @@ namespace Bomber.UI.Forms.Tiles.Factories
 {
     internal class FormsTileFactory : ITileFactory
     {
-        public IPlaceHolder CreatePlaceHolder(IPosition2D position, IConfigurationService2D configurationService, TileType tileType = TileType.Ground)
+        private readonly IConfigurationService2D _configurationService2D;
+        public FormsTileFactory(IConfigurationService2D configurationService2D)
         {
-            return new PlaceHolderTile(position, configurationService, tileType);
+            _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
+
         }
         
-        public IMapObject2D CreateWall(IPosition2D position, IConfigurationService2D configurationService)
+        public IPlaceHolder CreatePlaceHolder(IPosition2D position, TileType tileType = TileType.Ground)
         {
-            return new WallTile(position, configurationService);
+            return new PlaceHolderTile(position, _configurationService2D, tileType);
         }
         
-        public IMapObject2D CreateGround(IPosition2D position, IConfigurationService2D configurationService)
+        public IMapObject2D CreateWall(IPosition2D position)
         {
-            return new GroundTile(position, configurationService);
+            return new WallTile(position, _configurationService2D);
         }
         
-        public IMapObject2D CreateHole(IPosition2D position, IConfigurationService2D configurationService)
+        public IMapObject2D CreateGround(IPosition2D position)
         {
-            return new Hole(position, configurationService);
+            return new GroundTile(position, _configurationService2D);
+        }
+        
+        public IMapObject2D CreateHole(IPosition2D position)
+        {
+            return new Hole(position, _configurationService2D);
         }
     }
 }

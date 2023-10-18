@@ -59,5 +59,12 @@ namespace Bomber.UI.Forms.Views.Entities
             Top = position.Y * _configurationService.Dimension + 1;
             Left = position.X * _configurationService.Dimension + 1;
         }
+        public event EventHandler? EntityLoaded;
+
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            EntityLoaded?.Invoke(this, EventArgs.Empty);
+        }
     }
 }

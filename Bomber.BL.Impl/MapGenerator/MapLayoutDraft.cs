@@ -3,7 +3,6 @@ using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
 using Bomber.BL.Tiles.Factories;
-using GameFramework.Configuration;
 using GameFramework.Core.Factories;
 using Infrastructure.Application;
 using Infrastructure.IO;
@@ -18,7 +17,6 @@ namespace Bomber.BL.Impl.MapGenerator
         private readonly IReader _reader;
         private readonly ITileFactory _tileFactory;
         private readonly IPositionFactory _positionFactory;
-        private readonly IConfigurationService2D _configurationService;
         private readonly string _layoutPath;
         private int _columnCount;
         private int _rowCount;
@@ -32,7 +30,6 @@ namespace Bomber.BL.Impl.MapGenerator
             var settings = serviceProvider.GetRequiredService<IApplicationSettings>();
             _tileFactory = serviceProvider.GetRequiredService<ITileFactory>();
             _positionFactory = serviceProvider.GetRequiredService<IPositionFactory>();
-            _configurationService = serviceProvider.GetRequiredService<IConfigurationService2D>();
             model = model ?? throw new ArgumentNullException(nameof(model));
             Description = model.Description;
             Name = model.Name;
@@ -96,11 +93,11 @@ namespace Bomber.BL.Impl.MapGenerator
                     var pos = _positionFactory.CreatePosition(i, j);
                     if (oldValues is not null && i <= oldValues.Length / RowCount && j <= oldValues.Length / ColumnCount && i * ColumnCount + j < oldValues.Length)
                     {
-                        array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, _configurationService, oldValues[i * ColumnCount + j].Type);
+                        array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, oldValues[i * ColumnCount + j].Type);
                     }
                     else
                     {
-                        array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, _configurationService);
+                        array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos);
                     }
                 }
             }
@@ -130,7 +127,7 @@ namespace Bomber.BL.Impl.MapGenerator
                         if (j < row.Length)
                         {
                             var type = Constants.IntToTileType(row[j]);
-                            array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, _configurationService, type);
+                            array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, type);
                             success = true;
                         }
                     }
@@ -138,7 +135,7 @@ namespace Bomber.BL.Impl.MapGenerator
                     {
                         continue;
                     }
-                    array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, _configurationService);
+                    array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos);
                 }
             }
             streamReader.Close();

@@ -29,7 +29,7 @@ namespace Bomber.BL.Impl.Entities
             Position = position;
             _map = service.GetActiveMap<IBomberMap>()!;
             _direction = GetRandomMove();
-            _view.Load += OnViewLoad;
+            _view.EntityLoaded += OnViewLoad;
         }
         
         private void OnViewLoad(object? sender, EventArgs e)
