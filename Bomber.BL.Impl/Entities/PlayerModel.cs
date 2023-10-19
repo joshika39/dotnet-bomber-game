@@ -8,7 +8,7 @@ using GameFramework.Map.MapObject;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class PlayerModel : IBomber, IBombWatcher
+    public sealed class PlayerModel : IBomber
     {
         private readonly IPlayerView _view;
         private readonly IConfigurationService2D _configurationService2D;
@@ -23,7 +23,10 @@ namespace Bomber.BL.Impl.Entities
 
         public void SteppedOn(IUnit2D unit2D)
         {
-            throw new NotImplementedException();
+            if (unit2D is IEnemy)
+            {
+                _configurationService2D.GameIsRunning = false;
+            }
         }
 
         public void Step(IMapObject2D mapObject)
@@ -37,37 +40,36 @@ namespace Bomber.BL.Impl.Entities
 
                 _isAlive = false;
             }
-            
+
             Position = mapObject.Position;
             _view.UpdatePosition(Position);
         }
         public ICollection<IBomb> PlantedBombs { get; }
-        
-        public async void PutBomb(IBombView bombView, IBombWatcher bombWatcher)
+
+        public void PutBomb(IBombView bombView, IEnumerable<IBombWatcher> bombWatchers)
         {
-            var bombWatchers = new Collection<IBombWatcher>
-            {
-                bombWatcher,
-                this
-            };
             var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _cancellationToken);
             PlantedBombs.Add(bomb);
-            await bomb.Detonate();
         }
-        
+
+        public void PutBomb(IBombView bombView, IBombWatcher? bombWatcher)
+        {
+            PutBomb(bombView, new List<IBombWatcher> { bombWatcher ?? this });
+        }
+
         public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, CancellationToken cancellationToken)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
             _cancellationToken = cancellationToken;
-            Position = position;
-            Name = name;
-            Email = email;
+            Position = position ?? throw new ArgumentNullException(nameof(position));
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Email = email ?? throw new ArgumentNullException(nameof(email));
             Id = Guid.NewGuid();
             _view.EntityLoaded += OnViewLoad;
             PlantedBombs = new ObservableCollection<IBomb>();
         }
-        
+
         private void OnViewLoad(object? sender, EventArgs e)
         {
             _view.UpdatePosition(Position);
@@ -83,17 +85,23 @@ namespace Bomber.BL.Impl.Entities
             if (disposing)
             {
                 _view.Dispose();
+                while (PlantedBombs.Count > 0)
+                {
+                    var bomb = PlantedBombs.ElementAt(PlantedBombs.Count - 1);
+                    PlantedBombs.Remove(bomb);
+                    bomb.Dispose();
+                }
             }
 
             _disposed = true;
         }
-        
-        
+
+
         public void Dispose()
         {
             Dispose(true);
         }
-        
+
         public void Kill()
         {
             Dispose();

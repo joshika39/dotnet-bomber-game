@@ -4,52 +4,22 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
-
-
     <ItemGroup>
-      <ProjectReference Include="..\Bomber.BL\Bomber.BL.csproj" />
-      <ProjectReference Include="..\Bomber.UI.Shared\Bomber.UI.Shared.csproj" />
-
-
-
+        <InternalsVisibleTo Include="Bomber.BL.Int.Tests" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\Bomber.BL\Bomber.BL.csproj"/>
+        <ProjectReference Include="..\Bomber.UI.Shared\Bomber.UI.Shared.csproj"/>
     </ItemGroup>
 
 
-
     <ItemGroup>
-      <PackageReference Include="joshika39.Core" Version="1.1.9" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        <PackageReference Include="joshika39.Core" Version="1.1.9"/>
     </ItemGroup>
-
-
-
-
-
-
-
-
 
 
 </Project>
