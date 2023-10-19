@@ -48,4 +48,5 @@ jobs:
           Write-Output ${{ steps.get_version.outputs.version-without-v }}
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ secrets.PROJECT_KEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /v:"${{ steps.get_version.outputs.version-without-v }}"
           dotnet build
+          dotnet test
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
