@@ -8,7 +8,7 @@ using GameFramework.Map.MapObject;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public class PlayerModel : IBomber, IBombWatcher
+    public sealed class PlayerModel : IBomber, IBombWatcher
     {
         private readonly IPlayerView _view;
         private readonly IConfigurationService2D _configurationService2D;
@@ -73,7 +73,7 @@ namespace Bomber.BL.Impl.Entities
             _view.UpdatePosition(Position);
         }
 
-        protected virtual void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (_disposed)
             {
@@ -93,6 +93,7 @@ namespace Bomber.BL.Impl.Entities
         {
             Dispose(true);
         }
+        
         public void Kill()
         {
             Dispose();
