@@ -26,7 +26,7 @@ namespace Bomber.BL.Impl.Entities
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _stoppingToken = stoppingToken;
             service = service ?? throw new ArgumentNullException(nameof(service));
-            Position = position;
+            Position = position ?? throw new ArgumentNullException(nameof(position));
             _map = service.GetActiveMap<IBomberMap>()!;
             _direction = GetRandomMove();
             _view.EntityLoaded += OnViewLoad;

@@ -26,9 +26,16 @@ namespace Bomber.BL.Impl.Entities
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
-            _stoppingToken = stoppingToken;
             Position = position ?? throw new ArgumentNullException(nameof(position));
+            configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+
+            if (radius <= 0)
+            {
+                throw new InvalidOperationException("Radius cannot be zero or negative");
+            }
+            
             Radius = radius;
+            _stoppingToken = stoppingToken;
 
             if (!configurationService.GameIsRunning)
             {
