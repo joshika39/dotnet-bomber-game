@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Bomber.BL.Entities;
+using Bomber.BL.Tiles;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
@@ -25,20 +26,20 @@ namespace Bomber.BL.Impl.Entities
         {
             if (unit2D is IEnemy)
             {
-                _configurationService2D.GameIsRunning = false;
+                Kill();
             }
         }
 
         public void Step(IMapObject2D mapObject)
         {
-            if (!_configurationService2D.GameIsRunning)
+            if (!_configurationService2D.GameIsRunning || !_isAlive)
             {
-                if (!_isAlive)
-                {
-                    return;
-                }
+                return;
+            }
 
-                _isAlive = false;
+            if (mapObject is IDeadlyTile)
+            {
+                Kill();
             }
 
             Position = mapObject.Position;
@@ -91,12 +92,13 @@ namespace Bomber.BL.Impl.Entities
                     PlantedBombs.Remove(bomb);
                     bomb.Dispose();
                 }
+                _isAlive = false;
+                _configurationService2D.GameIsRunning = false;
             }
 
             _disposed = true;
         }
-
-
+        
         public void Dispose()
         {
             Dispose(true);

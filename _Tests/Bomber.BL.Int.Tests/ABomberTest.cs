@@ -2,18 +2,39 @@
 using Bomber.BL.Map;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Factories;
+using GameFramework.Impl.Core;
 using GameFramework.Map.MapObject;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
 namespace Bomber.BL.Int.Tests
 {
     public abstract class ABomberTest
     {
+        private readonly ServiceProvider _provider;
+        protected IPositionFactory PositionFactory { get; }
+        protected ABomberTest()
+        {
+            var collection = new ServiceCollection();
+            new GameModule().LoadModules(collection);
+            _provider = collection.BuildServiceProvider();
+            PositionFactory = _provider.GetRequiredService<IPositionFactory>();
+        }
+        
         protected Mock<IConfigurationService2D> GetConfigurationMock()
         {
             var configMock = new Mock<IConfigurationService2D>();
             configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
             configMock.Setup(c => c.GameIsRunning).Returns(true);
+            return configMock;
+        }
+        
+        protected Mock<IConfigurationService2D> GetConfigurationMock(bool initValue)
+        {
+            var configMock = new Mock<IConfigurationService2D>();
+            configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
+            configMock.SetupProperty(v => v.GameIsRunning, initValue);
             return configMock;
         }
 
@@ -60,6 +81,13 @@ namespace Bomber.BL.Int.Tests
             playerMock.Setup(p => p.PlantedBombs).Returns(GetBombs(playerMock.Object).ToList);
             playerMock.Setup(p => p.Kill()).Callback(() => playerMock.Object.Dispose());
             return playerMock;
+        }
+        
+        protected IMapObject2D GetMapObjectMockObject<T>(int x, int y) where T : class, IMapObject2D
+        {
+            var mapObjectMock = new Mock<T>();
+            mapObjectMock.Setup(p => p.Position).Returns(PositionFactory.CreatePosition(x, y));
+            return mapObjectMock.Object;
         }
     }
 }

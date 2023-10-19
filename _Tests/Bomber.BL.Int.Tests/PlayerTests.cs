@@ -1,9 +1,10 @@
-using System.Reflection;
 using Bomber.BL.Entities;
 using Bomber.BL.Impl.Entities;
+using Bomber.BL.Tiles;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Map.MapObject;
 using Moq;
 
 namespace Bomber.BL.Int.Tests
@@ -132,6 +133,67 @@ namespace Bomber.BL.Int.Tests
             Assert.Equal("Some Name", player.Name);
             Assert.Equal("email", player.Email);
             Assert.NotEqual(Guid.Empty, player.Id);
+        }
+        
+        [Fact]
+        public void BT_0081_Given_Player_When_SteppedOnEnemy_Then_GameFinished()
+        {
+            var configService = GetConfigurationMock(true).Object;
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), configService,"Some Name", "email", CancellationToken.None);
+       
+            player.SteppedOn(Mock.Of<IEnemy>());
+            
+            Assert.False(configService.GameIsRunning);
+        }
+        
+        [Fact]
+        public void BT_0091_Given_Player_When_SteppedOnGround_Then_ChangedPosition()
+        {
+            var configService = GetConfigurationMock(true).Object;
+            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", CancellationToken.None);
+       
+            player.Step(GetMapObjectMockObject<IMapObject2D>(1, 0));
+            
+            Assert.Equal(1, player.Position.X);
+            Assert.Equal(0, player.Position.Y);
+        }
+        
+        [Fact]
+        public void BT_0101_Given_Player_When_SteppedOnDeadlyTile_Then_PlayerIsDead()
+        {
+            var configService = GetConfigurationMock(true).Object;
+            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", CancellationToken.None);
+       
+            player.Step(GetMapObjectMockObject<IDeadlyTile>(1, 0));
+            
+            Assert.Equal(1, player.Position.X);
+            Assert.Equal(0, player.Position.Y);
+            Assert.False(configService.GameIsRunning);
+        }
+        
+        [Fact]
+        public void BT_0111_Given_Player_When_GameIsStoppedPlayerStepped_Then_NothingHappens()
+        {
+            var configService = GetConfigurationMock(true).Object;
+            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", CancellationToken.None);
+       
+            player.Step(GetMapObjectMockObject<IDeadlyTile>(1, 0));
+            player.Step(GetMapObjectMockObject<IMapObject2D>(2, 0));
+            
+            Assert.Equal(1, player.Position.X);
+            Assert.Equal(0, player.Position.Y);
+            Assert.False(configService.GameIsRunning);
+        }
+        
+        [Fact]
+        public void BT_0121_Given_Player_When_ViewLoaded_Then_TheViewIsUpdated()
+        {
+            var configService = GetConfigurationMock(true).Object;
+            var viewMock = new Mock<IPlayerView>();
+            _ = new PlayerModel(viewMock.Object, PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", CancellationToken.None);
+            
+            viewMock.Raise(v => v.EntityLoaded += null, EventArgs.Empty);
+            viewMock.Verify(p => p.UpdatePosition(It.IsAny<IPosition2D>()), Times.Once);
         }
     }
 }
