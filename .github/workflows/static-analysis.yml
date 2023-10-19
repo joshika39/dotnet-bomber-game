@@ -40,13 +40,18 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
+      - name: Install dotCover Global
+        shell: powershell
+        run: |
+          dotnet tool install --global JetBrains.dotCover.GlobalTool
       - name: Build and analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: powershell
         run: |
+          
           Write-Output ${{ steps.get_version.outputs.version-without-v }}
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"${{ secrets.PROJECT_KEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /v:"${{ steps.get_version.outputs.version-without-v }}"
           dotnet build
-          dotnet test
+          dotnet dotcover test --dcReportType=HTML --dotCoverFilters="-:*Tests;-:testhost"
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
