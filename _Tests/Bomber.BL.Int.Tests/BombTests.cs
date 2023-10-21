@@ -68,5 +68,25 @@ namespace Bomber.BL.Int.Tests
             Assert.NotNull(bomb);
             Assert.False(bomb.IsObstacle);
         }
+        
+        [Fact]
+        public async Task BT_0031_Given_Bomb_When_Exploded_Then_WatchersAreNotified()
+        {
+            var watchers = new List<IBombWatcher>()
+            {
+                Mock.Of<IBombWatcher>(),
+                Mock.Of<IBombWatcher>(),
+                Mock.Of<IBombWatcher>()
+            };
+            
+            var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), GetConfigurationMock().Object, watchers, 5, CancellationToken.None);
+            await bomb.Detonate();
+            
+            foreach (var watcher in watchers)
+            {
+                Mock.Get(watcher).Verify(x => x.BombExploded(bomb), Times.Once);
+            }
+            Assert.Null(bomb);
+        }
     }
 }

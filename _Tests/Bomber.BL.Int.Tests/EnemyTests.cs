@@ -1,9 +1,7 @@
 using Bomber.BL.Impl.Entities;
-using Bomber.BL.Map;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
-using GameFramework.Map.MapObject;
 using Moq;
 
 namespace Bomber.BL.Int.Tests

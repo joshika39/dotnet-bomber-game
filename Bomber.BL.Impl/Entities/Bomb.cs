@@ -71,10 +71,20 @@ namespace Bomber.BL.Impl.Entities
 
                 _timer = new PeriodicTimer(time);
 
+                
                 if (await _timer.WaitForNextTickAsync(_stoppingToken))
                 {
+                    if (_affectedObjects == null)
+                    {
+                        break;
+                    }
                     foreach (var affectedObject in _affectedObjects)
                     {
+                        if (affectedObject is null)
+                        {
+                            continue;
+                        }
+                        
                         if (affectedObject is IBomberMapTileView bombMapObject)
                         {
                             bombMapObject.IndicateBomb(countDownPeriod / 10);
