@@ -65,6 +65,10 @@ namespace Bomber.BL.Impl.Models
                 {
                     bomber.Score += 1;
                 }
+                if(entity is IBomber)
+                {
+                    _gameManager.GameFinished(new GameplayFeedback(FeedbackLevel.Info, "You lost! You got exploded!"), GameResolution.Loss);
+                }
                 entity.Dispose();
             }
 
