@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows;
 using Bomber.BL.Impl;
 using Bomber.UI.WPF.ViewModels;
@@ -19,8 +20,6 @@ namespace Bomber.UI.WPF
             base.OnStartup(e);
 
             var modules = LoadModules();
-
-            var mainWindowVM = modules.GetRequiredService<IMainWindowViewModel>();
             var mainWindow = modules.GetRequiredService<IMainWindow>();
             mainWindow.ShowOnTop();
         }
@@ -30,7 +29,7 @@ namespace Bomber.UI.WPF
             var collection = new ServiceCollection();
             
             new CoreModule().LoadModules(collection, "Bomber");
-            new GameModule().LoadModules(collection);
+            new GameModule().LoadModules(collection, new CancellationTokenSource());
             new BusinessLogicModule().LoadModules(collection);
             new WpfModule().LoadModules(collection);
             

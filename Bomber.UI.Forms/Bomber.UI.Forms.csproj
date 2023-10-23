@@ -8,6 +8,14 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>..\Binaries\Debug\</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>..\Binaries\Release\</OutputPath>
+    </PropertyGroup>
+
     <ItemGroup>
       <Compile Remove="Map\**" />
       <EmbeddedResource Remove="Map\**" />
@@ -24,7 +32,7 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="joshika39.Core" Version="1.1.9" />
-      <PackageReference Include="joshika39.GameFramework" Version="1.1.0" />
+      <PackageReference Include="joshika39.GameFramework" Version="1.2.1-rc2" />
       <PackageReference Include="joshika39.UiFramework.Forms" Version="1.0.1-pre0001" />
     </ItemGroup>
 

@@ -2,7 +2,7 @@ using Bomber.BL.Map;
 
 namespace Bomber.BL.Impl
 {
-    public class Constants
+    public static class Constants
     {
         public static int TileTypeToInt(TileType tileType)
         {

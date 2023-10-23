@@ -9,5 +9,7 @@ namespace Bomber.BL.Impl.MapGenerator.DomainModels
         public string Description { get; set; }
         public int ColumnCount { get; set; }
         public int RowCount { get; set; }
+        public int PlayerXPos { get; set; }
+        public int PlayerYPos { get; set; }
     }
 }

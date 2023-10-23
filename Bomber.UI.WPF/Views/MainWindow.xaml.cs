@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -10,11 +8,11 @@ using Bomber.BL.Entities;
 using Bomber.BL.Impl.Entities;
 using Bomber.BL.Map;
 using Bomber.UI.WPF.Entities;
-using Bomber.UI.WPF.Tiles;
 using Bomber.UI.WPF.ViewModels;
 using GameFramework.Configuration;
 using GameFramework.Core.Factories;
 using GameFramework.Core.Motion;
+using GameFramework.Time;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using UiFramework.Shared;
@@ -32,7 +30,8 @@ namespace Bomber.UI.WPF.Views
         private readonly IConfigurationService2D _configService;
         
         private IBomber? _player;
-        
+        private readonly IStopwatch _stopwatch;
+
         public MainWindow(IMainWindowViewModel viewModel, IServiceProvider provider)
         {
             _viewModel = viewModel ?? throw new ArgumentNullException(nameof(viewModel));
@@ -41,6 +40,7 @@ namespace Bomber.UI.WPF.Views
             DataContext = _viewModel.DataContext;
             _positionFactory = provider.GetRequiredService<IPositionFactory>();
             _configService = provider.GetRequiredService<IConfigurationService2D>();
+            _stopwatch = provider.GetRequiredService<IStopwatch>();
             MainCanvas.Background = new SolidColorBrush(Colors.Coral);
         }
 
@@ -60,7 +60,7 @@ namespace Bomber.UI.WPF.Views
             var map = _viewModel.OpenMap(openDialog.FileName);
 
             var view = new PlayerControl(_configService, MainCanvas);
-            _player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configService, "TestPlayer", "test@email.com", CancellationToken.None);
+            _player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configService, "TestPlayer", "test@email.com", _stopwatch);
             view.ViewAddedToMap();
             map.Entities.Add(_player);
             foreach (var mapMapObject in map.MapObjects)

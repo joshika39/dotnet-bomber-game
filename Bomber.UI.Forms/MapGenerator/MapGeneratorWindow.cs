@@ -1,5 +1,4 @@
 ﻿using Bomber.BL.Impl;
-using Bomber.BL.Map;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.Tiles;
 using Bomber.UI.Forms.MapGenerator._Interfaces;
@@ -31,7 +30,10 @@ namespace Bomber.UI.Forms.MapGenerator
             descBox.Text = selected.Description;
             _selectedLayoutWidth = selected.ColumnCount;
             _selectedLayoutHeight = selected.RowCount;
-            PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            if (Presenter.SelectedDraft.MapObjects != null)
+            {
+                PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            }
         }
 
         public DialogResult ShowOnTop()
@@ -64,8 +66,10 @@ namespace Bomber.UI.Forms.MapGenerator
             _selectedLayoutWidth = (int)numericUpDown.Value;
             numericUpDown.Value = (int)numericUpDown.Value;
             Presenter.SelectedDraft.ColumnCount = _selectedLayoutWidth;
-            
-            PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            if (Presenter.SelectedDraft.MapObjects != null)
+            {
+                PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            }
         }
 
         private void OnHeightChanged(object sender, EventArgs e)
@@ -75,7 +79,10 @@ namespace Bomber.UI.Forms.MapGenerator
             _selectedLayoutHeight = (int)numericUpDown.Value;
             numericUpDown.Value = (int)numericUpDown.Value;
             Presenter.SelectedDraft.RowCount = _selectedLayoutHeight;
-            PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            if (Presenter.SelectedDraft.MapObjects != null)
+            {
+                PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            }
         }
 
         private void PopulatePanel(IEnumerable<IPlaceHolder> mapObjects)
@@ -103,7 +110,10 @@ namespace Bomber.UI.Forms.MapGenerator
             draftName.Text = draft.Name;
             descBox.Text = draft.Description;
             Presenter.SelectedDraft = draft;
-            PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            if (Presenter.SelectedDraft.MapObjects != null)
+            {
+                PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            }
         }
 
         private void OnSaveAsDraftClicked(object sender, EventArgs e)
@@ -117,6 +127,18 @@ namespace Bomber.UI.Forms.MapGenerator
 
         private void OnGenerateClick(object sender, EventArgs e)
         {
+            var fileName = OpenDraftDialog();
+            if (string.IsNullOrEmpty(fileName))
+            {
+                return;
+            }
+            
+            LoadMapObjects(fileName);
+            
+        }
+
+        private string OpenDraftDialog()
+        {
             var dialog = new SaveFileDialog();
             dialog.Filter = "BoB files (*.bob)|*.bob";
             dialog.OverwritePrompt = true;
@@ -126,16 +148,22 @@ namespace Bomber.UI.Forms.MapGenerator
             Constants.CreateDirectory(@$"{folder}\");
             dialog.InitialDirectory = folder;
             var result = dialog.ShowDialog();
-            if (result != System.Windows.Forms.DialogResult.OK)
+            if (result == System.Windows.Forms.DialogResult.OK)
             {
-                return;
+                return dialog.FileName;
             }
+
+            return string.Empty;
+        }
+
+        private void LoadMapObjects(string fileName)
+        {
             foreach (var mapItem in draftComboBox.Items)
             {
                 if (mapItem is IMapLayoutDraft mapLayoutDraft)
                 {
                     if (!mapLayoutDraft.Id.Equals(Presenter.SelectedDraft.Id)) continue;
-                    Presenter.GenerateMapFromDraft(Presenter.SelectedDraft, dialog.FileName);
+                    Presenter.GenerateMapFromDraft(Presenter.SelectedDraft, fileName);
                     draftComboBox.Items.Remove(mapItem);
                     if (draftComboBox.Items.Count > 0 && draftComboBox.Items[0] is IMapLayoutDraft selected)
                     {
@@ -144,7 +172,10 @@ namespace Bomber.UI.Forms.MapGenerator
                         descBox.Text = selected.Description;
                         _selectedLayoutWidth = selected.ColumnCount;
                         _selectedLayoutHeight = selected.RowCount;
-                        PopulatePanel(Presenter.SelectedDraft.MapObjects);
+                        if (Presenter.SelectedDraft.MapObjects != null)
+                        {
+                            PopulatePanel(Presenter.SelectedDraft.MapObjects);
+                        }
                     }
                     else
                     {
@@ -161,9 +192,9 @@ namespace Bomber.UI.Forms.MapGenerator
         private void OnNewClicked(object sender, EventArgs e)
         {
             Presenter.SelectedDraft = Presenter.CreateDraft();
-            
+
             draftComboBox.Items.Add(Presenter.SelectedDraft);
-            
+
             var selected = Presenter.SelectedDraft;
             var item = Presenter.Drafts.First(d => d.Id.Equals(selected.Id));
             draftComboBox.SelectedIndex = draftComboBox.Items.IndexOf(item);
@@ -171,8 +202,10 @@ namespace Bomber.UI.Forms.MapGenerator
             descBox.Text = selected.Description;
             _selectedLayoutWidth = selected.ColumnCount;
             _selectedLayoutHeight = selected.RowCount;
-            PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            if (Presenter.SelectedDraft.MapObjects != null)
+            {
+                PopulatePanel(Presenter.SelectedDraft.MapObjects);
+            }
         }
     }
 }
-

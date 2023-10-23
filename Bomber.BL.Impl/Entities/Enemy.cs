@@ -7,12 +7,15 @@ using GameFramework.Core;
 using GameFramework.Core.Motion;
 using GameFramework.Entities;
 using GameFramework.Map.MapObject;
+using GameFramework.Time;
+using GameFramework.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class Enemy : IEnemy
+    public sealed class Enemy : IEnemy, ITickListener
     {
         private readonly IEnemyView _view;
+        private readonly IStopwatch _stopwatch;
         private readonly CancellationToken _stoppingToken;
         private readonly IBomberMap _map;
         private Move2D _direction;
@@ -21,12 +24,13 @@ namespace Bomber.BL.Impl.Entities
         public IPosition2D Position { get; private set; }
         public bool IsObstacle => false;
 
-        public Enemy(IEnemyView view, IConfigurationService2D service, IPosition2D position, CancellationToken stoppingToken)
+        public Enemy(IEnemyView view, IConfigurationService2D service, IPosition2D position, IStopwatch stopwatch)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
-            _stoppingToken = stoppingToken;
+            _stopwatch = stopwatch ?? throw new ArgumentNullException(nameof(stopwatch));
             service = service ?? throw new ArgumentNullException(nameof(service));
             Position = position ?? throw new ArgumentNullException(nameof(position));
+            _stoppingToken = service.CancellationTokenSource.Token;
             _map = service.GetActiveMap<IBomberMap>()!;
             _direction = GetRandomMove();
             _view.EntityLoaded += OnViewLoad;
@@ -41,24 +45,9 @@ namespace Bomber.BL.Impl.Entities
         {
             while (!_stoppingToken.IsCancellationRequested && !_disposed)
             {
-                var newPeriodInSeconds = new Random().Next(1, 3);
-                var time = new TimeSpan(0, 0, newPeriodInSeconds);
-
-                using PeriodicTimer timer = new(time);
-
-                if (!await timer.WaitForNextTickAsync(_stoppingToken))
-                {
-                    continue;
-                }
+                var newPeriodInSeconds = System.Security.Cryptography.RandomNumberGenerator.GetInt32(1, 3);
                 
-                var mapObject = _map.SimulateMove(Position, _direction);
-                while (mapObject is null || mapObject.IsObstacle || mapObject is IDeadlyTile || _map.HasEnemy(mapObject.Position))
-                {
-                    _direction = GetRandomMove();
-                    mapObject = _map.SimulateMove(Position, _direction);
-                }
-                    
-                Step(mapObject);
+                await _stopwatch.WaitAsync(newPeriodInSeconds * 1000, this);
             }
         }
         
@@ -79,7 +68,7 @@ namespace Bomber.BL.Impl.Entities
 
         private static Move2D GetRandomMove()
         {
-            return new Random().Next(0, 4) switch
+            return System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 4) switch
             {
                 0 => Move2D.Left,
                 1 => Move2D.Right,
@@ -113,5 +102,19 @@ namespace Bomber.BL.Impl.Entities
         {
             Dispose();
         }
+        
+        public void RaiseTick(int round)
+        {
+            var mapObject = _map.SimulateMove(Position, _direction);
+            while (mapObject is null || mapObject.IsObstacle || mapObject is IDeadlyTile || _map.HasEnemy(mapObject.Position))
+            {
+                _direction = GetRandomMove();
+                mapObject = _map.SimulateMove(Position, _direction);
+            }
+                    
+            Step(mapObject);
+        }
+        
+        public TimeSpan ElapsedTime { get; set; }
     }
 }

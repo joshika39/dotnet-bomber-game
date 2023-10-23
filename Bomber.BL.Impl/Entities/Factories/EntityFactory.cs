@@ -2,30 +2,33 @@ using Bomber.BL.Entities;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Time;
 
 namespace Bomber.BL.Impl.Entities.Factories
 {
     public class EntityFactory : IEntityFactory
     {
         private readonly IConfigurationService2D _configurationService;
-        public EntityFactory(IConfigurationService2D configurationService)
+        private readonly IStopwatch _stopwatch;
+        public EntityFactory(IConfigurationService2D configurationService, IStopwatch stopwatch)
         {
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+            _stopwatch = stopwatch ?? throw new ArgumentNullException(nameof(stopwatch));
         }
 
-        public IBomb CreateBomb(IBombView view, IPosition2D position2D, IConfigurationService2D configurationService2D, IEnumerable<IBombWatcher> bombWatchers, int radius, CancellationToken stoppingToken)
+        public IBomb CreateBomb(IBombView view, IPosition2D position2D, IEnumerable<IBombWatcher> bombWatchers, int radius)
         {
-            return new Bomb(view, position2D, configurationService2D, bombWatchers, radius, stoppingToken);
+            return new Bomb(view, position2D, _configurationService, bombWatchers, radius, _stopwatch);
         }
         
-        public IBomber CreatePlayer(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, CancellationToken cancellationToken)
+        public IBomber CreatePlayer(IPlayerView view, IPosition2D position, string name, string email)
         {
-            return new PlayerModel(view, position, configurationService2D, name, email, cancellationToken);
+            return new PlayerModel(view, position, _configurationService, name, email, _stopwatch);
         }
         
-        public IEnemy CreateEnemy(IEnemyView view, IPosition2D position2D, CancellationToken token)
+        public IEnemy CreateEnemy(IEnemyView view, IPosition2D position2D)
         {
-            return new Enemy(view, _configurationService, position2D, token);
+            return new Enemy(view, _configurationService, position2D, _stopwatch);
         }
     }
 }

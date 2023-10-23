@@ -13,14 +13,14 @@ namespace Bomber.BL.Impl.Map
     public class Map : AMap2D, IBomberMap
     {
         private readonly IPositionFactory _positionFactory;
-        private readonly IConfigurationService2D _configurationService;
 
-        public Map(int sizeX, int sizeY, ICollection<IUnit2D> entities, IEnumerable<IMapObject2D> mapObjects, IPositionFactory positionFactory, IConfigurationService2D configurationService) : base(sizeX, sizeY, entities, mapObjects)
+        public Map(int sizeX, int sizeY, ICollection<IUnit2D> entities, IEnumerable<IMapObject2D> mapObjects, IPositionFactory positionFactory, IConfigurationService2D configurationService, IPosition2D playerPosition) : base(sizeX, sizeY, entities, mapObjects)
         {
             _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
+            PlayerPosition = playerPosition ?? throw new ArgumentNullException(nameof(playerPosition));
         }
 
+        public IPosition2D PlayerPosition { get; }
         public bool HasEnemy(IPosition2D position)
         {
             foreach (var entity in Entities)
@@ -45,12 +45,9 @@ namespace Bomber.BL.Impl.Map
             {
                 foreach (var entity in Entities)
                 {
-                    if (entity is IBomberEntity bomberEntity)
+                    if (entity is IBomberEntity bomberEntity && entity.Position == mapObject.Position)
                     {
-                        if (entity.Position == mapObject.Position)
-                        {
-                            entities.Add(bomberEntity);
-                        }
+                        entities.Add(bomberEntity);
                     }
                 }
             }

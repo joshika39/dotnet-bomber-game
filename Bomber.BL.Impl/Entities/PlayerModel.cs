@@ -6,6 +6,7 @@ using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
 using GameFramework.Map.MapObject;
+using GameFramework.Time;
 
 namespace Bomber.BL.Impl.Entities
 {
@@ -13,7 +14,7 @@ namespace Bomber.BL.Impl.Entities
     {
         private readonly IPlayerView _view;
         private readonly IConfigurationService2D _configurationService2D;
-        private readonly CancellationToken _cancellationToken;
+        private readonly IStopwatch _stopwatch;
         private bool _isAlive = true;
         private bool _disposed;
         public IPosition2D Position { get; private set; }
@@ -46,23 +47,46 @@ namespace Bomber.BL.Impl.Entities
             _view.UpdatePosition(Position);
         }
         public ICollection<IBomb> PlantedBombs { get; }
-
-        public void PutBomb(IBombView bombView, IEnumerable<IBombWatcher> bombWatchers)
+        
+        public void DetonateBombAt(int bombIndex)
         {
-            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _cancellationToken);
-            PlantedBombs.Add(bomb);
+            if (!PlantedBombs.Any())
+            {
+                return;
+            }
+            
+            if(bombIndex < 0 || bombIndex >= PlantedBombs.Count)
+            {
+                return;
+            }
+
+            var bomb = PlantedBombs.ElementAt(bombIndex);
+            bomb.Detonate();
         }
+        
+        public int Score { get; set; }
 
         public void PutBomb(IBombView bombView, IBombWatcher? bombWatcher)
         {
-            PutBomb(bombView, new List<IBombWatcher> { bombWatcher ?? this });
+            var bombWatchers = new List<IBombWatcher>
+            {
+                bombWatcher ?? this
+            };
+            
+            if (!bombWatchers.Contains(this))
+            {
+                bombWatchers.Add(this);
+            }
+            
+            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _stopwatch);
+            PlantedBombs.Add(bomb);
         }
 
-        public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, CancellationToken cancellationToken)
+        public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, IStopwatch stopwatch)
         {
             _view = view ?? throw new ArgumentNullException(nameof(view));
             _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
-            _cancellationToken = cancellationToken;
+            _stopwatch = stopwatch ?? throw new ArgumentNullException(nameof(stopwatch));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Email = email ?? throw new ArgumentNullException(nameof(email));

@@ -3,6 +3,7 @@ using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
 using Bomber.BL.Tiles.Factories;
+using GameFramework.Core;
 using GameFramework.Core.Factories;
 using Infrastructure.Application;
 using Infrastructure.IO;
@@ -23,6 +24,7 @@ namespace Bomber.BL.Impl.MapGenerator
         public string Name { get; set; }
         public Guid Id { get; }
         public string RawData => GetRawData(MapObjects);
+        public IPosition2D PlayerStartPosition { get; }
 
         public MapLayoutDraft(IServiceProvider serviceProvider, IDraftLayoutModel model)
         {
@@ -91,7 +93,7 @@ namespace Bomber.BL.Impl.MapGenerator
                 for (var j = 0; j < ColumnCount; j++)
                 {
                     var pos = _positionFactory.CreatePosition(i, j);
-                    if (oldValues is not null && i <= oldValues.Length / RowCount && j <= oldValues.Length / ColumnCount && i * ColumnCount + j < oldValues.Length)
+                    if (i <= oldValues.Length / RowCount && j <= oldValues.Length / ColumnCount && i * ColumnCount + j < oldValues.Length)
                     {
                         array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, oldValues[i * ColumnCount + j].Type);
                     }

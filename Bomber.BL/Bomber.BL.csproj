@@ -5,9 +5,17 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <OutputPath>..\Binaries\Debug\</OutputPath>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <OutputPath>..\Binaries\Release\</OutputPath>
+    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="joshika39.Core" Version="1.1.9" />
-        <PackageReference Include="joshika39.GameFramework" Version="1.1.0" />
+        <PackageReference Include="joshika39.GameFramework" Version="1.2.1-rc2" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Bomber.UI.Shared\Bomber.UI.Shared.csproj" />

@@ -9,6 +9,7 @@ namespace Bomber.BL.Map
 {
     public interface IBomberMap : IMap2D
     {
+        IPosition2D PlayerPosition { get; }
         bool HasEnemy(IPosition2D position);
         
         IEnumerable<IMapObject2D> MapPortion(IPosition2D topLeft, IPosition2D bottomRight);

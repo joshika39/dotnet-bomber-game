@@ -1,3 +1,4 @@
+using GameFramework.Core;
 using GameFramework.Map.MapObject;
 using Infrastructure.Repositories;
 
@@ -11,5 +12,6 @@ namespace Bomber.BL.Map
         public int ColumnCount { get; set; }
         public int RowCount { get; set; }
         IEnumerable<IMapObject2D> MapObjects { get; }
+        IPosition2D PlayerPosition { get; set; }
     }
 }

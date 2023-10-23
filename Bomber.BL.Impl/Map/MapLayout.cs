@@ -2,6 +2,7 @@
 using Bomber.BL.Map;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.Tiles.Factories;
+using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.Map.MapObject;
 using Infrastructure.Configuration;
@@ -24,6 +25,7 @@ namespace Bomber.BL.Impl.Map
         public int RowCount { get; set; }
         public Guid Id { get; }
         public IEnumerable<IMapObject2D> MapObjects { get; }
+        public IPosition2D PlayerPosition { get; set; }
 
         public MapLayout(
             string filePath,
@@ -42,6 +44,9 @@ namespace Bomber.BL.Impl.Map
             ColumnCount = _query.GetIntAttribute("row") ??  throw new InvalidOperationException("Draft config is missing a 'row;");
             RowCount = _query.GetIntAttribute("col") ??  throw new InvalidOperationException("Draft config is missing a 'col'");
             _mapDataBase64 = _query.GetStringAttribute("data") ??  throw new InvalidOperationException("Draft config is missing the 'data'");
+            var xPos = _query.GetIntAttribute("player.x") ?? 1;
+            var yPos = _query.GetIntAttribute("player.y") ?? 1;
+            PlayerPosition = _positionFactory.CreatePosition(xPos, yPos);
             MapObjects = ConvertDataToObjects();
         }
         

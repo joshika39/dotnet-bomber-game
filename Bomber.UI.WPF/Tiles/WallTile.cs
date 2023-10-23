@@ -17,10 +17,7 @@ namespace Bomber.UI.WPF.Tiles
         public override bool IsObstacle => true;
         public override void SteppedOn(IUnit2D unit2D)
         {
-            if (ConfigurationService.GameIsRunning)
-            {
-                
-            }
+            // do nothing
         }
     }
 }

@@ -6,36 +6,40 @@ using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
 using GameFramework.Map.MapObject;
+using GameFramework.Time;
+using GameFramework.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class Bomb : IBomb
+    public sealed class Bomb : IBomb, ITickListener
     {
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
-        private readonly CancellationToken _stoppingToken;
-        private PeriodicTimer? _timer;
+        private readonly IStopwatch _stopwatch;
         private readonly IEnumerable<IMapObject2D> _affectedObjects;
         private bool _disposed;
+        private readonly CancellationToken _stoppingToken;
+        private int _countDownPeriod = 2000;
         public IPosition2D Position { get; }
         public bool IsObstacle => false;
         public int Radius { get; }
         public IBombView View { get; }
+        private bool _isDetonated;
 
 
-        public Bomb(IBombView view, IPosition2D position, IConfigurationService2D configurationService, IEnumerable<IBombWatcher> bombWatchers, int radius,  CancellationToken stoppingToken)
+        public Bomb(IBombView view, IPosition2D position, IConfigurationService2D configurationService, IEnumerable<IBombWatcher> bombWatchers, int radius, IStopwatch stopwatch)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
+            _stopwatch = stopwatch ?? throw new ArgumentNullException(nameof(stopwatch));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-
+            _stoppingToken = configurationService.CancellationTokenSource.Token;
             if (radius <= 0)
             {
                 throw new InvalidOperationException("Radius cannot be zero or negative");
             }
             
             Radius = radius;
-            _stoppingToken = stoppingToken;
 
             if (!configurationService.GameIsRunning)
             {
@@ -54,43 +58,23 @@ namespace Bomber.BL.Impl.Entities
 
         public async Task Detonate()
         {
-            var countDownPeriod = 2d;
+            if(_disposed || _isDetonated)
+            {
+                return;
+            }
+
+            _isDetonated = true;
             while (!_stoppingToken.IsCancellationRequested)
             {
+                _countDownPeriod -= 300;
 
-                countDownPeriod -= 0.3;
-
-
-                if (countDownPeriod <= 0)
+                if (_countDownPeriod <= 0)
                 {
                     Explode();
                     break;
                 }
 
-                var time = TimeSpan.FromSeconds(countDownPeriod);
-
-                _timer = new PeriodicTimer(time);
-
-                
-                if (await _timer.WaitForNextTickAsync(_stoppingToken))
-                {
-                    if (_affectedObjects == null)
-                    {
-                        break;
-                    }
-                    foreach (var affectedObject in _affectedObjects)
-                    {
-                        if (affectedObject is null)
-                        {
-                            continue;
-                        }
-                        
-                        if (affectedObject is IBomberMapTileView bombMapObject)
-                        {
-                            bombMapObject.IndicateBomb(countDownPeriod / 10);
-                        }
-                    }
-                }
+                await _stopwatch.WaitAsync(_countDownPeriod, this);
 
             }
 
@@ -106,7 +90,9 @@ namespace Bomber.BL.Impl.Entities
         }
 
         public void SteppedOn(IUnit2D unit2D)
-        { }
+        {
+            throw new NotSupportedException();
+        }
 
         private void Dispose(bool disposing)
         {
@@ -117,7 +103,6 @@ namespace Bomber.BL.Impl.Entities
 
             if (disposing)
             {
-                _timer?.Dispose();
                 View.Dispose();
             }
 
@@ -129,5 +114,18 @@ namespace Bomber.BL.Impl.Entities
         {
             Dispose(true);
         }
+        
+        public void RaiseTick(int round)
+        {
+            foreach (var affectedObject in _affectedObjects)
+            {
+                if (affectedObject is IBomberMapTileView bombMapObject)
+                {
+                    bombMapObject.IndicateBomb(_countDownPeriod / 1000d);
+                }
+            }
+        }
+        
+        public TimeSpan ElapsedTime { get; set; }
     }
 }

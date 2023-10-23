@@ -8,17 +8,14 @@ namespace Bomber.BL.Entities
     {
         IBomb CreateBomb(IBombView view, 
             IPosition2D position2D, 
-            IConfigurationService2D configurationService2D, 
-            IEnumerable<IBombWatcher> bombWatchers, int radius, 
-            CancellationToken stoppingToken);
+            IEnumerable<IBombWatcher> bombWatchers, int radius);
         
         IBomber CreatePlayer(
             IPlayerView view, 
             IPosition2D position, 
-            IConfigurationService2D configurationService2D, 
             string name, 
-            string email, CancellationToken cancellationToken);
+            string email);
         
-        IEnemy CreateEnemy(IEnemyView view, IPosition2D position2D, CancellationToken token);
+        IEnemy CreateEnemy(IEnemyView view, IPosition2D position2D);
     }
 }

@@ -7,6 +7,8 @@ namespace Bomber.BL.Entities
     {
         ICollection<IBomb> PlantedBombs { get; }
         void PutBomb(IBombView bombView, IBombWatcher bombWatcher);
-        void PutBomb(IBombView bombView, IEnumerable<IBombWatcher> bombWatchers);
+
+        void DetonateBombAt(int bombIndex);
+        int Score { get; set; }
     }
 }

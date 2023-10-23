@@ -2,7 +2,7 @@
 
 namespace Bomber.UI.Forms.Views.Main
 {
-    partial class MainWindow
+    sealed partial class MainWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -47,6 +47,7 @@ namespace Bomber.UI.Forms.Views.Main
             elementList = new Panel();
             button1 = new Button();
             button2 = new Button();
+            currentTime = new Label();
             menuStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -63,10 +64,10 @@ namespace Bomber.UI.Forms.Views.Main
             // 
             // bomberMap
             // 
-            bomberMap.AutoSize = true;
-            bomberMap.Location = new Point(11, 89);
+            bomberMap.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            bomberMap.Location = new Point(12, 64);
             bomberMap.Name = "bomberMap";
-            bomberMap.Size = new Size(350, 350);
+            bomberMap.Size = new Size(581, 406);
             bomberMap.TabIndex = 1;
             // 
             // menuStrip1
@@ -158,8 +159,7 @@ namespace Bomber.UI.Forms.Views.Main
             // 
             // elementList
             // 
-            elementList.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            elementList.Location = new Point(643, 192);
+            elementList.Location = new Point(643, 239);
             elementList.Name = "elementList";
             elementList.Size = new Size(145, 247);
             elementList.TabIndex = 5;
@@ -167,7 +167,7 @@ namespace Bomber.UI.Forms.Views.Main
             // button1
             // 
             button1.Anchor = AnchorStyles.Right;
-            button1.Location = new Point(713, 89);
+            button1.Location = new Point(713, 112);
             button1.Name = "button1";
             button1.Size = new Size(75, 23);
             button1.TabIndex = 6;
@@ -178,7 +178,7 @@ namespace Bomber.UI.Forms.Views.Main
             // button2
             // 
             button2.Anchor = AnchorStyles.Right;
-            button2.Location = new Point(713, 118);
+            button2.Location = new Point(713, 141);
             button2.Name = "button2";
             button2.Size = new Size(75, 23);
             button2.TabIndex = 7;
@@ -186,12 +186,23 @@ namespace Bomber.UI.Forms.Views.Main
             button2.UseVisualStyleBackColor = true;
             button2.Click += OnStopTestClick;
             // 
+            // currentTime
+            // 
+            currentTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            currentTime.AutoSize = true;
+            currentTime.Location = new Point(12, 473);
+            currentTime.Name = "currentTime";
+            currentTime.Size = new Size(63, 15);
+            currentTime.TabIndex = 8;
+            currentTime.Text = "Stopwatch";
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(800, 497);
+            Controls.Add(currentTime);
             Controls.Add(button2);
             Controls.Add(button1);
             Controls.Add(elementList);
@@ -203,7 +214,7 @@ namespace Bomber.UI.Forms.Views.Main
             MainMenuStrip = menuStrip1;
             Name = "MainWindow";
             Text = "MainWindow";
-            KeyDown += OnKeyPressed;
+            KeyPress += OnKeyPressed;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
             ResumeLayout(false);
@@ -229,6 +240,7 @@ namespace Bomber.UI.Forms.Views.Main
         private Panel elementList;
         private Button button1;
         private Button button2;
+        private Label currentTime;
     }
 }
 

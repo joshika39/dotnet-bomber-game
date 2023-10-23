@@ -1,5 +1,6 @@
 ﻿using Bomber.BL.Entities;
 using Bomber.BL.Map;
+using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
@@ -17,15 +18,16 @@ namespace Bomber.BL.Int.Tests
         protected ABomberTest()
         {
             var collection = new ServiceCollection();
-            new GameModule().LoadModules(collection);
+            new GameModule().LoadModules(collection, new CancellationTokenSource());
             _provider = collection.BuildServiceProvider();
             PositionFactory = _provider.GetRequiredService<IPositionFactory>();
         }
         
-        protected Mock<IConfigurationService2D> GetConfigurationMock()
+        protected static Mock<IConfigurationService2D> GetConfigurationMock()
         {
             var configMock = new Mock<IConfigurationService2D>();
             configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
+            configMock.Setup(c => c.CancellationTokenSource).Returns(new CancellationTokenSource());
             configMock.Setup(c => c.GameIsRunning).Returns(true);
             return configMock;
         }
@@ -34,14 +36,24 @@ namespace Bomber.BL.Int.Tests
         {
             var configMock = new Mock<IConfigurationService2D>();
             configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
+            configMock.Setup(c => c.CancellationTokenSource).Returns(new CancellationTokenSource());
             configMock.SetupProperty(v => v.GameIsRunning, initValue);
             return configMock;
         }
 
-        protected Mock<IBomberMap> GetMapMock()
+        protected static Mock<IBomberMap> GetMapMock()
         {
             var mapMock = new Mock<IBomberMap>();
-            mapMock.Setup(m => m.MapPortion(It.IsAny<IPosition2D>(), It.IsAny<int>())).Returns(Mock.Of<IEnumerable<IMapObject2D>>());
+            var mapObjects = new List<IMapObject2D>();
+            for (var i = 0; i < 5; i++)
+            {
+                for (var j = 0; j < 5; j++) 
+                {
+                    mapObjects.Add(GetMapObjectMockObject<IBomberMapTileView>(i, j));
+                }
+            }
+            mapMock.Setup(m => m.MapObjects).Returns(mapObjects);
+            mapMock.Setup(m => m.MapPortion(It.IsAny<IPosition2D>(), It.IsAny<int>())).Returns(mapObjects);
             return mapMock;
         }
 
@@ -83,10 +95,13 @@ namespace Bomber.BL.Int.Tests
             return playerMock;
         }
         
-        protected IMapObject2D GetMapObjectMockObject<T>(int x, int y) where T : class, IMapObject2D
+        protected static IMapObject2D GetMapObjectMockObject<T>(int x, int y) where T : class, IMapObject2D
         {
+            var collection = new ServiceCollection();
+            new GameModule().LoadModules(collection, new CancellationTokenSource());
+            var positionFactory = collection.BuildServiceProvider().GetRequiredService<IPositionFactory>();
             var mapObjectMock = new Mock<T>();
-            mapObjectMock.Setup(p => p.Position).Returns(PositionFactory.CreatePosition(x, y));
+            mapObjectMock.Setup(p => p.Position).Returns(positionFactory.CreatePosition(x, y));
             return mapObjectMock.Object;
         }
     }

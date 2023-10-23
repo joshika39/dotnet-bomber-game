@@ -31,7 +31,7 @@ namespace Bomber.UI.Forms
             var collection = new ServiceCollection();
             
             new CoreModule().LoadModules(collection, "Bomber");
-            new GameModule().LoadModules(collection);
+            new GameModule().LoadModules(collection, new CancellationTokenSource());
             new BusinessLogicModule().LoadModules(collection);
             new BomberModule().LoadModules(collection);
 

@@ -1,6 +1,6 @@
 ﻿namespace Bomber.BL.Map
 {
-    public enum TileType : int
+    public enum TileType
     {
         Ground,
         Wall,
