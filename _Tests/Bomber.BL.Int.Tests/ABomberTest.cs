@@ -6,6 +6,7 @@ using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.Impl.Core;
 using GameFramework.Map.MapObject;
+using GameFramework.Time;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
@@ -92,6 +93,13 @@ namespace Bomber.BL.Int.Tests
             playerMock.Setup(p => p.PlantedBombs).Returns(GetBombs(playerMock.Object).ToList);
             playerMock.Setup(p => p.Kill()).Callback(() => playerMock.Object.Dispose());
             return playerMock;
+        }
+
+        protected Mock<IGameManager> GetGameManagerMock()
+        {
+            var gameManagerMock = new Mock<IGameManager>();
+            gameManagerMock.Setup(g => g.Timer).Returns(Mock.Of<IStopwatch>());
+            return gameManagerMock;
         }
         
         protected static IMapObject2D GetMapObjectMockObject<T>(int x, int y) where T : class, IMapObject2D

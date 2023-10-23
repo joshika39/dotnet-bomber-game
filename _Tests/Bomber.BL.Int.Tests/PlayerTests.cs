@@ -83,7 +83,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0041_Given_Player_When_PutBombCalled_Then_PlantedBombsWillIncrease()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", GetGameManagerMock().Object);
             
             for (var i = 0; i < 3; i++)
             {
@@ -98,7 +98,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0051_Given_Player_When_Killed_Then_PlayerBombsWillBeRemoved()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", GetGameManagerMock().Object);
             
             for (var i = 0; i < 3; i++)
             {
