@@ -1,5 +1,4 @@
-﻿using Bomber.BL.Map;
-using Bomber.BL.MapGenerator;
+﻿using Bomber.BL.MapGenerator;
 
 namespace Bomber.UI.Forms.MapGenerator
 {
@@ -30,6 +29,7 @@ namespace Bomber.UI.Forms.MapGenerator
         {
             return _mapGeneratorSettings.CreateDraft();
         }
+        
         public void GenerateMapFromDraft(IMapLayoutDraft draft, string name)
         {
             _mapGeneratorSettings.GenerateMapFromDraft(draft, name);

@@ -71,7 +71,7 @@ namespace Bomber.BL.Int.Tests
             return GetBombMock(new List<IBombWatcher>() { bombWatcher });
         }
 
-        private Mock<IBomb> GetBombMock(IEnumerable<IBombWatcher> bombWatchers)
+        private static Mock<IBomb> GetBombMock(IEnumerable<IBombWatcher> bombWatchers)
         {
             var bombMock = new Mock<IBomb>();
             bombMock.Setup(b => b.Detonate()).Callback(() => BombExploded(bombWatchers, bombMock));

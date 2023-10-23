@@ -1,6 +1,8 @@
 ﻿using System.Text;
+using Bomber.BL.Entities;
 using Bomber.BL.Map;
 using Bomber.BL.MapGenerator;
+using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles.Factories;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
@@ -25,7 +27,10 @@ namespace Bomber.BL.Impl.Map
         public int RowCount { get; set; }
         public Guid Id { get; }
         public IEnumerable<IMapObject2D> MapObjects { get; }
+        public ICollection<DummyEntity> Entities { get; set; }
         public IPosition2D PlayerPosition { get; set; }
+        
+        public int PlayerScore { get; set; }
 
         public MapLayout(
             string filePath,
@@ -46,7 +51,9 @@ namespace Bomber.BL.Impl.Map
             _mapDataBase64 = _query.GetStringAttribute("data") ??  throw new InvalidOperationException("Draft config is missing the 'data'");
             var xPos = _query.GetIntAttribute("player.x") ?? 1;
             var yPos = _query.GetIntAttribute("player.y") ?? 1;
+            PlayerScore = _query.GetIntAttribute("player.score") ?? 0;
             PlayerPosition = _positionFactory.CreatePosition(xPos, yPos);
+            Entities = _query.GetObject<List<DummyEntity>>("enemies") ?? new List<DummyEntity>();
             MapObjects = ConvertDataToObjects();
         }
         
@@ -69,6 +76,7 @@ namespace Bomber.BL.Impl.Map
             PlayerPosition = _positionFactory.CreatePosition(source.PlayerStartPosition.X, source.PlayerStartPosition.Y);
             _mapDataBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(source.RawData));
             MapObjects = ConvertDataToObjects();
+            Entities = source.Entities;
             SaveData();
         }
 
@@ -110,6 +118,21 @@ namespace Bomber.BL.Impl.Map
             _query.SetAttribute("row", RowCount);
             _query.SetAttribute("col", ColumnCount);
             _query.SetAttribute("data", _mapDataBase64);
+            _query.SetAttribute("player.x", PlayerPosition.X);
+            _query.SetAttribute("player.y", PlayerPosition.Y);
+            _query.SetObject("enemies", Entities);
+            _query.SetAttribute("player.score", PlayerScore);
+        }
+        
+        public void SaveLayout(IBomber bomber, IList<DummyEntity> dummyEntities)
+        {
+            PlayerPosition = bomber.Position;
+            PlayerScore = bomber.Score;
+            Entities = dummyEntities;
+            _query.SetAttribute("player.x", bomber.Position.X);
+            _query.SetAttribute("player.y", bomber.Position.Y);
+            _query.SetObject("enemies", dummyEntities);
+            _query.SetAttribute("player.score", bomber.Score);
         }
     }
 }

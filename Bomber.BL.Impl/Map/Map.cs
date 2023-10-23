@@ -1,9 +1,10 @@
 ﻿using Bomber.BL.Entities;
 using Bomber.BL.Map;
+using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.UI.Shared.Entities;
-using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
+using GameFramework.Core.Motion;
 using GameFramework.Entities;
 using GameFramework.Impl.Map;
 using GameFramework.Map.MapObject;
@@ -13,14 +14,32 @@ namespace Bomber.BL.Impl.Map
     public class Map : AMap2D, IBomberMap
     {
         private readonly IPositionFactory _positionFactory;
+        private readonly IEntityViewFactory _entityViewFactory;
+        private readonly IEntityFactory _entityFactory;
 
-        public Map(int sizeX, int sizeY, ICollection<IUnit2D> entities, IEnumerable<IMapObject2D> mapObjects, IPositionFactory positionFactory, IConfigurationService2D configurationService, IPosition2D playerPosition) : base(sizeX, sizeY, entities, mapObjects)
+        public IMapLayout MapLayout { get; }
+
+        public Map(int sizeX, int sizeY, ICollection<IUnit2D> entities, IEnumerable<IMapObject2D> mapObjects, IPositionFactory positionFactory, IEntityViewFactory entityViewFactory, IEntityFactory entityFactory, IMapLayout mapLayout) : base(sizeX, sizeY, entities, mapObjects)
         {
+            MapLayout = mapLayout ?? throw new ArgumentNullException(nameof(mapLayout));
             _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
-            PlayerPosition = playerPosition ?? throw new ArgumentNullException(nameof(playerPosition));
+            _entityViewFactory = entityViewFactory ?? throw new ArgumentNullException(nameof(entityViewFactory));
+            _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
+            FillEntities(mapLayout);
         }
 
-        public IPosition2D PlayerPosition { get; }
+        public override void MoveUnit(IUnit2D unit2D, Move2D move)
+        {
+            base.MoveUnit(unit2D, move);
+            foreach (var entity in Entities)
+            {
+                if (!entity.Equals(unit2D) && entity.Position.Equals(unit2D.Position))
+                {
+                    entity.SteppedOn(unit2D);
+                }
+            }
+        }
+
         public bool HasEnemy(IPosition2D position)
         {
             foreach (var entity in Entities)
@@ -60,6 +79,11 @@ namespace Bomber.BL.Impl.Map
             var objects = MapPortion(topLeft, bottomRight);
             return GetEntitiesAtPortion(objects);
         }
+        
+        public void SaveProgress(IBomber bomber)
+        {
+            MapLayout.SaveLayout(bomber, Entities.Where(e => e is INpc).Select(e => new DummyEntity(e.Position.X, e.Position.Y)).ToList());
+        }
 
         public IEnumerable<IMapObject2D> MapPortion(IPosition2D topLeft, IPosition2D bottomRight)
         {
@@ -82,6 +106,14 @@ namespace Bomber.BL.Impl.Map
             var topLeftPos = _positionFactory.CreatePosition(left, top);
             var bottomRightPos = _positionFactory.CreatePosition(right, bottom);
             return MapPortion(topLeftPos, bottomRightPos);
+        }
+
+        private void FillEntities(IMapLayout mapLayout)
+        {
+            foreach (var entity in mapLayout.Entities)
+            {
+                Entities.Add(_entityFactory.CreateEnemy(_entityViewFactory.CreateEnemyView(), _positionFactory.CreatePosition(entity.X, entity.Y)));
+            }
         }
     }
 }

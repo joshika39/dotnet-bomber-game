@@ -8,16 +8,13 @@ namespace Bomber.UI.Forms.Views.Entities
     {
         private readonly IConfigurationService2D _configurationService2D;
         
-        public EnemyView(IConfigurationService2D configurationService2D, int guardCount)
+        public EnemyView(IConfigurationService2D configurationService2D)
         {
             _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
             InitializeComponent();
             Width = _configurationService2D.Dimension - 4;
             Height = _configurationService2D.Dimension - 4;
             BackColor = Color.Red;
-            var label = new Label();
-            label.Text = $@"{guardCount}";
-            Controls.Add(label);
         }
         
         public void UpdatePosition(IPosition2D position)

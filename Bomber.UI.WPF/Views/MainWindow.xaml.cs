@@ -10,9 +10,9 @@ using Bomber.BL.Map;
 using Bomber.UI.WPF.Entities;
 using Bomber.UI.WPF.ViewModels;
 using GameFramework.Configuration;
+using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.Core.Motion;
-using GameFramework.Time;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using UiFramework.Shared;
@@ -23,14 +23,15 @@ namespace Bomber.UI.WPF.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IMainWindow, IBombWatcher
+    public sealed partial class MainWindow : IMainWindow, IBombWatcher, IDisposable
     {
         private readonly IMainWindowViewModel _viewModel;
         private readonly IPositionFactory _positionFactory;
         private readonly IConfigurationService2D _configService;
 
         private IBomber? _player;
-        private readonly IStopwatch _stopwatch;
+        private bool _disposed;
+        private readonly IGameManager _gameManager;
 
         public MainWindow(IMainWindowViewModel viewModel, IServiceProvider provider)
         {
@@ -40,8 +41,13 @@ namespace Bomber.UI.WPF.Views
             DataContext = _viewModel.DataContext;
             _positionFactory = provider.GetRequiredService<IPositionFactory>();
             _configService = provider.GetRequiredService<IConfigurationService2D>();
-            _stopwatch = provider.GetRequiredService<IStopwatch>();
+            _gameManager = provider.GetRequiredService<IGameManager>();
             MainCanvas.Background = new SolidColorBrush(Colors.Coral);
+        }
+        
+        ~MainWindow()
+        {
+            Dispose(false);
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
@@ -60,7 +66,7 @@ namespace Bomber.UI.WPF.Views
             var map = _viewModel.OpenMap(openDialog.FileName);
 
             var view = new PlayerControl(_configService, MainCanvas);
-            _player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configService, "TestPlayer", "test@email.com", _stopwatch);
+            _player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configService, "TestPlayer", "test@email.com", _gameManager);
             view.ViewAddedToMap();
             map.Entities.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
@@ -139,6 +145,27 @@ namespace Bomber.UI.WPF.Views
                 view.ViewAddedToMap();
                 MainCanvas.Children.Add(view);
             }
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
+
+            if (disposing)
+            {
+                _player?.Dispose();
+            }
+            
+            _disposed = true;
+        }
+        
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

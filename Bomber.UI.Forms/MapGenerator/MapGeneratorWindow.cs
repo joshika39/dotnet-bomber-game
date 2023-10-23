@@ -1,22 +1,27 @@
 ﻿using Bomber.BL.Impl;
+using Bomber.BL.Impl.MapGenerator.DomainModels;
 using Bomber.BL.MapGenerator;
+using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
 using Bomber.UI.Forms.MapGenerator._Interfaces;
+using GameFramework.Core.Factories;
 using DialogResult = UiFramework.Shared.DialogResult;
 
 namespace Bomber.UI.Forms.MapGenerator
 {
     public partial class MapGeneratorWindow : Form, IMapGeneratorWindow
     {
+        private readonly IPositionFactory _positionFactory;
         private int _selectedLayoutWidth;
         private int _selectedLayoutHeight;
         public IMapGeneratorWindowPresenter Presenter { get; }
 
-
-        public MapGeneratorWindow(IMapGeneratorWindowPresenter presenter)
+        public MapGeneratorWindow(IMapGeneratorWindowPresenter presenter, IPositionFactory positionFactory)
         {
+            _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
             Presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
             InitializeComponent();
+            entityList.Items.Clear();
 
             foreach (var draft in Presenter.Drafts)
             {
@@ -122,6 +127,17 @@ namespace Bomber.UI.Forms.MapGenerator
             Presenter.SelectedDraft.RowCount = _selectedLayoutHeight;
             Presenter.SelectedDraft.Name = draftName.Text;
             Presenter.SelectedDraft.Description = descBox.Text;
+            Presenter.SelectedDraft.PlayerStartPosition = _positionFactory.CreatePosition((int)playerX.Value, (int)playerY.Value);
+            Presenter.SelectedDraft.Entities.Clear();
+            foreach (var entity in entityList.Items)
+            {
+                if (entity is not DummyEntity dummy)
+                {
+                    continue;
+                }
+
+                Presenter.SelectedDraft.Entities.Add(dummy);
+            }
             Presenter.UpdateDraft(Presenter.SelectedDraft);
         }
 
@@ -132,9 +148,9 @@ namespace Bomber.UI.Forms.MapGenerator
             {
                 return;
             }
-            
+
             LoadMapObjects(fileName);
-            
+
         }
 
         private string OpenDraftDialog()
@@ -206,6 +222,45 @@ namespace Bomber.UI.Forms.MapGenerator
             {
                 PopulatePanel(Presenter.SelectedDraft.MapObjects);
             }
+        }
+
+        private void OnAddEnemyClick(object sender, EventArgs e)
+        {
+            var dummy = new DummyEntity((int)entityX.Value, (int)entityY.Value);
+            entityList.Items.Add(dummy);
+        }
+
+        private void OnSelectedEntityChanged(object sender, EventArgs e)
+        {
+            if (sender is not ListBox listBox)
+            {
+                editEntityButton.Enabled = false;
+                return;
+            }
+
+            if (listBox.SelectedItem is not DummyEntity dummy)
+            {
+                editEntityButton.Enabled = false;
+                return;
+            }
+
+            entityX.Value = dummy.X;
+            entityY.Value = dummy.Y;
+
+            editEntityButton.Enabled = true;
+        }
+
+        private void OnEditEntityClick(object sender, EventArgs e)
+        {
+            if (entityList.SelectedItem is not DummyEntity dummy)
+            {
+                return;
+            }
+
+            dummy.X = (int)entityX.Value;
+            dummy.Y = (int)entityY.Value;
+            entityList.Items.Remove(entityList.SelectedItem);
+            entityList.Items.Add(dummy);
         }
     }
 }

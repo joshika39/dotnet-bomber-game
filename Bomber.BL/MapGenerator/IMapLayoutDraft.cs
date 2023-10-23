@@ -1,5 +1,7 @@
+using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
 using GameFramework.Core;
+using GameFramework.Entities;
 using Infrastructure.Repositories;
 using Newtonsoft.Json;
 
@@ -13,7 +15,8 @@ namespace Bomber.BL.MapGenerator
         int ColumnCount { get; set; }
         int RowCount { get; set; }
         string RawData { get; }
-        IPosition2D PlayerStartPosition { get; }
+        ICollection<DummyEntity> Entities { get; }
+        IPosition2D PlayerStartPosition { get; set; }
         IEnumerable<IPlaceHolder>? MapObjects { get; }
         void SaveLayout(IEnumerable<IPlaceHolder> newMapObjects);
         void Delete();

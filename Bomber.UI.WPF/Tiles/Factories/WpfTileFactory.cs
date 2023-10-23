@@ -8,7 +8,7 @@ using GameFramework.Map.MapObject;
 
 namespace Bomber.UI.WPF.Tiles.Factories
 {
-    public class WpfTileFactory : ITileFactory
+    internal class WpfTileFactory : ITileFactory
     {
         private readonly IConfigurationService2D _configurationService;
 

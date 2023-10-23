@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.BL.Impl.MapGenerator
 {
-    public class MapGeneratorSettings : IMapGeneratorSettings
+    internal class MapGeneratorSettings : IMapGeneratorSettings
     {
         private readonly IServiceProvider _provider;
         private readonly IConfigurationQuery _query;
@@ -49,7 +49,10 @@ namespace Bomber.BL.Impl.MapGenerator
                 Name = draft.Name,
                 Description = draft.Description,
                 ColumnCount = draft.ColumnCount,
-                RowCount = draft.RowCount
+                RowCount = draft.RowCount,
+                DummyEntities = draft.Entities,
+                PlayerYPos = draft.PlayerStartPosition.Y,
+                PlayerXPos = draft.PlayerStartPosition.X
             };
             _draftsRepository.Update(model).SaveChanges();
             draft.SaveLayout(draft.MapObjects ?? new List<IPlaceHolder>());

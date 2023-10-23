@@ -1,20 +1,22 @@
 ﻿using System.Collections.ObjectModel;
 using Bomber.BL.Entities;
+using Bomber.BL.Feedback;
 using Bomber.BL.Tiles;
 using Bomber.UI.Shared.Entities;
+using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
+using GameFramework.GameFeedback;
 using GameFramework.Map.MapObject;
-using GameFramework.Time;
 
 namespace Bomber.BL.Impl.Entities
 {
     public sealed class PlayerModel : IBomber
     {
-        private readonly IPlayerView _view;
+        public IBomberMapEntityView View { get; }
         private readonly IConfigurationService2D _configurationService2D;
-        private readonly IStopwatch _stopwatch;
+        private readonly IGameManager _gameManager;
         private bool _isAlive = true;
         private bool _disposed;
         public IPosition2D Position { get; private set; }
@@ -44,7 +46,7 @@ namespace Bomber.BL.Impl.Entities
             }
 
             Position = mapObject.Position;
-            _view.UpdatePosition(Position);
+            View.UpdatePosition(Position);
         }
         public ICollection<IBomb> PlantedBombs { get; }
         
@@ -78,26 +80,26 @@ namespace Bomber.BL.Impl.Entities
                 bombWatchers.Add(this);
             }
             
-            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _stopwatch);
+            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _gameManager.Timer);
             PlantedBombs.Add(bomb);
         }
 
-        public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, IStopwatch stopwatch)
+        public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, IGameManager gameManager)
         {
-            _view = view ?? throw new ArgumentNullException(nameof(view));
+            View = view ?? throw new ArgumentNullException(nameof(view));
             _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
-            _stopwatch = stopwatch ?? throw new ArgumentNullException(nameof(stopwatch));
+            _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Email = email ?? throw new ArgumentNullException(nameof(email));
             Id = Guid.NewGuid();
-            _view.EntityLoaded += OnViewLoad;
+            View.EntityLoaded += OnViewLoad;
             PlantedBombs = new ObservableCollection<IBomb>();
         }
 
         private void OnViewLoad(object? sender, EventArgs e)
         {
-            _view.UpdatePosition(Position);
+            View.UpdatePosition(Position);
         }
 
         private void Dispose(bool disposing)
@@ -109,7 +111,7 @@ namespace Bomber.BL.Impl.Entities
 
             if (disposing)
             {
-                _view.Dispose();
+                View.Dispose();
                 while (PlantedBombs.Count > 0)
                 {
                     var bomb = PlantedBombs.ElementAt(PlantedBombs.Count - 1);
@@ -130,6 +132,7 @@ namespace Bomber.BL.Impl.Entities
 
         public void Kill()
         {
+            _gameManager.GameFinished(new GameplayFeedback(FeedbackLevel.Info, "You lost because you're DEAD!"), GameResolution.Loss);
             Dispose();
         }
 

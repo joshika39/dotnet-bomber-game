@@ -5,7 +5,6 @@ using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Map.MapObject;
-using GameFramework.Time;
 using Moq;
 
 namespace Bomber.BL.Int.Tests
@@ -32,7 +31,7 @@ namespace Bomber.BL.Int.Tests
         {
             var exception = Record.Exception(() =>
             {
-                _ = new PlayerModel(view, position, configurationService, name, email, Mock.Of<IStopwatch>());
+                _ = new PlayerModel(view, position, configurationService, name, email, Mock.Of<IGameManager>());
             });
 
             Assert.NotNull(exception);
@@ -42,7 +41,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0021_Given_PlayerModel_IsObstacleCalled_Then_ReturnsFalse()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
             Assert.NotNull(player);
             Assert.False(player.IsObstacle);
         }
@@ -51,7 +50,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0031_Given_PlantedBombs_When_BombExploded_Then_BombWillBeRemovedFromPlantedBombs()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
             Assert.NotNull(player);
             Assert.False(player.IsObstacle);
             var bombMocks = new List<Mock<IBomb>>()
@@ -84,7 +83,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0041_Given_Player_When_PutBombCalled_Then_PlantedBombsWillIncrease()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
             
             for (var i = 0; i < 3; i++)
             {
@@ -99,7 +98,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0051_Given_Player_When_Killed_Then_PlayerBombsWillBeRemoved()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
             
             for (var i = 0; i < 3; i++)
             {
@@ -116,7 +115,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0061_Given_Player_When_Killed_Then_Disposes()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
        
             player.Kill();
             player.Dispose();
@@ -128,7 +127,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0071_Given_Player_When_OnEmailAndNameAndIdGet_Then_ReturnsCorrectValues()
         {
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), GetConfigurationMock().Object,"Some Name", "email", Mock.Of<IGameManager>());
             
             Assert.NotNull(player);
             Assert.Equal("Some Name", player.Name);
@@ -140,7 +139,7 @@ namespace Bomber.BL.Int.Tests
         public void BT_0081_Given_Player_When_SteppedOnEnemy_Then_GameFinished()
         {
             var configService = GetConfigurationMock(true).Object;
-            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), configService,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(),Mock.Of<IPosition2D>(), configService,"Some Name", "email", Mock.Of<IGameManager>());
        
             player.SteppedOn(Mock.Of<IEnemy>());
             
@@ -151,7 +150,7 @@ namespace Bomber.BL.Int.Tests
         public void BT_0091_Given_Player_When_SteppedOnGround_Then_ChangedPosition()
         {
             var configService = GetConfigurationMock(true).Object;
-            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IGameManager>());
        
             player.Step(GetMapObjectMockObject<IMapObject2D>(1, 0));
             
@@ -163,7 +162,7 @@ namespace Bomber.BL.Int.Tests
         public void BT_0101_Given_Player_When_SteppedOnDeadlyTile_Then_PlayerIsDead()
         {
             var configService = GetConfigurationMock(true).Object;
-            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IGameManager>());
        
             player.Step(GetMapObjectMockObject<IDeadlyTile>(1, 0));
             
@@ -176,7 +175,7 @@ namespace Bomber.BL.Int.Tests
         public void BT_0111_Given_Player_When_GameIsStoppedPlayerStepped_Then_NothingHappens()
         {
             var configService = GetConfigurationMock(true).Object;
-            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IStopwatch>());
+            var player = new PlayerModel(Mock.Of<IPlayerView>(), PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IGameManager>());
        
             player.Step(GetMapObjectMockObject<IDeadlyTile>(1, 0));
             player.Step(GetMapObjectMockObject<IMapObject2D>(2, 0));
@@ -191,7 +190,7 @@ namespace Bomber.BL.Int.Tests
         {
             var configService = GetConfigurationMock(true).Object;
             var viewMock = new Mock<IPlayerView>();
-            _ = new PlayerModel(viewMock.Object, PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IStopwatch>());
+            _ = new PlayerModel(viewMock.Object, PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IGameManager>());
             
             viewMock.Raise(v => v.EntityLoaded += null, EventArgs.Empty);
             viewMock.Verify(p => p.UpdatePosition(It.IsAny<IPosition2D>()), Times.Once);

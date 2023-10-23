@@ -11,5 +11,7 @@ namespace Bomber.BL.Impl.MapGenerator.DomainModels
         public int RowCount { get; set; }
         public int PlayerXPos { get; set; }
         public int PlayerYPos { get; set; }
+        
+        public ICollection<DummyEntity> DummyEntities { get; set; } = new List<DummyEntity>();
     }
 }

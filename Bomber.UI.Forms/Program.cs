@@ -1,7 +1,11 @@
 using Bomber.BL.Impl;
+using Bomber.UI.Forms._Interface;
 using Bomber.UI.Forms.Core;
 using Bomber.UI.Forms.Main;
+using Bomber.UI.Forms.MapGenerator._Interfaces;
 using Bomber.UI.Forms.Views.Main;
+using Bomber.UI.Shared.Feedback;
+using GameFramework.Core;
 using GameFramework.Impl.Core;
 using Implementation.Module;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +23,8 @@ namespace Bomber.UI.Forms
             ApplicationConfiguration.Initialize();
             var modules = LoadModules();
             var mainWindow = modules.GetRequiredService<IMainWindow>();
-
+            var gameManager = modules.GetRequiredService<IGameManager>();
+            gameManager.AttachListener(modules.GetRequiredService<IFeedbackPopup>());
             if (mainWindow is MainWindow window)
             {
                 Application.Run(window);

@@ -1,17 +1,14 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Bomber.BL.Entities;
+﻿using Bomber.BL.Entities;
+using Bomber.BL.Feedback;
 using Bomber.BL.Impl.Entities;
 using Bomber.BL.Map;
 using Bomber.UI.Forms.Main;
 using Bomber.UI.Forms.Views.Entities;
 using Bomber.UI.Forms.Views.Main._Interfaces;
 using GameFramework.Configuration;
-using GameFramework.Core.Factories;
-using GameFramework.Core.Motion;
-using GameFramework.Time;
+using GameFramework.Core;
+using GameFramework.GameFeedback;
 using GameFramework.Time.Listeners;
-using Microsoft.Extensions.DependencyInjection;
 using DialogResult = UiFramework.Shared.DialogResult;
 
 namespace Bomber.UI.Forms.Views.Main
@@ -23,19 +20,15 @@ namespace Bomber.UI.Forms.Views.Main
         private IBomber? _player;
 
         private readonly IConfigurationService2D _service;
-        private readonly IPositionFactory _factory;
-        private readonly IEntityFactory _entityFactory;
-        private readonly IStopwatch _stopwatch;
+        private readonly IGameManager _gameManager;
 
         public TimeSpan ElapsedTime { get; set; }
-        
-        public MainWindow(IConfigurationService2D service, IPositionFactory factory, IServiceProvider provider, IMainWindowPresenter presenter, IEntityFactory entityFactory)
+
+        public MainWindow(IConfigurationService2D service, IMainWindowPresenter presenter, IGameManager gameManager)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
-            _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
+            _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             Presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
-            _stopwatch = provider.GetRequiredService<IStopwatch>();
             KeyPreview = true;
             InitializeComponent();
         }
@@ -82,43 +75,31 @@ namespace Bomber.UI.Forms.Views.Main
             var map = Presenter.OpenMap(openDialog.FileName);
 
             var view = new PlayerView(_service);
-            _player = new PlayerModel(view, map.PlayerPosition, _service, "TestPlayer", "test@email.com", _stopwatch);
+            _player = new PlayerModel(view, map.MapLayout.PlayerPosition, _service, "TestPlayer", "test@email.com", _gameManager);
             bomberMap.Controls.Add(view);
             map.Entities.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
             {
                 if (mapMapObject is Control control)
                 {
-#if DEBUG
-                    var label = new Label();
-                    label.Text = $@"{mapMapObject.Position.X}, {mapMapObject.Position.Y}";
-                    control.Controls.Add(label);
-#endif
                     bomberMap.Controls.Add(control);
                 }
             }
-            _stopwatch.Start();
-            _stopwatch.PeriodicOperation(1000, this, _service.CancellationTokenSource.Token);
-        }
 
-        private async void OnTestClick(object sender, EventArgs e)
-        {
-            var map = _service.GetActiveMap<IBomberMap>();
-            if (map is null)
+            foreach (var unit in map.Entities)
             {
-                return;
+                if (unit is not IEnemy { View: EnemyView control } enemy)
+                {
+                    continue;
+                }
+                Task.Run(async () => await enemy.ExecuteAsync());
+
+                bomberMap.Controls.Add(control);
             }
 
-            var enemyView = new EnemyView(_service, map.Entities.Count + 1);
-            var enemy = _entityFactory.CreateEnemy(enemyView, _factory.CreatePosition(1, 1));
-            bomberMap.Controls.Add(enemyView);
-            map.Entities.Add(enemy);
-            await enemy.ExecuteAsync();
-        }
-
-        private void OnStopTestClick(object sender, EventArgs e)
-        {
-            _service.CancellationTokenSource.Cancel();
+            _gameManager.GameStarted(new GameplayFeedback(FeedbackLevel.Info, "The game is started"));
+            _gameManager.Timer.PeriodicOperation(1000, this, _service.CancellationTokenSource.Token);
+            mapName.Text = map.MapLayout.Name;
         }
 
         public void BombExploded(IBomb bomb)
@@ -131,38 +112,32 @@ namespace Bomber.UI.Forms.Views.Main
             Presenter.BombExploded(bomb, _player);
         }
 
+
+        public void RaiseTick(int round)
+        {
+            Invoke(() =>
+            {
+                currentTime.Text = _gameManager.Timer.Elapsed.ToString("g");
+            });
+        }
+
         private void OnKeyPressed(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 'p')
             {
-                Presenter.PauseGame(_stopwatch);
+                Presenter.PauseGame();
             }
-            
+
             if (!_service.GameIsRunning || _player is null)
             {
                 return;
             }
-
-            var map = _service.GetActiveMap<IBomberMap>();
 
             Presenter.HandleKeyPress(e.KeyChar, _player);
 
             if (int.TryParse(e.KeyChar.ToString(), out var bombIndex))
             {
                 _player.DetonateBombAt(bombIndex - 1);
-            }
-
-            if (e.KeyChar == 't' && map is not null)
-            {
-                var testEntities = map.GetEntitiesAtPortion(map.MapPortion(_player.Position, 3));
-                foreach (var testEntity in testEntities)
-                {
-                    if (testEntity is not INpc enemy)
-                    {
-                        continue;
-                    }
-                    map.Entities.Remove(enemy);
-                }
             }
 
             if (e.KeyChar == 'b')
@@ -173,12 +148,15 @@ namespace Bomber.UI.Forms.Views.Main
             }
         }
 
-        public void RaiseTick(int round)
+        private void OnSaveClicked(object sender, EventArgs e)
         {
-            Invoke(() =>
+            var map = _service.GetActiveMap<IBomberMap>();
+            if (_player is null || map is null)
             {
-                currentTime.Text = _stopwatch.Elapsed.ToString("g");
-            });
+                return;
+            }
+            
+            map.SaveProgress(_player);
         }
     }
 }

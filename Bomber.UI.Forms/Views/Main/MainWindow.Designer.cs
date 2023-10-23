@@ -30,7 +30,6 @@ namespace Bomber.UI.Forms.Views.Main
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
             bomberMap = new Panel();
             menuStrip1 = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -45,29 +44,17 @@ namespace Bomber.UI.Forms.Views.Main
             mapName = new Label();
             description = new Label();
             elementList = new Panel();
-            button1 = new Button();
-            button2 = new Button();
             currentTime = new Label();
+            mapDescription = new Label();
             menuStrip1.SuspendLayout();
             SuspendLayout();
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 22F, FontStyle.Regular, GraphicsUnit.Point);
-            label1.Location = new Point(591, 37);
-            label1.Name = "label1";
-            label1.Size = new Size(197, 41);
-            label1.TabIndex = 0;
-            label1.Text = "Bomber.UI v1";
             // 
             // bomberMap
             // 
             bomberMap.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
-            bomberMap.Location = new Point(12, 64);
+            bomberMap.Location = new Point(12, 37);
             bomberMap.Name = "bomberMap";
-            bomberMap.Size = new Size(581, 406);
+            bomberMap.Size = new Size(581, 433);
             bomberMap.TabIndex = 1;
             // 
             // menuStrip1
@@ -91,26 +78,27 @@ namespace Bomber.UI.Forms.Views.Main
             // openToolStripMenuItem
             // 
             openToolStripMenuItem.Name = "openToolStripMenuItem";
-            openToolStripMenuItem.Size = new Size(142, 22);
+            openToolStripMenuItem.Size = new Size(180, 22);
             openToolStripMenuItem.Text = "Open...";
             openToolStripMenuItem.Click += OnOpenMap;
             // 
             // saveToolStripMenuItem
             // 
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            saveToolStripMenuItem.Size = new Size(142, 22);
+            saveToolStripMenuItem.Size = new Size(180, 22);
             saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += OnSaveClicked;
             // 
             // quitToolStripMenuItem
             // 
             quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            quitToolStripMenuItem.Size = new Size(142, 22);
+            quitToolStripMenuItem.Size = new Size(180, 22);
             quitToolStripMenuItem.Text = "Quit";
             // 
             // recentMapsToolStripMenuItem
             // 
             recentMapsToolStripMenuItem.Name = "recentMapsToolStripMenuItem";
-            recentMapsToolStripMenuItem.Size = new Size(142, 22);
+            recentMapsToolStripMenuItem.Size = new Size(180, 22);
             recentMapsToolStripMenuItem.Text = "Recent Maps";
             // 
             // settingsToolStripMenuItem
@@ -143,11 +131,10 @@ namespace Bomber.UI.Forms.Views.Main
             // mapName
             // 
             mapName.AutoSize = true;
-            mapName.Location = new Point(12, 37);
+            mapName.Location = new Point(599, 37);
             mapName.Name = "mapName";
-            mapName.Size = new Size(74, 15);
+            mapName.Size = new Size(0, 15);
             mapName.TabIndex = 3;
-            mapName.Text = "Select a Map";
             // 
             // description
             // 
@@ -164,28 +151,6 @@ namespace Bomber.UI.Forms.Views.Main
             elementList.Size = new Size(145, 247);
             elementList.TabIndex = 5;
             // 
-            // button1
-            // 
-            button1.Anchor = AnchorStyles.Right;
-            button1.Location = new Point(713, 112);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 6;
-            button1.Text = "Test";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += OnTestClick;
-            // 
-            // button2
-            // 
-            button2.Anchor = AnchorStyles.Right;
-            button2.Location = new Point(713, 141);
-            button2.Name = "button2";
-            button2.Size = new Size(75, 23);
-            button2.TabIndex = 7;
-            button2.Text = "Stop Test";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += OnStopTestClick;
-            // 
             // currentTime
             // 
             currentTime.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
@@ -196,20 +161,26 @@ namespace Bomber.UI.Forms.Views.Main
             currentTime.TabIndex = 8;
             currentTime.Text = "Stopwatch";
             // 
+            // mapDescription
+            // 
+            mapDescription.AutoSize = true;
+            mapDescription.Location = new Point(599, 64);
+            mapDescription.Name = "mapDescription";
+            mapDescription.Size = new Size(0, 15);
+            mapDescription.TabIndex = 9;
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = SystemColors.Window;
             ClientSize = new Size(800, 497);
+            Controls.Add(mapDescription);
             Controls.Add(currentTime);
-            Controls.Add(button2);
-            Controls.Add(button1);
             Controls.Add(elementList);
             Controls.Add(description);
             Controls.Add(mapName);
             Controls.Add(bomberMap);
-            Controls.Add(label1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
             Name = "MainWindow";
@@ -222,8 +193,6 @@ namespace Bomber.UI.Forms.Views.Main
         }
 
         #endregion
-
-        private Label label1;
         private Panel bomberMap;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
@@ -238,9 +207,8 @@ namespace Bomber.UI.Forms.Views.Main
         private Label mapName;
         private Label description;
         private Panel elementList;
-        private Button button1;
-        private Button button2;
         private Label currentTime;
+        private Label mapDescription;
     }
 }
 

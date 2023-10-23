@@ -24,7 +24,8 @@ namespace Bomber.BL.Impl.MapGenerator
         public string Name { get; set; }
         public Guid Id { get; }
         public string RawData => GetRawData(MapObjects);
-        public IPosition2D PlayerStartPosition { get; }
+        public ICollection<DummyEntity> Entities { get; }
+        public IPosition2D PlayerStartPosition { get; set; }
 
         public MapLayoutDraft(IServiceProvider serviceProvider, IDraftLayoutModel model)
         {
@@ -42,6 +43,7 @@ namespace Bomber.BL.Impl.MapGenerator
             _layoutPath = Path.Join(settings.ConfigurationFolder, "layouts", "draftLayouts", Id + ".txt");
             Constants.CreateFileAndDirectory(_layoutPath);
             MapObjects = FirstLoad();
+            Entities = model.DummyEntities;
         }
 
         public string Description { get; set; }

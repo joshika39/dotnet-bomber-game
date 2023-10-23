@@ -11,9 +11,9 @@ namespace Bomber.BL.Int.Tests
     {
         public static IEnumerable<object[]> GetMemberData_0001()
         {
-            yield return new[] { (object)null!, Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), Mock.Of<IStopwatch>() };
-            yield return new[] { Mock.Of<IEnemyView>(), (object)null!, Mock.Of<IPosition2D>(), Mock.Of<IStopwatch>() };
-            yield return new[] { Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), (object)null!, Mock.Of<IStopwatch>() };
+            yield return new[] { (object)null!, Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), Mock.Of<IGameManager>() };
+            yield return new[] { Mock.Of<IEnemyView>(), (object)null!, Mock.Of<IPosition2D>(), Mock.Of<IGameManager>() };
+            yield return new[] { Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), (object)null!, Mock.Of<IGameManager>() };
             yield return new[] { Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), (object)null! };
         }
         [Theory]
@@ -22,11 +22,11 @@ namespace Bomber.BL.Int.Tests
             IEnemyView view,
             IConfigurationService2D configurationService,
             IPosition2D position,
-            IStopwatch stopwatch)
+            IGameManager gameManager)
         {
             var exception = Record.Exception(() =>
             {
-                _ = new Enemy(view, configurationService, position, stopwatch);
+                _ = new Enemy(view, configurationService, position, gameManager);
             });
 
             Assert.NotNull(exception);
@@ -36,7 +36,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0021_Given_Enemy_IsObstacleCalled_Then_ReturnsFalse()
         {
-            var enemy = new Enemy(Mock.Of<IEnemyView>(), GetConfigurationMock().Object, Mock.Of<IPosition2D>(), Mock.Of<IStopwatch>());
+            var enemy = new Enemy(Mock.Of<IEnemyView>(), GetConfigurationMock().Object, Mock.Of<IPosition2D>(), Mock.Of<IGameManager>());
             Assert.NotNull(enemy);
             Assert.False(enemy.IsObstacle);
         }
