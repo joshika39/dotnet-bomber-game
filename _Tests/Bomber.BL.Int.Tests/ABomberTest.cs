@@ -13,14 +13,13 @@ namespace Bomber.BL.Int.Tests
 {
     public abstract class ABomberTest
     {
-        private readonly ServiceProvider _provider;
         protected IPositionFactory PositionFactory { get; }
         protected ABomberTest()
         {
             var collection = new ServiceCollection();
             new GameModule().LoadModules(collection, new CancellationTokenSource());
-            _provider = collection.BuildServiceProvider();
-            PositionFactory = _provider.GetRequiredService<IPositionFactory>();
+            var provider = collection.BuildServiceProvider();
+            PositionFactory = provider.GetRequiredService<IPositionFactory>();
         }
         
         protected static Mock<IConfigurationService2D> GetConfigurationMock()
@@ -32,7 +31,7 @@ namespace Bomber.BL.Int.Tests
             return configMock;
         }
         
-        protected Mock<IConfigurationService2D> GetConfigurationMock(bool initValue)
+        protected static Mock<IConfigurationService2D> GetConfigurationMock(bool initValue)
         {
             var configMock = new Mock<IConfigurationService2D>();
             configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
@@ -41,7 +40,7 @@ namespace Bomber.BL.Int.Tests
             return configMock;
         }
 
-        protected static Mock<IBomberMap> GetMapMock()
+        private static Mock<IBomberMap> GetMapMock()
         {
             var mapMock = new Mock<IBomberMap>();
             var mapObjects = new List<IMapObject2D>();
@@ -57,7 +56,7 @@ namespace Bomber.BL.Int.Tests
             return mapMock;
         }
 
-        protected IEnumerable<IBomb> GetBombs(IBombWatcher bombWatcher)
+        private IEnumerable<IBomb> GetBombs(IBombWatcher bombWatcher)
         {
             return new List<IBomb>()
             {
@@ -72,14 +71,14 @@ namespace Bomber.BL.Int.Tests
             return GetBombMock(new List<IBombWatcher>() { bombWatcher });
         }
 
-        protected Mock<IBomb> GetBombMock(IEnumerable<IBombWatcher> bombWatchers)
+        private Mock<IBomb> GetBombMock(IEnumerable<IBombWatcher> bombWatchers)
         {
             var bombMock = new Mock<IBomb>();
             bombMock.Setup(b => b.Detonate()).Callback(() => BombExploded(bombWatchers, bombMock));
             return bombMock;
         }
 
-        private void BombExploded(IEnumerable<IBombWatcher> bombWatchers, Mock<IBomb> bombMock)
+        private static void BombExploded(IEnumerable<IBombWatcher> bombWatchers, Mock<IBomb> bombMock)
         {
             foreach (var bombWatcher in bombWatchers)
             {

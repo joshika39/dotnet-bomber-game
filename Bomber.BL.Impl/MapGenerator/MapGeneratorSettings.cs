@@ -2,6 +2,7 @@ using Bomber.BL.Impl.Map;
 using Bomber.BL.Impl.MapGenerator.DomainModels;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
+using Bomber.BL.Tiles;
 using Infrastructure.Application;
 using Infrastructure.Configuration;
 using Infrastructure.Configuration.Factories;
@@ -51,7 +52,7 @@ namespace Bomber.BL.Impl.MapGenerator
                 RowCount = draft.RowCount
             };
             _draftsRepository.Update(model).SaveChanges();
-            draft.SaveLayout(draft.MapObjects);
+            draft.SaveLayout(draft.MapObjects ?? new List<IPlaceHolder>());
         }
 
         public IMapLayoutDraft CreateDraft()
@@ -61,10 +62,12 @@ namespace Bomber.BL.Impl.MapGenerator
                 Name = "",
                 Description = "",
                 ColumnCount = 3,
-                RowCount = 3
+                RowCount = 3,
+                PlayerXPos = 0,
+                PlayerYPos = 0
             };
             _draftsRepository.Create(model).SaveChanges();
-            return new MapLayoutDraft(_provider.GetRequiredService<IServiceProvider>(), model);
+            return new MapLayoutDraft(_provider, model);
         }
         
         public void GenerateMapFromDraft(IMapLayoutDraft draft, string name)

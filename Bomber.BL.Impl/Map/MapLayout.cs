@@ -66,6 +66,7 @@ namespace Bomber.BL.Impl.Map
             Description = source.Description;
             ColumnCount = source.ColumnCount;
             RowCount = source.RowCount;
+            PlayerPosition = _positionFactory.CreatePosition(source.PlayerStartPosition.X, source.PlayerStartPosition.Y);
             _mapDataBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(source.RawData));
             MapObjects = ConvertDataToObjects();
             SaveData();

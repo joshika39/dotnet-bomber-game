@@ -33,6 +33,7 @@ namespace Bomber.BL.Impl.MapGenerator
             _tileFactory = serviceProvider.GetRequiredService<ITileFactory>();
             _positionFactory = serviceProvider.GetRequiredService<IPositionFactory>();
             model = model ?? throw new ArgumentNullException(nameof(model));
+            PlayerStartPosition = _positionFactory.CreatePosition(model.PlayerXPos, model.PlayerYPos);
             Description = model.Description;
             Name = model.Name;
             Id = model.Id;

@@ -1,0 +1,24 @@
+@startuml
+
+(Time progression) as (Ongoing)
+(Start new game) as (NewGame)
+(Game finish) as (End)
+(Plant Bomb) as (BombDown)
+
+User -> (Start)
+User -> (Quit)
+User --> (Save)
+User --> (Load)
+User --> (Step)
+User ----> (Open Map)
+User ---> (BombDown)
+
+(Open Map) ..> (Ongoing): precedes
+(Open Map) .> (NewGame): precedes
+(NewGame) .> (Step): precedes
+(Load) .> (Step): precedes
+(Ongoing) .> (End): invokes
+(Step) .> (End): invokes
+(BombDown) ..> (End): invokes
+
+@enduml

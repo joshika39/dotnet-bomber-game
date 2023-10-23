@@ -28,7 +28,7 @@ namespace Bomber.UI.WPF.Views
         private readonly IMainWindowViewModel _viewModel;
         private readonly IPositionFactory _positionFactory;
         private readonly IConfigurationService2D _configService;
-        
+
         private IBomber? _player;
         private readonly IStopwatch _stopwatch;
 
@@ -75,7 +75,12 @@ namespace Bomber.UI.WPF.Views
 
         public void BombExploded(IBomb bomb)
         {
-           
+            if (_player is null)
+            {
+                return;
+            }
+            
+            _viewModel.BombExploded(bomb, _player);
         }
 
         public DialogResult ShowOnTop()
@@ -86,7 +91,7 @@ namespace Bomber.UI.WPF.Views
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             base.OnPreviewKeyDown(e);
-            
+
             if (!_configService.GameIsRunning || _player is null)
             {
                 return;
