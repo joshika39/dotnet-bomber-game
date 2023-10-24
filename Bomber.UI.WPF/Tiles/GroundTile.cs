@@ -32,9 +32,15 @@ namespace Bomber.UI.WPF.Tiles
         
         private async Task SetBack(double waitTime)
         {
-            Fill = new SolidColorBrush(Colors.Yellow);
+            Dispatcher.Invoke(() =>
+            {
+                Fill = new SolidColorBrush(Colors.Yellow);
+            });
             await Task.Delay(TimeSpan.FromSeconds(waitTime));
-            Fill = new SolidColorBrush(Colors.Green);
+            Dispatcher.Invoke(() =>
+            {
+                Fill = new SolidColorBrush(Colors.Green);
+            });
         }
         
     }

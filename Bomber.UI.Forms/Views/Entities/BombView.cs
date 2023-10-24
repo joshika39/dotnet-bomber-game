@@ -7,7 +7,8 @@ namespace Bomber.UI.Forms.Views.Entities
     public sealed partial class BombView : UserControl, IBombView
     {
         private readonly IConfigurationService2D _configurationService;
-
+        private readonly ICollection<IEntityViewSubscriber> _subscribers = new List<IEntityViewSubscriber>();
+        private readonly ICollection<IEntityViewDisposedSubscriber> _disposedSubscribers = new List<IEntityViewDisposedSubscriber>();
         public BombView(IConfigurationService2D configurationService)
         {
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
@@ -51,6 +52,15 @@ namespace Bomber.UI.Forms.Views.Entities
             Controls.Add(line2);
             line1.BringToFront();
             line2.BringToFront();
+            Disposed += OnDisposed;
+        }
+        
+        private void OnDisposed(object? sender, EventArgs e)
+        {
+            foreach (var subscriber in _disposedSubscribers)
+            {
+                subscriber.OnViewDisposed(this);
+            }
         }
 
         public void UpdatePosition(IPosition2D position)
@@ -59,18 +69,28 @@ namespace Bomber.UI.Forms.Views.Entities
             Top = position.Y * _configurationService.Dimension + 1;
             Left = position.X * _configurationService.Dimension + 1;
         }
-        
-        public void ViewAddedToMap()
+        public void EntityViewLoaded()
         {
-            throw new NotImplementedException();
+            foreach (var subscriber in _subscribers)
+            {
+                subscriber.OnViewLoaded();
+            }
         }
         
-        public event EventHandler? EntityLoaded;
+        public void Attach(IEntityViewSubscriber subscriber)
+        {
+            _subscribers.Add(subscriber);
+        }
+        
+        public void Attach(IEntityViewDisposedSubscriber subscriber)
+        {
+            _disposedSubscribers.Add(subscriber);
+        }
 
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            EntityLoaded?.Invoke(this, EventArgs.Empty);
+            EntityViewLoaded();
         }
     }
 }

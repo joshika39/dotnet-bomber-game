@@ -11,7 +11,7 @@ using GameFramework.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class Bomb : IBomb, ITickListener
+    public sealed class Bomb : IBomb, ITickListener, IEntityViewSubscriber
     {
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
         private readonly IStopwatch _stopwatch;
@@ -38,7 +38,7 @@ namespace Bomber.BL.Impl.Entities
             {
                 throw new InvalidOperationException("Radius cannot be zero or negative");
             }
-            
+
             Radius = radius;
 
             if (!configurationService.GameIsRunning)
@@ -48,12 +48,7 @@ namespace Bomber.BL.Impl.Entities
 
             var map = configurationService.GetActiveMap<IBomberMap>();
             _affectedObjects = map!.MapPortion(position, radius);
-            View.EntityLoaded += OnViewLoaded;
-        }
-
-        private void OnViewLoaded(object? sender, EventArgs e)
-        {
-            View.UpdatePosition(Position);
+            View.Attach(this);
         }
 
         public async Task Detonate()
@@ -127,5 +122,10 @@ namespace Bomber.BL.Impl.Entities
         }
         
         public TimeSpan ElapsedTime { get; set; }
+        
+        public void OnViewLoaded()
+        {
+            View.UpdatePosition(Position);
+        }
     }
 }

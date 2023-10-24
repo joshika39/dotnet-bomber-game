@@ -14,7 +14,7 @@ using GameFramework.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class Enemy : IEnemy, ITickListener
+    public sealed class Enemy : IEnemy, ITickListener, IEntityViewSubscriber
     {
         public IBomberMapEntityView View { get; }
         
@@ -35,12 +35,7 @@ namespace Bomber.BL.Impl.Entities
             Position = position ?? throw new ArgumentNullException(nameof(position));
             _stoppingToken = service.CancellationTokenSource.Token;
             _direction = GetRandomMove();
-            View.EntityLoaded += OnViewLoad;
-        }
-        
-        private void OnViewLoad(object? sender, EventArgs e)
-        {
-            View.UpdatePosition(Position);
+            View.Attach(this);
         }
 
         public async Task ExecuteAsync()
@@ -128,5 +123,10 @@ namespace Bomber.BL.Impl.Entities
         }
         
         public TimeSpan ElapsedTime { get; set; }
+        
+        public void OnViewLoaded()
+        {
+            View.UpdatePosition(Position);
+        }
     }
 }

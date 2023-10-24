@@ -192,7 +192,7 @@ namespace Bomber.BL.Int.Tests
             var viewMock = new Mock<IPlayerView>();
             _ = new PlayerModel(viewMock.Object, PositionFactory.CreatePosition(0, 0), configService,"Some Name", "email", Mock.Of<IGameManager>());
             
-            viewMock.Raise(v => v.EntityLoaded += null, EventArgs.Empty);
+            viewMock.Object.EntityViewLoaded();
             viewMock.Verify(p => p.UpdatePosition(It.IsAny<IPosition2D>()), Times.Once);
         }
     }

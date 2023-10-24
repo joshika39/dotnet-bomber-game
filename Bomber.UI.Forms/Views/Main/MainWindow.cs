@@ -135,11 +135,6 @@ namespace Bomber.UI.Forms.Views.Main
 
             Presenter.HandleKeyPress(e.KeyChar, _player);
 
-            if (int.TryParse(e.KeyChar.ToString(), out var bombIndex))
-            {
-                _player.DetonateBombAt(bombIndex - 1);
-            }
-
             if (e.KeyChar == 'b')
             {
                 var view = new BombView(_service);

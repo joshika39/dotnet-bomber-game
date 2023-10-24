@@ -12,7 +12,7 @@ using GameFramework.Map.MapObject;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class PlayerModel : IBomber
+    public sealed class PlayerModel : IBomber, IEntityViewSubscriber
     {
         public IBomberMapEntityView View { get; }
         private readonly IConfigurationService2D _configurationService2D;
@@ -48,6 +48,7 @@ namespace Bomber.BL.Impl.Entities
             Position = mapObject.Position;
             View.UpdatePosition(Position);
         }
+        
         public ICollection<IBomb> PlantedBombs { get; }
         
         public void DetonateBombAt(int bombIndex)
@@ -93,13 +94,8 @@ namespace Bomber.BL.Impl.Entities
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Email = email ?? throw new ArgumentNullException(nameof(email));
             Id = Guid.NewGuid();
-            View.EntityLoaded += OnViewLoad;
             PlantedBombs = new ObservableCollection<IBomb>();
-        }
-
-        private void OnViewLoad(object? sender, EventArgs e)
-        {
-            View.UpdatePosition(Position);
+            View.Attach(this);
         }
 
         private void Dispose(bool disposing)
@@ -139,6 +135,11 @@ namespace Bomber.BL.Impl.Entities
         public void BombExploded(IBomb bomb)
         {
             PlantedBombs.Remove(bomb);
+        }
+        
+        public void OnViewLoaded()
+        {
+            View.UpdatePosition(Position);
         }
     }
 }

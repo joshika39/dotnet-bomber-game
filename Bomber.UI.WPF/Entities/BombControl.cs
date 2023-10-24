@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Windows.Controls;
 using Bomber.UI.Shared.Entities;
 using Bomber.UI.WPF.Tiles;
@@ -9,12 +10,12 @@ namespace Bomber.UI.WPF.Entities
 {
     internal sealed class BombControl : ACustomShape, IBombView
     {
-        private readonly Canvas _canvas;
         private bool _disposed;
+        private readonly ICollection<IEntityViewSubscriber> _subscribers = new List<IEntityViewSubscriber>();
+        private readonly ICollection<IEntityViewDisposedSubscriber> _disposedSubscribers = new List<IEntityViewDisposedSubscriber>();
 
-        public BombControl(IConfigurationService2D configurationService, Canvas canvas) : base(configurationService)
+        public BombControl(IConfigurationService2D configurationService) : base(configurationService)
         {
-            _canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
             Width = (double)ConfigurationService.Dimension / 2;
             Height = (double)ConfigurationService.Dimension / 2;
         }
@@ -30,12 +31,23 @@ namespace Bomber.UI.WPF.Entities
             Canvas.SetTop(this, position.Y * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
         }
         
-        public void ViewAddedToMap()
+        public void EntityViewLoaded()
         {
-            EntityLoaded?.Invoke(this, EventArgs.Empty);
+            foreach (var subscriber in _subscribers)
+            {
+                subscriber.OnViewLoaded();
+            }
         }
         
-        public event EventHandler? EntityLoaded;
+        public void Attach(IEntityViewSubscriber subscriber)
+        {
+            _subscribers.Add(subscriber);
+        }
+        
+        public void Attach(IEntityViewDisposedSubscriber subscriber)
+        {
+            throw new NotImplementedException();
+        }
 
         private void Dispose(bool disposing)
         {
@@ -46,7 +58,10 @@ namespace Bomber.UI.WPF.Entities
 
             if (disposing)
             {
-                _canvas.Children.Remove(this);
+                foreach (var subscriber in _disposedSubscribers)
+                {
+                    subscriber.OnViewDisposed(this);
+                }
             }
 
             _disposed = true;
