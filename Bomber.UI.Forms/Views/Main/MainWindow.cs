@@ -31,6 +31,9 @@ namespace Bomber.UI.Forms.Views.Main
             Presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
             KeyPreview = true;
             InitializeComponent();
+            openToolStripMenuItem.Click += OnOpenMap;
+            openMapGeneratorToolStripMenuItem.Click += openMapGeneratorToolStripMenuItem_Click;
+            KeyPress += OnKeyPressed;
         }
 
         public DialogResult ShowOnTop()
@@ -110,6 +113,7 @@ namespace Bomber.UI.Forms.Views.Main
             }
 
             Presenter.BombExploded(bomb, _player);
+            explodedEnemiesText.Text = _player.Score.ToString();
         }
 
 

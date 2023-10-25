@@ -39,7 +39,7 @@ namespace Bomber.UI.Forms.MapGenerator
             label11 = new Label();
             entityY = new NumericUpDown();
             entityX = new NumericUpDown();
-            button2 = new Button();
+            addEntity = new Button();
             entityList = new ListBox();
             playerY = new NumericUpDown();
             playerX = new NumericUpDown();
@@ -73,7 +73,7 @@ namespace Bomber.UI.Forms.MapGenerator
             // generateButton
             // 
             generateButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            generateButton.Location = new Point(226, 1025);
+            generateButton.Location = new Point(226, 700);
             generateButton.Name = "generateButton";
             generateButton.Size = new Size(75, 23);
             generateButton.TabIndex = 0;
@@ -110,7 +110,7 @@ namespace Bomber.UI.Forms.MapGenerator
             panel2.Controls.Add(label11);
             panel2.Controls.Add(entityY);
             panel2.Controls.Add(entityX);
-            panel2.Controls.Add(button2);
+            panel2.Controls.Add(addEntity);
             panel2.Controls.Add(entityList);
             panel2.Controls.Add(playerY);
             panel2.Controls.Add(playerX);
@@ -141,7 +141,7 @@ namespace Bomber.UI.Forms.MapGenerator
             // 
             editEntityButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             editEntityButton.Enabled = false;
-            editEntityButton.Location = new Point(230, 741);
+            editEntityButton.Location = new Point(230, 500);
             editEntityButton.Name = "editEntityButton";
             editEntityButton.Size = new Size(60, 23);
             editEntityButton.TabIndex = 28;
@@ -173,39 +173,39 @@ namespace Bomber.UI.Forms.MapGenerator
             // 
             // entityY
             // 
-            entityY.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            entityY.Location = new Point(102, 741);
+            entityY.Anchor = AnchorStyles.Top;
+            entityY.Location = new Point(102, 500);
             entityY.Name = "entityY";
             entityY.Size = new Size(45, 23);
             entityY.TabIndex = 25;
             // 
             // entityX
             // 
-            entityX.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            entityX.Location = new Point(29, 741);
+            entityX.Anchor = AnchorStyles.Top;
+            entityX.Location = new Point(29, 500);
             entityX.Name = "entityX";
             entityX.Size = new Size(44, 23);
             entityX.TabIndex = 24;
             // 
-            // button2
+            // addEntity
             // 
-            button2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            button2.Location = new Point(155, 741);
-            button2.Name = "button2";
-            button2.Size = new Size(65, 23);
-            button2.TabIndex = 23;
-            button2.Text = "Add";
-            button2.UseVisualStyleBackColor = true;
-            button2.Click += OnAddEnemyClick;
+            addEntity.Anchor = AnchorStyles.Top;
+            addEntity.Location = new Point(155, 500);
+            addEntity.Name = "addEntity";
+            addEntity.Size = new Size(65, 23);
+            addEntity.TabIndex = 23;
+            addEntity.Text = "Add";
+            addEntity.UseVisualStyleBackColor = true;
+            addEntity.Click += OnAddEnemyClick;
             // 
             // entityList
             // 
-            entityList.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            entityList.Anchor = AnchorStyles.Top;
             entityList.FormattingEnabled = true;
             entityList.ItemHeight = 15;
-            entityList.Location = new Point(9, 487);
+            entityList.Location = new Point(9, 410);
             entityList.Name = "entityList";
-            entityList.Size = new Size(284, 244);
+            entityList.Size = new Size(284, 100);
             entityList.TabIndex = 22;
             entityList.SelectedValueChanged += OnSelectedEntityChanged;
             // 
@@ -252,7 +252,7 @@ namespace Bomber.UI.Forms.MapGenerator
             label8.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label8.AutoSize = true;
             label8.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point);
-            label8.Location = new Point(9, 466);
+            label8.Location = new Point(9, 400);
             label8.Name = "label8";
             label8.Size = new Size(48, 15);
             label8.TabIndex = 17;
@@ -325,8 +325,8 @@ namespace Bomber.UI.Forms.MapGenerator
             // 
             // draftButton
             // 
-            draftButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            draftButton.Location = new Point(8, 1025);
+            draftButton.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            draftButton.Location = new Point(8, 700);
             draftButton.Name = "draftButton";
             draftButton.Size = new Size(95, 23);
             draftButton.TabIndex = 8;
@@ -336,8 +336,8 @@ namespace Bomber.UI.Forms.MapGenerator
             // 
             // cancelButton
             // 
-            cancelButton.Anchor = AnchorStyles.Bottom;
-            cancelButton.Location = new Point(146, 1025);
+            cancelButton.Anchor = AnchorStyles.Top;
+            cancelButton.Location = new Point(146, 700);
             cancelButton.Name = "cancelButton";
             cancelButton.Size = new Size(75, 23);
             cancelButton.TabIndex = 7;
@@ -377,10 +377,10 @@ namespace Bomber.UI.Forms.MapGenerator
             // 
             // descBox
             // 
-            descBox.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            descBox.Anchor = AnchorStyles.Top;
             descBox.Location = new Point(8, 281);
             descBox.Name = "descBox";
-            descBox.Size = new Size(286, 159);
+            descBox.Size = new Size(286, 50);
             descBox.TabIndex = 3;
             descBox.Text = "";
             // 
@@ -443,7 +443,7 @@ namespace Bomber.UI.Forms.MapGenerator
         private Label label10;
         private Label label9;
         private Label label8;
-        private Button button2;
+        private Button addEntity;
         private ListBox entityList;
         private NumericUpDown entityX;
         private Label label12;
