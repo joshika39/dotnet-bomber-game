@@ -4,22 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:main="clr-namespace:Bomber.UI.WPF.Main"
-        xmlns:visualBasic="clr-namespace:Microsoft.VisualBasic;assembly=Microsoft.VisualBasic.Core"
-        xmlns:wpf="clr-namespace:Bomber.UI.WPF"
-        xmlns:interactivity="clr-namespace:Avalonia.Xaml.Interactivity;assembly=Avalonia.Xaml.Interactivity"
-        xmlns:core="clr-namespace:Avalonia.Xaml.Interactions.Core;assembly=Avalonia.Xaml.Interactions"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         d:DataContext="{d:DesignInstance {d:Type main:MainWindowViewModel}}">
     <Grid>
-        <interactivity:Interaction.Behaviors>
-            <core:EventTriggerBehavior EventName="OnKeyDown">
-                <core:InvokeCommandAction Command="{Binding}"
-                                          CommandParameter=""/>
-            </core:EventTriggerBehavior>
-        </interactivity:Interaction.Behaviors>
-
-
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*"/>

@@ -1,8 +1,9 @@
 ﻿using System;
-using Bomber.BL.Impl.Models;
+using Bomber.BL.Entities;
 using Bomber.BL.Map;
 using Bomber.UI.WPF.GameCanvas;
 using Bomber.UI.WPF.ViewModels;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameFramework.Configuration;
 using GameFramework.Core;
@@ -13,7 +14,7 @@ using Path = System.IO.Path;
 
 namespace Bomber.UI.WPF.Main
 {
-    internal partial class MainWindowViewModel : AMainWindowModel, IMainWindowViewModel, ITickListener
+    internal partial class MainWindowViewModel : ObservableObject, IMainWindowViewModel, ITickListener
     {
         private readonly IConfigurationService2D _configurationService;
         private readonly IGameManager _gameManager;
@@ -30,7 +31,7 @@ namespace Bomber.UI.WPF.Main
             private set => SetProperty(ref _currentTime, value);
         }
 
-        public MainWindowViewModel(IServiceProvider provider, IConfigurationService2D configurationService, IGameManager gameManager) : base(provider, configurationService, gameManager)
+        public MainWindowViewModel(IServiceProvider provider, IConfigurationService2D configurationService, IGameManager gameManager)
         {
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
@@ -62,6 +63,22 @@ namespace Bomber.UI.WPF.Main
             
             _canvasViewModel.StartGame(map);
             
+        }
+        public IBomberMap OpenMap(string mapFileName)
+        {
+            return default;
+        }
+        public void BombExploded(IBomb bomb, IBomber bomber)
+        {
+        }
+        public void HandleKeyPress(char keyChar, IBomber bomber)
+        {
+        }
+        public void PutBomb()
+        {
+        }
+        public void PauseGame()
+        {
         }
     }
 }

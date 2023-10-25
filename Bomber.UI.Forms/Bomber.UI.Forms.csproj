@@ -30,10 +30,6 @@
 
 
     <ItemGroup>
-      <PackageReference Include="ELTE.EVA.SARuleSet" Version="2.0.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
       <PackageReference Include="joshika39.Core" Version="1.1.10-rc1" />
       <PackageReference Include="joshika39.GameFramework" Version="1.3.1" />
       <PackageReference Include="joshika39.UiFramework.Forms" Version="1.0.1-pre0001" />

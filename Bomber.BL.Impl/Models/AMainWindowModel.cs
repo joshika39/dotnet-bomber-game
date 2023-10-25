@@ -4,7 +4,6 @@ using Bomber.BL.Feedback;
 using Bomber.BL.Impl.Map;
 using Bomber.BL.Map;
 using Bomber.UI.Shared.Entities;
-using CommunityToolkit.Mvvm.ComponentModel;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
@@ -15,7 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.BL.Impl.Models
 {
-    public class AMainWindowModel : ObservableObject, IMainWindowModel, IGameManagerSubscriber
+    public class AMainWindowModel : IMainWindowModel, IGameManagerSubscriber
     {
         private readonly IServiceProvider _provider;
         private readonly IPositionFactory _factory;
@@ -110,7 +109,7 @@ namespace Bomber.BL.Impl.Models
         
         public void PutBomb()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnGameStarted(IGameplayFeedback feedback)
