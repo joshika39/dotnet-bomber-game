@@ -34,6 +34,7 @@ namespace Bomber.UI.Forms.Views.Main
             openToolStripMenuItem.Click += OnOpenMap;
             openMapGeneratorToolStripMenuItem.Click += openMapGeneratorToolStripMenuItem_Click;
             KeyPress += OnKeyPressed;
+            saveToolStripMenuItem.Click += OnSaveClicked;
         }
 
         public DialogResult ShowOnTop()
@@ -103,6 +104,7 @@ namespace Bomber.UI.Forms.Views.Main
             _gameManager.GameStarted(new GameplayFeedback(FeedbackLevel.Info, "The game is started"));
             _gameManager.Timer.PeriodicOperation(1000, this, _service.CancellationTokenSource.Token);
             mapName.Text = map.MapLayout.Name;
+            description.Text = map.MapLayout.Description;
         }
 
         public void BombExploded(IBomb bomb)
