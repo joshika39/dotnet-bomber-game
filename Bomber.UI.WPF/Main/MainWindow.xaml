@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:main="clr-namespace:Bomber.UI.WPF.Main"
+        xmlns:gameCanvas="clr-namespace:Bomber.UI.WPF.GameCanvas"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800"
         d:DataContext="{d:DesignInstance {d:Type main:MainWindowViewModel}}">
@@ -16,7 +17,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Content="Open New Map" Command="{Binding OpenCommand}"></Button>
         </StackPanel>
-        <Canvas HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" x:Name="MainCanvas" Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" />
+        <gameCanvas:GameCanvasView Grid.Row="1" />
         <StackPanel Grid.Row="2">
             <TextBlock Text="{Binding CurrentTime}" />
         </StackPanel>

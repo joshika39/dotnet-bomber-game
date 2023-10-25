@@ -51,10 +51,7 @@ namespace Bomber.UI.WPF.GameCanvas
                 }
                 
                 EntityViews.Add(bomberEntity.View);
-                map.Entities.Add(bomberEntity);
             }
-            
-            EntityViews.Add(view);
             
             _gameManager.GameStarted(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
         }

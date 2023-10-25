@@ -83,8 +83,8 @@ namespace Bomber.UI.WPF.GameCanvas
 
         public ObservableCollection<IMapObject2D> MapObjects
         {
-            get => (ObservableCollection<IMapObject2D>)GetValue(EntityViewsProperty);
-            set => SetValue(EntityViewsProperty, value);
+            get => (ObservableCollection<IMapObject2D>)GetValue(MapObjectsProperty);
+            set => SetValue(MapObjectsProperty, value);
         }
 
         public static readonly DependencyProperty MapObjectsProperty = DependencyProperty.Register(
