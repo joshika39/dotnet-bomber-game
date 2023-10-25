@@ -37,9 +37,11 @@ namespace Bomber.UI.Forms.Views.Entities
             
             Invoke(() =>
             {
+              
                 BringToFront();
                 Top = position.Y * _configurationService2D.Dimension + 2;
                 Left = position.X * _configurationService2D.Dimension + 2; 
+                
             });
         }
         

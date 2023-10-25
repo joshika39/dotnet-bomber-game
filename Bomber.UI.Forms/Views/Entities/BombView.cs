@@ -65,9 +65,12 @@ namespace Bomber.UI.Forms.Views.Entities
 
         public void UpdatePosition(IPosition2D position)
         {
-            BringToFront();
-            Top = position.Y * _configurationService.Dimension + 1;
-            Left = position.X * _configurationService.Dimension + 1;
+            if (!IsDisposed)
+            {
+                BringToFront();
+                Top = position.Y * _configurationService.Dimension + 1;
+                Left = position.X * _configurationService.Dimension + 1;
+            }
         }
         public void EntityViewLoaded()
         {

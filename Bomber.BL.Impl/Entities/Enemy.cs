@@ -118,8 +118,7 @@ namespace Bomber.BL.Impl.Entities
                 _direction = GetRandomMove();
                 mapObject = map.SimulateMove(Position, _direction);
             }
-                    
-            Step(mapObject);
+            map.MoveUnit(this, _direction);
         }
         
         public TimeSpan ElapsedTime { get; set; }
