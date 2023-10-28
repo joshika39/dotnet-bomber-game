@@ -36,6 +36,17 @@ namespace Bomber.UI.WPF.GameCanvas
             }
         }
         
+        private void UpdateMapObjects()
+        {
+            foreach (var mapObject in MapObjects)
+            {
+                if (mapObject is Shape shape)
+                {
+                    Children.Add(shape);
+                } 
+            }
+        }
+        
         public IBombWatcher BombWatcher
         {
             get => (IBombWatcher)GetValue(BombWatcherProperty);
@@ -101,6 +112,7 @@ namespace Bomber.UI.WPF.GameCanvas
         private void OnMapObjectsChanged(ObservableCollection<IMapObject2D> eNewValue)
         {
             MapObjects = eNewValue;
+            UpdateMapObjects();
         }
     }
 }

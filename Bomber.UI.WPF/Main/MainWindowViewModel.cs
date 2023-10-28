@@ -53,7 +53,7 @@ namespace Bomber.UI.WPF.Main
         {
             var openDialog = new OpenFileDialog
             {
-                Filter = @"BoB files (*.bob)|*.bob",
+                Filter = "BoB files (*.bob)|*.bob",
                 InitialDirectory = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "joshik39", "Bomber", "maps")
             };
             if (!openDialog.ShowDialog() ?? false)
