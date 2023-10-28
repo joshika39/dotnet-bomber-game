@@ -20,6 +20,8 @@ namespace Bomber.UI.WPF
             collection.AddSingleton<IMainWindow, MainWindow>();
             collection.AddSingleton<ITileFactory, WpfTileFactory>();
             collection.AddSingleton<IEntityViewFactory, WpfEntityFactory>();
+
+            collection.AddSingleton<IGameCanvasView, GameCanvasView>();
         }
     }
 }

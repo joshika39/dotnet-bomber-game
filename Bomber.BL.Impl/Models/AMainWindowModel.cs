@@ -110,7 +110,7 @@ namespace Bomber.BL.Impl.Models
         
         public void PutBomb()
         {
-            throw new NotImplementedException();
+            
         }
 
         public void OnGameStarted(IGameplayFeedback feedback)

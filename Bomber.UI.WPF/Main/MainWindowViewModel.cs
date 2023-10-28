@@ -1,8 +1,10 @@
 ﻿using System;
+using Bomber.BL.Entities;
 using Bomber.BL.Impl.Models;
 using Bomber.BL.Map;
 using Bomber.UI.WPF.GameCanvas;
 using Bomber.UI.WPF.ViewModels;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using GameFramework.Configuration;
 using GameFramework.Core;
@@ -23,6 +25,7 @@ namespace Bomber.UI.WPF.Main
         public object DataContext => this;
         public double CanvasWidth => _configurationService.Dimension * _configurationService.GetActiveMap<IBomberMap>()?.SizeX ?? 0d;
         public double CanvasHeight => _configurationService.Dimension * _configurationService.GetActiveMap<IBomberMap>()?.SizeY ?? 0d;
+        
         public TimeSpan ElapsedTime { get; set; }
         public string CurrentTime
         {
@@ -50,7 +53,7 @@ namespace Bomber.UI.WPF.Main
         {
             var openDialog = new OpenFileDialog
             {
-                Filter = @"BoB files (*.bob)|*.bob",
+                Filter = "BoB files (*.bob)|*.bob",
                 InitialDirectory = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "joshik39", "Bomber", "maps")
             };
             if (!openDialog.ShowDialog() ?? false)
@@ -61,7 +64,6 @@ namespace Bomber.UI.WPF.Main
             var map = OpenMap(openDialog.FileName);
             
             _canvasViewModel.StartGame(map);
-            
         }
     }
 }

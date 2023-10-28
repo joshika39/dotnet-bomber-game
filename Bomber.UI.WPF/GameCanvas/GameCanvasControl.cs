@@ -36,6 +36,17 @@ namespace Bomber.UI.WPF.GameCanvas
             }
         }
         
+        private void UpdateMapObjects()
+        {
+            foreach (var mapObject in MapObjects)
+            {
+                if (mapObject is Shape shape)
+                {
+                    Children.Add(shape);
+                } 
+            }
+        }
+        
         public IBombWatcher BombWatcher
         {
             get => (IBombWatcher)GetValue(BombWatcherProperty);
@@ -83,8 +94,8 @@ namespace Bomber.UI.WPF.GameCanvas
 
         public ObservableCollection<IMapObject2D> MapObjects
         {
-            get => (ObservableCollection<IMapObject2D>)GetValue(EntityViewsProperty);
-            set => SetValue(EntityViewsProperty, value);
+            get => (ObservableCollection<IMapObject2D>)GetValue(MapObjectsProperty);
+            set => SetValue(MapObjectsProperty, value);
         }
 
         public static readonly DependencyProperty MapObjectsProperty = DependencyProperty.Register(
@@ -101,6 +112,7 @@ namespace Bomber.UI.WPF.GameCanvas
         private void OnMapObjectsChanged(ObservableCollection<IMapObject2D> eNewValue)
         {
             MapObjects = eNewValue;
+            UpdateMapObjects();
         }
     }
 }

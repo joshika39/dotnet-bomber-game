@@ -10,7 +10,7 @@
     <Grid>
         <gameCanvas:GameCanvasControl
             BombWatcher="{Binding}"
-            EntityViews="{Binding EntityViews}"
-            MapObjects="{Binding MapObjects}" />
+            EntityViews="{Binding EntityViews, UpdateSourceTrigger=PropertyChanged}"
+            MapObjects="{Binding MapObjects, UpdateSourceTrigger=PropertyChanged}" />
     </Grid>
 </UserControl>
