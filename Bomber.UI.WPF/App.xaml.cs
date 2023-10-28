@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Windows;
 using Bomber.BL.Impl;
+using Bomber.UI.WPF.GameCanvas;
 using Bomber.UI.WPF.ViewModels;
 using Bomber.UI.WPF.Views;
 using GameFramework.Impl.Core;
@@ -15,29 +16,30 @@ namespace Bomber.UI.WPF
     /// </summary>
     public partial class App : Application
     {
-        
+        public App()
+        {
+            var collection = new ServiceCollection();
+            Services = LoadModules(collection);
+        }
+
         public static new App Current => (App)Application.Current;
 
-        public IServiceProvider Services => LoadModules();
+        public IServiceProvider Services { get; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-
-            var modules = LoadModules();
-            var mainWindow = modules.GetRequiredService<IMainWindow>();
+            var mainWindow = Services.GetRequiredService<IMainWindow>();
             mainWindow.ShowOnTop();
         }
-        
-        private static IServiceProvider LoadModules()
+
+        private static IServiceProvider LoadModules(IServiceCollection collection)
         {
-            var collection = new ServiceCollection();
-            
             new CoreModule().LoadModules(collection, "Bomber");
             new GameModule().LoadModules(collection, new CancellationTokenSource());
             new BusinessLogicModule().LoadModules(collection);
             new WpfModule().LoadModules(collection);
-            
+
             return collection.BuildServiceProvider();
         }
     }
