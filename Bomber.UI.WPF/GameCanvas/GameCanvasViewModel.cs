@@ -76,7 +76,7 @@ namespace Bomber.UI.WPF.GameCanvas
 
         public void BombExploded(IBomb bomb)
         {
-            throw new System.NotImplementedException();
+            
         }
     }
 }
