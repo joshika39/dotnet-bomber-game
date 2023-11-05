@@ -11,6 +11,8 @@ using GameFramework.Core.Factories;
 using GameFramework.Core.Motion;
 using GameFramework.Entities;
 using GameFramework.GameFeedback;
+using GameFramework.Impl.Map.Source;
+using GameFramework.Visuals;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.BL.Impl.Models
@@ -30,21 +32,12 @@ namespace Bomber.BL.Impl.Models
             _factory = _provider.GetRequiredService<IPositionFactory>();
         }
 
-        public IBomberMap OpenMap(string mapFileName)
+        public IBomberMap OpenMap(string mapFileName, IMapView2D mapView2D)
         {
-            var mapLayout = new MapLayout(mapFileName, _provider);
-            var map = new Map.Map(
-                mapLayout.ColumnCount,
-                mapLayout.RowCount,
-                new List<IUnit2D>(),
-                mapLayout.MapObjects,
-                _factory,
-                _provider.GetRequiredService<IEntityViewFactory>(),
-                _provider.GetRequiredService<IEntityFactory>(),
-                mapLayout);
+            var source = new BomberMapSource(_provider, mapFileName);
+            var map = new Map.Map(source, mapView2D, _factory, _provider.GetRequiredService<IEntityFactory>(), _provider.GetRequiredService<IEntityViewFactory>());
 
-            _configurationService.SetActiveMap(map);
-            _configurationService.GameIsRunning = true;
+            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"), map);
             return map;
         }
         
@@ -58,24 +51,25 @@ namespace Bomber.BL.Impl.Models
 
             var affectedObjects = map.MapPortion(bomb.Position, bomb.Radius);
 
-            var entities = map.GetEntitiesAtPortion(affectedObjects);
+            var entities = map.GetUnitsAtPortion(affectedObjects);
             foreach (var entity in entities)
             {
-                map.Entities.Remove(entity);
+                map.Units.Remove(entity);
                 if (entity is IEnemy)
                 {
                     bomber.Score += 1;
                 }
                 if(entity is IBomber)
                 {
-                    _gameManager.GameFinished(new GameplayFeedback(FeedbackLevel.Info, "You lost! You got exploded!"), GameResolution.Loss);
+                    _gameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "You lost! You got exploded!"), GameResolution.Loss);
                 }
-                entity.Dispose();
+                
+                entity.Kill();
             }
 
-            if (!map.Entities.Any(entity => entity is IEnemy))
+            if (!map.Units.Any(entity => entity is IEnemy))
             {
-                _gameManager.GameFinished(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {_gameManager.Timer.Elapsed:g}"), GameResolution.Win);
+                _gameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {_gameManager.Timer.Elapsed:g}"), GameResolution.Win);
                 _gameManager.Timer.Reset();
             }
     
@@ -126,12 +120,10 @@ namespace Bomber.BL.Impl.Models
                 return;
             }
             
-            foreach (var unit in map.Entities)
+            foreach (var unit in map.Units)
             {
-                if (unit is IBomberEntity bomberEntity)
-                {
-                    bomberEntity.Dispose();
-                }
+                // TODO: Uncomment when update is released to the game framework 
+                // unit.Dispose();
             }
         }
         
@@ -139,18 +131,24 @@ namespace Bomber.BL.Impl.Models
         {
             Debug.WriteLine("Game paused");
         }
-        
+        public void OnGameResumed()
+        {
+            throw new NotImplementedException();
+        }
+        public void OnGameReset()
+        {
+            throw new NotImplementedException();
+        }
+
         public void PauseGame()
         {
-            if (_configurationService.GameIsRunning)
+            if (_gameManager.State == GameState.Paused)
             {
-                _gameManager.Timer.Stop();
-                _configurationService.GameIsRunning = false;
+                _gameManager.ResumeGame();
             }
             else
             {
-                _gameManager.Timer.Start();
-                _configurationService.GameIsRunning = true;
+                _gameManager.PauseGame();
             }
         }
     }

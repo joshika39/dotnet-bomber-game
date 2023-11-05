@@ -1,7 +1,8 @@
-﻿<Application x:Class="Bomber.UI.WPF.App"
+﻿<core:GameApp2D x:Class="Bomber.UI.WPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Application.Resources>
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:core="clr-namespace:GameFramework.UI.WPF.Core;assembly=joshika39.GameFramework.UI.WPF">
+    <core:GameApp2D.Resources>
          
-    </Application.Resources>
-</Application>
+    </core:GameApp2D.Resources>
+</core:GameApp2D>

@@ -1,14 +1,15 @@
 ﻿using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Visuals;
 
 namespace Bomber.UI.Forms.Views.Entities
 {
     public sealed partial class BombView : UserControl, IBombView
     {
         private readonly IConfigurationService2D _configurationService;
-        private readonly ICollection<IEntityViewSubscriber> _subscribers = new List<IEntityViewSubscriber>();
-        private readonly ICollection<IEntityViewDisposedSubscriber> _disposedSubscribers = new List<IEntityViewDisposedSubscriber>();
+        private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
+        private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
         public BombView(IConfigurationService2D configurationService)
         {
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
@@ -72,20 +73,20 @@ namespace Bomber.UI.Forms.Views.Entities
                 Left = position.X * _configurationService.Dimension + 1;
             }
         }
-        public void EntityViewLoaded()
+        public void ViewLoaded()
         {
             foreach (var subscriber in _subscribers)
             {
-                subscriber.OnViewLoaded();
+                subscriber.OnLoaded();
             }
         }
         
-        public void Attach(IEntityViewSubscriber subscriber)
+        public void Attach(IViewLoadedSubscriber subscriber)
         {
             _subscribers.Add(subscriber);
         }
-        
-        public void Attach(IEntityViewDisposedSubscriber subscriber)
+
+        public void Attach(IViewDisposedSubscriber subscriber)
         {
             _disposedSubscribers.Add(subscriber);
         }
@@ -93,7 +94,7 @@ namespace Bomber.UI.Forms.Views.Entities
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            EntityViewLoaded();
+            ViewLoaded();
         }
     }
 }

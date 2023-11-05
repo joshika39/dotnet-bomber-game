@@ -16,12 +16,9 @@ namespace Bomber.UI.WPF
         public void LoadModules(IServiceCollection collection)
         {
             collection.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
-            collection.AddSingleton<IGameCanvasViewModel, GameCanvasViewModel>();
             collection.AddSingleton<IMainWindow, MainWindow>();
             collection.AddSingleton<ITileFactory, WpfTileFactory>();
             collection.AddSingleton<IEntityViewFactory, WpfEntityFactory>();
-
-            collection.AddSingleton<IGameCanvasView, GameCanvasView>();
         }
     }
 }

@@ -1,20 +1,19 @@
 ﻿using System.Collections.ObjectModel;
 using Bomber.BL.Entities;
 using Bomber.BL.Feedback;
-using Bomber.BL.Tiles;
 using Bomber.UI.Shared.Entities;
-using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
 using GameFramework.GameFeedback;
 using GameFramework.Map.MapObject;
+using GameFramework.Tiles;
+using GameFramework.Visuals;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class PlayerModel : IBomber, IEntityViewSubscriber
+    public sealed class PlayerModel : IBomber, IViewLoadedSubscriber
     {
-        public IBomberMapEntityView View { get; }
         private readonly IConfigurationService2D _configurationService2D;
         private readonly IGameManager _gameManager;
         private bool _isAlive = true;
@@ -22,6 +21,7 @@ namespace Bomber.BL.Impl.Entities
         public IPosition2D Position { get; private set; }
         public bool IsObstacle => false;
         public Guid Id { get; }
+        public IDynamicMapObjectView View { get; }
         public string Name { get; }
         public string Email { get; }
 
@@ -35,7 +35,7 @@ namespace Bomber.BL.Impl.Entities
 
         public void Step(IMapObject2D mapObject)
         {
-            if (!_configurationService2D.GameIsRunning || !_isAlive)
+            if (_gameManager.State != GameState.InProgress || !_isAlive)
             {
                 return;
             }
@@ -81,7 +81,7 @@ namespace Bomber.BL.Impl.Entities
                 bombWatchers.Add(this);
             }
             
-            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _gameManager.Timer);
+            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _gameManager);
             PlantedBombs.Add(bomb);
         }
 
@@ -114,8 +114,6 @@ namespace Bomber.BL.Impl.Entities
                     PlantedBombs.Remove(bomb);
                     bomb.Dispose();
                 }
-                _isAlive = false;
-                _configurationService2D.GameIsRunning = false;
             }
 
             _disposed = true;
@@ -128,7 +126,8 @@ namespace Bomber.BL.Impl.Entities
 
         public void Kill()
         {
-            _gameManager.GameFinished(new GameplayFeedback(FeedbackLevel.Info, "You lost because you're DEAD!"), GameResolution.Loss);
+            _isAlive = false;
+            _gameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "You lost because you're DEAD!"), GameResolution.Loss);
             Dispose();
         }
 
@@ -137,7 +136,7 @@ namespace Bomber.BL.Impl.Entities
             PlantedBombs.Remove(bomb);
         }
         
-        public void OnViewLoaded()
+        public void OnLoaded()
         {
             View.UpdatePosition(Position);
         }

@@ -14,8 +14,8 @@
       <OutputPath>..\Binaries\Release\</OutputPath>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="joshika39.Core" Version="1.1.10-rc1" />
-        <PackageReference Include="joshika39.GameFramework" Version="1.3.1" />
+        <PackageReference Include="joshika39.Core" Version="1.2.0" />
+        <PackageReference Include="joshika39.GameFramework.Core" Version="1.4.2" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Bomber.UI.Shared\Bomber.UI.Shared.csproj" />

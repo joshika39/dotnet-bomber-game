@@ -6,14 +6,15 @@ using Bomber.UI.Shared.Entities;
 using Bomber.UI.WPF.Tiles;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Visuals;
 
 namespace Bomber.UI.WPF.Entities
 {
     internal sealed class PlayerControl : ACustomShape, IPlayerView
     {
         private bool _disposed;
-        private readonly ICollection<IEntityViewSubscriber> _subscribers = new List<IEntityViewSubscriber>();
-        private readonly ICollection<IEntityViewDisposedSubscriber> _disposedSubscribers = new List<IEntityViewDisposedSubscriber>();
+        private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
+        private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
 
         public PlayerControl(IConfigurationService2D configurationService) : base(configurationService)
         {
@@ -31,20 +32,20 @@ namespace Bomber.UI.WPF.Entities
             Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
         }
 
-        public void EntityViewLoaded()
+        public void ViewLoaded()
         {
             foreach (var subscriber in _subscribers)
             {
-                subscriber.OnViewLoaded();
+                subscriber.OnLoaded();
             }
         }
 
-        public void Attach(IEntityViewSubscriber subscriber)
+        public void Attach(IViewLoadedSubscriber subscriber)
         {
             _subscribers.Add(subscriber);
         }
 
-        public void Attach(IEntityViewDisposedSubscriber subscriber)
+        public void Attach(IViewDisposedSubscriber subscriber)
         {
             _disposedSubscribers.Add(subscriber);
         }

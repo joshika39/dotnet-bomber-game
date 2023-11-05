@@ -19,10 +19,7 @@ namespace Bomber.UI.WPF.Tiles
 
         public override void SteppedOn(IUnit2D unit2D)
         {
-            if (ConfigurationService.GameIsRunning)
-            {
-                unit2D.Step(this);
-            }
+            unit2D.Step(this);
         }
 
         public async void IndicateBomb(double waitTime)

@@ -1,8 +1,9 @@
 using Bomber.UI.Shared.Views;
+using GameFramework.Visuals;
 
 namespace Bomber.UI.Shared.Entities
 {
-    public interface IEnemyView : IBomberMapEntityView
+    public interface IEnemyView : IDynamicMapObjectView
     {
         
     }

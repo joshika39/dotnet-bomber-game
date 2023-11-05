@@ -10,6 +10,6 @@ namespace Bomber.UI.Forms.MapGenerator
         IEnumerable<IMapLayoutDraft> Drafts { get; }
         void UpdateDraft(IMapLayoutDraft draft);
         IMapLayoutDraft CreateDraft();
-        void GenerateMapFromDraft(IMapLayoutDraft draft, string name);
+        void GenerateMapFromDraft(IMapLayoutDraft draft, string filename);
     }
 }

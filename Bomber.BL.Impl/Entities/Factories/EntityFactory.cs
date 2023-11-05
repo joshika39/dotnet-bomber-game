@@ -2,7 +2,6 @@ using Bomber.BL.Entities;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
-using GameFramework.Time;
 
 namespace Bomber.BL.Impl.Entities.Factories
 {
@@ -18,7 +17,7 @@ namespace Bomber.BL.Impl.Entities.Factories
 
         public IBomb CreateBomb(IBombView view, IPosition2D position2D, IEnumerable<IBombWatcher> bombWatchers, int radius)
         {
-            return new Bomb(view, position2D, _configurationService, bombWatchers, radius, _gameManager.Timer);
+            return new Bomb(view, position2D, _configurationService, bombWatchers, radius, _gameManager);
         }
         
         public IBomber CreatePlayer(IPlayerView view, IPosition2D position, string name, string email)

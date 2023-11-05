@@ -28,7 +28,6 @@ namespace Bomber.BL.Int.Tests
             var configMock = new Mock<IConfigurationService2D>();
             configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
             configMock.Setup(c => c.CancellationTokenSource).Returns(new CancellationTokenSource());
-            configMock.Setup(c => c.GameIsRunning).Returns(true);
             return configMock;
         }
         
@@ -37,7 +36,6 @@ namespace Bomber.BL.Int.Tests
             var configMock = new Mock<IConfigurationService2D>();
             configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
             configMock.Setup(c => c.CancellationTokenSource).Returns(new CancellationTokenSource());
-            configMock.SetupProperty(v => v.GameIsRunning, initValue);
             return configMock;
         }
 
@@ -111,5 +109,5 @@ namespace Bomber.BL.Int.Tests
             mapObjectMock.Setup(p => p.Position).Returns(positionFactory.CreatePosition(x, y));
             return mapObjectMock.Object;
         }
-    }
+    } 
 }

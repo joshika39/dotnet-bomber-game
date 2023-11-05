@@ -28,7 +28,7 @@ namespace Bomber.BL.Impl.MapGenerator
                 SetSelectedDraft(value);
             }
         }
-       
+
         public IEnumerable<IMapLayoutDraft> Drafts => GetDrafts();
 
         public MapGeneratorSettings(IServiceProvider provider, IConfigurationQueryFactory configurationQueryFactory, IRepositoryFactory repositoryFactory)
@@ -40,7 +40,7 @@ namespace Bomber.BL.Impl.MapGenerator
             _draftsRepository = repositoryFactory.CreateJsonRepository<IDraftLayoutModel, DraftLayoutModel>("drafts");
             _selectedDraft = GetSelectedDraftAsync();
         }
-        
+
         public void UpdateDraft(IMapLayoutDraft draft)
         {
             var model = new DraftLayoutModel()
@@ -72,10 +72,20 @@ namespace Bomber.BL.Impl.MapGenerator
             _draftsRepository.Create(model).SaveChanges();
             return new MapLayoutDraft(_provider, model);
         }
-        
-        public void GenerateMapFromDraft(IMapLayoutDraft draft, string name)
+
+        public void GenerateMapFromDraft(IMapLayoutDraft draft, string filename)
         {
-            _ = new MapLayout(name, draft, _provider);
+            // TODO: Implement unit view DomainModel in game framework
+            // _ = new BomberMapSource(
+            //     _provider,
+            //     filename,
+            //     draft.Data,
+            //     draft.Entities,
+            //     draft.ColumnCount,
+            //     draft.RowCount,
+            //     draft.Name,
+            //     draft.Description
+            // );
             draft.Delete();
             _draftsRepository.Delete(draft.Id).SaveChanges();
         }
@@ -89,12 +99,12 @@ namespace Bomber.BL.Impl.MapGenerator
             {
                 return CreateNewSelectedDraft();
             }
-            
+
             var parsed = Guid.Parse(selectedId);
             var selected = allEntities.FirstOrDefault(d => d.Id.Equals(parsed));
             return selected is null ? CreateNewSelectedDraft() : new MapLayoutDraft(_provider.GetRequiredService<IServiceProvider>(), selected);
         }
-        
+
         private void SetSelectedDraft(IMapLayoutDraft value)
         {
             _query.SetAttribute("selected-draft", value.Id.ToString());
@@ -115,10 +125,10 @@ namespace Bomber.BL.Impl.MapGenerator
                 var layout = new MapLayoutDraft(_provider.GetRequiredService<IServiceProvider>(), layoutModel);
                 _ = _draftsRepository.Create(layoutModel).SaveChanges();
                 _query.SetAttribute("selected-draft", layout.Id.ToString());
-                return layout; 
+                return layout;
             }
         }
-        
+
         private IEnumerable<IMapLayoutDraft> GetDrafts()
         {
             var drafts = new List<IMapLayoutDraft>();

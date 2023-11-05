@@ -7,7 +7,9 @@ using GameFramework.Core.Factories;
 using GameFramework.Core.Motion;
 using GameFramework.Entities;
 using GameFramework.Impl.Map;
+using GameFramework.Map;
 using GameFramework.Map.MapObject;
+using GameFramework.Visuals;
 
 namespace Bomber.BL.Impl.Map
 {
@@ -17,34 +19,22 @@ namespace Bomber.BL.Impl.Map
         private readonly IEntityViewFactory _entityViewFactory;
         private readonly IEntityFactory _entityFactory;
 
-        public IMapLayout MapLayout { get; }
+        public IBomberMapSource BomberMapSource { get; }
 
-        public Map(int sizeX, int sizeY, ICollection<IUnit2D> entities, IEnumerable<IMapObject2D> mapObjects, IPositionFactory positionFactory, IEntityViewFactory entityViewFactory, IEntityFactory entityFactory, IMapLayout mapLayout) : base(sizeX, sizeY, entities, mapObjects)
+        public Map(IBomberMapSource mapSource, IMapView2D view, IPositionFactory positionFactory, IEntityFactory entityFactory, IEntityViewFactory entityViewFactory) : base(mapSource, view, positionFactory)
         {
-            MapLayout = mapLayout ?? throw new ArgumentNullException(nameof(mapLayout));
+            BomberMapSource = mapSource ?? throw new ArgumentException("Map source is not a BomberMapSource");
             _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
             _entityViewFactory = entityViewFactory ?? throw new ArgumentNullException(nameof(entityViewFactory));
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
-            FillEntities(mapLayout);
-        }
-
-        public override void MoveUnit(IUnit2D unit2D, Move2D move)
-        {
-            base.MoveUnit(unit2D, move);
-            foreach (var entity in Entities)
-            {
-                if (!entity.Equals(unit2D) && entity.Position.Equals(unit2D.Position))
-                {
-                    entity.SteppedOn(unit2D);
-                }
-            }
+            FillEntities(mapSource);
         }
 
         public bool HasEnemy(IPosition2D position)
         {
-            foreach (var entity in Entities)
+            foreach (var entity in Units)
             {
-                if (entity is not INpc npc)
+                if (entity is not IEnemy npc)
                 {
                     continue;
                 }
@@ -57,63 +47,13 @@ namespace Bomber.BL.Impl.Map
             return false;
         }
 
-        public IEnumerable<IBomberEntity> GetEntitiesAtPortion(IEnumerable<IMapObject2D> mapObjects)
+        private void FillEntities(IMapSource2D bomberMapSource)
         {
-            var entities = new List<IBomberEntity>();
-            foreach (var mapObject in mapObjects)
+            foreach (var entity in bomberMapSource.Units)
             {
-                foreach (var entity in Entities)
-                {
-                    if (entity is IBomberEntity bomberEntity && entity.Position == mapObject.Position)
-                    {
-                        entities.Add(bomberEntity);
-                    }
-                }
+                Units.Add(_entityFactory.CreateEnemy(_entityViewFactory.CreateEnemyView(), _positionFactory.CreatePosition(entity.Position.X, entity.Position.Y)));
             }
-
-            return entities;
-        }
-
-        public IEnumerable<IBomberEntity> GetEntitiesAtPortion(IPosition2D topLeft, IPosition2D bottomRight)
-        {
-            var objects = MapPortion(topLeft, bottomRight);
-            return GetEntitiesAtPortion(objects);
         }
         
-        public void SaveProgress(IBomber bomber)
-        {
-            MapLayout.SaveLayout(bomber, Entities.Where(e => e is INpc).Select(e => new DummyEntity(e.Position.X, e.Position.Y)).ToList());
-        }
-
-        public IEnumerable<IMapObject2D> MapPortion(IPosition2D topLeft, IPosition2D bottomRight)
-        {
-            var objects = MapObjects.ToArray();
-            for (var y = topLeft.Y; y <= bottomRight.Y; y++)
-            {
-                for (var x = topLeft.X; x <= bottomRight.X; x++)
-                {
-                    yield return objects[y * SizeX + x];
-                }
-            }
-        }
-
-        public IEnumerable<IMapObject2D> MapPortion(IPosition2D center, int radius)
-        {
-            var top = center.Y - radius < 0 ? 0 : center.Y - radius;
-            var bottom = center.Y + radius >= SizeY ? SizeY - 1 : center.Y + radius;
-            var left = center.X - radius < 0 ? 0 : center.X - radius;
-            var right = center.X + radius >= SizeX ? SizeX - 1 : center.X + radius;
-            var topLeftPos = _positionFactory.CreatePosition(left, top);
-            var bottomRightPos = _positionFactory.CreatePosition(right, bottom);
-            return MapPortion(topLeftPos, bottomRightPos);
-        }
-
-        private void FillEntities(IMapLayout mapLayout)
-        {
-            foreach (var entity in mapLayout.Entities)
-            {
-                Entities.Add(_entityFactory.CreateEnemy(_entityViewFactory.CreateEnemyView(), _positionFactory.CreatePosition(entity.X, entity.Y)));
-            }
-        }
     }
 }

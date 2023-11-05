@@ -30,9 +30,9 @@ namespace Bomber.UI.Forms.MapGenerator
             return _mapGeneratorSettings.CreateDraft();
         }
         
-        public void GenerateMapFromDraft(IMapLayoutDraft draft, string name)
+        public void GenerateMapFromDraft(IMapLayoutDraft draft, string filename)
         {
-            _mapGeneratorSettings.GenerateMapFromDraft(draft, name);
+            _mapGeneratorSettings.GenerateMapFromDraft(draft, filename);
         }
     }
 }

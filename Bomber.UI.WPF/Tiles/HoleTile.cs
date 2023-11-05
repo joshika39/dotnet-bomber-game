@@ -1,13 +1,16 @@
 ﻿using System.Windows.Media;
-using Bomber.BL.Tiles;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
+using GameFramework.Tiles;
 
 namespace Bomber.UI.WPF.Tiles
 {
     internal class HoleTile : ATile, IDeadlyTile
     {
+        public bool InstantDeath { get; }
+        public int Damage { get; }
+        
         public override bool IsObstacle => false;
 
         public HoleTile(IPosition2D position, IConfigurationService2D configurationService) : base(position, configurationService)
@@ -17,11 +20,8 @@ namespace Bomber.UI.WPF.Tiles
 
         public override void SteppedOn(IUnit2D unit2D)
         {
-            if (ConfigurationService.GameIsRunning)
-            {
-                ConfigurationService.GameIsRunning = false;
-                unit2D.Step(this);
-            }
+            unit2D.Step(this);
         }
+        
     }
 }

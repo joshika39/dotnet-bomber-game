@@ -5,16 +5,17 @@ using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
+using GameFramework.GameFeedback;
 using GameFramework.Map.MapObject;
-using GameFramework.Time;
 using GameFramework.Time.Listeners;
+using GameFramework.Visuals;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class Bomb : IBomb, ITickListener, IEntityViewSubscriber
+    public sealed class Bomb : IBomb, ITickListener, IViewLoadedSubscriber
     {
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
-        private readonly IStopwatch _stopwatch;
+        private readonly IGameManager _gameManager;
         private readonly IEnumerable<IMapObject2D> _affectedObjects;
         private bool _disposed;
         private readonly CancellationToken _stoppingToken;
@@ -26,11 +27,11 @@ namespace Bomber.BL.Impl.Entities
         private bool _isDetonated;
 
 
-        public Bomb(IBombView view, IPosition2D position, IConfigurationService2D configurationService, IEnumerable<IBombWatcher> bombWatchers, int radius, IStopwatch stopwatch)
+        public Bomb(IBombView view, IPosition2D position, IConfigurationService2D configurationService, IEnumerable<IBombWatcher> bombWatchers, int radius, IGameManager gameManager)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
-            _stopwatch = stopwatch ?? throw new ArgumentNullException(nameof(stopwatch));
+            _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _stoppingToken = configurationService.CancellationTokenSource.Token;
@@ -41,7 +42,7 @@ namespace Bomber.BL.Impl.Entities
 
             Radius = radius;
 
-            if (!configurationService.GameIsRunning)
+            if (_gameManager.State == GameState.InProgress)
             {
                 Dispose();
             }
@@ -69,8 +70,7 @@ namespace Bomber.BL.Impl.Entities
                     break;
                 }
 
-                await _stopwatch.WaitAsync(_countDownPeriod, this);
-
+                await _gameManager.Timer.WaitAsync(_countDownPeriod, this);
             }
 
             Dispose();
@@ -123,7 +123,7 @@ namespace Bomber.BL.Impl.Entities
         
         public TimeSpan ElapsedTime { get; set; }
         
-        public void OnViewLoaded()
+        public void OnLoaded()
         {
             View.UpdatePosition(Position);
         }

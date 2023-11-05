@@ -15,6 +15,7 @@ namespace Bomber.BL.MapGenerator
         int ColumnCount { get; set; }
         int RowCount { get; set; }
         string RawData { get; }
+        int[,] Data { get; }
         ICollection<DummyEntity> Entities { get; }
         IPosition2D PlayerStartPosition { get; set; }
         IEnumerable<IPlaceHolder>? MapObjects { get; }

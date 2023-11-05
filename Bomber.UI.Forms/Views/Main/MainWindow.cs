@@ -1,14 +1,18 @@
 ﻿using Bomber.BL.Entities;
 using Bomber.BL.Feedback;
 using Bomber.BL.Impl.Entities;
+using Bomber.BL.Impl.Map;
 using Bomber.BL.Map;
 using Bomber.UI.Forms.Main;
 using Bomber.UI.Forms.Views.Entities;
 using Bomber.UI.Forms.Views.Main._Interfaces;
+using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Factories;
 using GameFramework.GameFeedback;
 using GameFramework.Time.Listeners;
+using Microsoft.Extensions.DependencyInjection;
 using DialogResult = UiFramework.Shared.DialogResult;
 
 namespace Bomber.UI.Forms.Views.Main
@@ -21,13 +25,17 @@ namespace Bomber.UI.Forms.Views.Main
 
         private readonly IConfigurationService2D _service;
         private readonly IGameManager _gameManager;
+        private readonly IPositionFactory _positionFactory;
+        private readonly IServiceProvider _provider;
 
         public TimeSpan ElapsedTime { get; set; }
 
-        public MainWindow(IConfigurationService2D service, IMainWindowPresenter presenter, IGameManager gameManager)
+        public MainWindow(IConfigurationService2D service, IMainWindowPresenter presenter, IGameManager gameManager, IPositionFactory positionFactory, IServiceProvider provider)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
+            _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             Presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
             KeyPreview = true;
             InitializeComponent();
@@ -76,12 +84,16 @@ namespace Bomber.UI.Forms.Views.Main
                 return;
             }
 
-            var map = Presenter.OpenMap(openDialog.FileName);
+            var source = new BomberMapSource(_provider, openDialog.FileName);
+            // TODO: Think about how to pull Winforms in the infrastructure
+            var map = new Map(source, null, _positionFactory, _provider.GetRequiredService<IEntityFactory>(), _provider.GetRequiredService<IEntityViewFactory>());
+
+            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"), map);
 
             var view = new PlayerView(_service);
-            _player = new PlayerModel(view, map.MapLayout.PlayerPosition, _service, "TestPlayer", "test@email.com", _gameManager);
+            _player = new PlayerModel(view, _positionFactory.CreatePosition(0, 0), _service, "TestPlayer", "test@email.com", _gameManager);
             bomberMap.Controls.Add(view);
-            map.Entities.Add(_player);
+            map.Units.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
             {
                 if (mapMapObject is Control control)
@@ -90,7 +102,7 @@ namespace Bomber.UI.Forms.Views.Main
                 }
             }
 
-            foreach (var unit in map.Entities)
+            foreach (var unit in map.Units)
             {
                 if (unit is not IEnemy { View: EnemyView control } enemy)
                 {
@@ -101,10 +113,10 @@ namespace Bomber.UI.Forms.Views.Main
                 bomberMap.Controls.Add(control);
             }
 
-            _gameManager.GameStarted(new GameplayFeedback(FeedbackLevel.Info, "The game is started"));
+            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "The game is started"), map);
             _gameManager.Timer.PeriodicOperation(1000, this, _service.CancellationTokenSource.Token);
-            mapName.Text = map.MapLayout.Name;
-            description.Text = map.MapLayout.Description;
+            mapName.Text = map.BomberMapSource.Name;
+            description.Text = map.BomberMapSource.Description;
         }
 
         public void BombExploded(IBomb bomb)
@@ -134,7 +146,7 @@ namespace Bomber.UI.Forms.Views.Main
                 Presenter.PauseGame();
             }
 
-            if (!_service.GameIsRunning || _player is null)
+            if (_gameManager.State != GameState.InProgress || _player is null)
             {
                 return;
             }
@@ -156,8 +168,8 @@ namespace Bomber.UI.Forms.Views.Main
             {
                 return;
             }
-            
-            map.SaveProgress(_player);
+
+            map.SaveProgress();
         }
     }
 }

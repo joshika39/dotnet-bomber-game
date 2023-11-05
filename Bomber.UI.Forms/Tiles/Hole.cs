@@ -2,18 +2,15 @@
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
+using GameFramework.Map.MapObject;
+using GameFramework.Tiles;
 
 namespace Bomber.UI.Forms.Tiles
 {
-    public sealed partial class Hole : UserControl, IDeadlyTile
+    public sealed partial class Hole : UserControl, IMapObject2D, IDeadlyTile
     {
-        private readonly IConfigurationService2D _configurationService;
         public void SteppedOn(IUnit2D unit2D)
         {
-            if (unit2D is IPlayer2D)
-            {
-                _configurationService.GameIsRunning = true;
-            }
             unit2D.Step(this);
         }
         public IPosition2D Position { get; }
@@ -21,7 +18,6 @@ namespace Bomber.UI.Forms.Tiles
         
         public Hole(IPosition2D position, IConfigurationService2D configurationService)
         {
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             InitializeComponent();
             Top = position.Y * configurationService.Dimension;
@@ -31,6 +27,8 @@ namespace Bomber.UI.Forms.Tiles
             BackColor = Color.Black;
             SendToBack();
         }
+        public bool InstantDeath { get; }
+        public int Damage { get; }
     }
 }
 

@@ -1,14 +1,15 @@
 ﻿using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Visuals;
 
 namespace Bomber.UI.Forms.Views.Entities
 {
     public sealed partial class EnemyView : UserControl, IEnemyView
     {
         private readonly IConfigurationService2D _configurationService2D;
-        private readonly ICollection<IEntityViewSubscriber> _subscribers = new List<IEntityViewSubscriber>();
-        private readonly ICollection<IEntityViewDisposedSubscriber> _disposedSubscribers = new List<IEntityViewDisposedSubscriber>();
+        private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
+        private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
         
         public EnemyView(IConfigurationService2D configurationService2D)
         {
@@ -45,19 +46,20 @@ namespace Bomber.UI.Forms.Views.Entities
             });
         }
         
-        public void EntityViewLoaded()
+        public void ViewLoaded()
         {
             foreach (var subscriber in _subscribers)
             {
-                subscriber.OnViewLoaded();
+                subscriber.OnLoaded();
             }
         }
         
-        public void Attach(IEntityViewSubscriber subscriber)
+        public void Attach(IViewLoadedSubscriber subscriber)
         {
             _subscribers.Add(subscriber);
         }
-        public void Attach(IEntityViewDisposedSubscriber subscriber)
+
+        public void Attach(IViewDisposedSubscriber subscriber)
         {
             _disposedSubscribers.Add(subscriber);
         }
@@ -65,7 +67,7 @@ namespace Bomber.UI.Forms.Views.Entities
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            EntityViewLoaded();
+            ViewLoaded();
         }
     }
 }

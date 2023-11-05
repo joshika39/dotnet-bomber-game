@@ -1,8 +1,8 @@
 using Bomber.BL.Impl;
-using Bomber.BL.Map;
 using Bomber.BL.Tiles;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Map.MapObject;
 
 namespace Bomber.UI.Forms.Tiles
 {

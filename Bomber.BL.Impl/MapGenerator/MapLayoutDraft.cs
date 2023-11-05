@@ -24,6 +24,7 @@ namespace Bomber.BL.Impl.MapGenerator
         public string Name { get; set; }
         public Guid Id { get; }
         public string RawData => GetRawData(MapObjects);
+        public int[,] Data { get; set; }
         public ICollection<DummyEntity> Entities { get; }
         public IPosition2D PlayerStartPosition { get; set; }
 
@@ -44,6 +45,7 @@ namespace Bomber.BL.Impl.MapGenerator
             Constants.CreateFileAndDirectory(_layoutPath);
             MapObjects = FirstLoad();
             Entities = model.DummyEntities;
+            Data = new int[RowCount, ColumnCount];
         }
 
         public string Description { get; set; }
@@ -99,10 +101,13 @@ namespace Bomber.BL.Impl.MapGenerator
                     if (i <= oldValues.Length / RowCount && j <= oldValues.Length / ColumnCount && i * ColumnCount + j < oldValues.Length)
                     {
                         array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, oldValues[i * ColumnCount + j].Type);
+                        Data[i, j] = Constants.TileTypeToInt(oldValues[i * ColumnCount + j].Type);
                     }
                     else
                     {
-                        array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos);
+                        var placeholder = _tileFactory.CreatePlaceHolder(pos);
+                        array[i * ColumnCount + j] = placeholder;
+                        Data[i, j] = Constants.TileTypeToInt(placeholder.Type);
                     }
                 }
             }

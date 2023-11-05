@@ -45,6 +45,16 @@ namespace Bomber.UI.Forms.Feedback
         {
             
         }
+        
+        public void OnGameResumed()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public void OnGameReset()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

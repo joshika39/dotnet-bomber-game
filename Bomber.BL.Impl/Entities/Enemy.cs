@@ -1,23 +1,24 @@
 using Bomber.BL.Entities;
 using Bomber.BL.Feedback;
 using Bomber.BL.Map;
-using Bomber.BL.Tiles;
 using Bomber.UI.Shared.Entities;
-using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Motion;
 using GameFramework.Entities;
 using GameFramework.GameFeedback;
 using GameFramework.Map.MapObject;
+using GameFramework.Tiles;
 using GameFramework.Time.Listeners;
+using GameFramework.Visuals;
 
 namespace Bomber.BL.Impl.Entities
 {
-    public sealed class Enemy : IEnemy, ITickListener, IEntityViewSubscriber
+    public sealed class Enemy : IEnemy, ITickListener, IViewLoadedSubscriber
     {
-        public IBomberMapEntityView View { get; }
-        
+        public Guid Id { get; } = Guid.NewGuid();
+        public IDynamicMapObjectView View { get; }
+
         private readonly CancellationToken _stoppingToken;
         private Move2D _direction;
         private bool _disposed;
@@ -52,7 +53,7 @@ namespace Bomber.BL.Impl.Entities
         {
             if (unit2D is IBomber)
             {
-                _gameManager.GameFinished(new GameplayFeedback(FeedbackLevel.Info, "You died!"), GameResolution.Loss);
+                _gameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "You died!"), GameResolution.Loss);
             }
         }
         
@@ -123,7 +124,7 @@ namespace Bomber.BL.Impl.Entities
         
         public TimeSpan ElapsedTime { get; set; }
         
-        public void OnViewLoaded()
+        public void OnLoaded()
         {
             View.UpdatePosition(Position);
         }
