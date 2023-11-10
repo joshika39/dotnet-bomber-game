@@ -9,8 +9,8 @@ using GameFramework.Entities;
 using GameFramework.GameFeedback;
 using GameFramework.Map.MapObject;
 using GameFramework.Tiles;
-using GameFramework.Time.Listeners;
 using GameFramework.Visuals;
+using Infrastructure.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
 {
@@ -26,6 +26,10 @@ namespace Bomber.BL.Impl.Entities
         private readonly IGameManager _gameManager;
 
         public IPosition2D Position { get; private set; }
+        public IScreenSpacePosition ScreenSpacePosition
+        {
+            get;
+        }
         public bool IsObstacle => false;
 
         public Enemy(IEnemyView view, IConfigurationService2D service, IPosition2D position, IGameManager gameManager)
@@ -106,20 +110,20 @@ namespace Bomber.BL.Impl.Entities
         
         public void RaiseTick(int round)
         {
-            var map = _service.GetActiveMap<IBomberMap>();
+            // var map = _service.GetActiveMap<IBomberMap>();
             
-            if(map is null)
-            {
-                return;
-            }
-            
-            var mapObject = map.SimulateMove(Position, _direction);
-            while (mapObject is null || mapObject.IsObstacle || mapObject is IDeadlyTile || map.HasEnemy(mapObject.Position))
-            {
-                _direction = GetRandomMove();
-                mapObject = map.SimulateMove(Position, _direction);
-            }
-            map.MoveUnit(this, _direction);
+            // if(map is null)
+            // {
+            //     return;
+            // }
+            //
+            // var mapObject = map.SimulateMove(Position, _direction);
+            // while (mapObject is null || mapObject.IsObstacle || mapObject is IDeadlyTile || map.HasEnemy(mapObject.Position))
+            // {
+            //     _direction = GetRandomMove();
+            //     mapObject = map.SimulateMove(Position, _direction);
+            // }
+            // map.MoveUnit(this, _direction);
         }
         
         public TimeSpan ElapsedTime { get; set; }
@@ -127,6 +131,18 @@ namespace Bomber.BL.Impl.Entities
         public void OnLoaded()
         {
             View.UpdatePosition(Position);
+        }
+        public void OnHovered()
+        {
+            throw new NotImplementedException();
+        }
+        public void OnHoverLost()
+        {
+            throw new NotImplementedException();
+        }
+        public bool IsHovered
+        {
+            get;
         }
     }
 }

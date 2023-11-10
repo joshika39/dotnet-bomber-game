@@ -11,7 +11,7 @@ using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.GameFeedback;
-using GameFramework.Time.Listeners;
+using Infrastructure.Time.Listeners;
 using Microsoft.Win32;
 using Path = System.IO.Path;
 

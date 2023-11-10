@@ -14,6 +14,10 @@ namespace Bomber.UI.Forms.Tiles
             unit2D.Step(this);
         }
         public IPosition2D Position { get; }
+        public IScreenSpacePosition ScreenSpacePosition
+        {
+            get;
+        }
         public bool IsObstacle => false;
         
         public Hole(IPosition2D position, IConfigurationService2D configurationService)
@@ -29,6 +33,21 @@ namespace Bomber.UI.Forms.Tiles
         }
         public bool InstantDeath { get; }
         public int Damage { get; }
+        
+        public void OnHovered()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public void OnHoverLost()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public bool IsHovered
+        {
+            get;
+        }
     }
 }
 

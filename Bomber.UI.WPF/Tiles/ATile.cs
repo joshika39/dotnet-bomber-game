@@ -11,6 +11,10 @@ namespace Bomber.UI.WPF.Tiles
     internal abstract class ATile : ACustomShape, IMapObject2D
     {
         public IPosition2D Position { get; }
+        public IScreenSpacePosition ScreenSpacePosition
+        {
+            get;
+        }
         public abstract bool IsObstacle { get; }
         
         protected ATile(IPosition2D position, IConfigurationService2D configurationService) : base(configurationService)
@@ -21,5 +25,19 @@ namespace Bomber.UI.WPF.Tiles
         }
         
         public abstract void SteppedOn(IUnit2D unit2D);
+        public void OnHovered()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public void OnHoverLost()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public bool IsHovered
+        {
+            get;
+        }
     }
 }

@@ -27,8 +27,8 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-        <PackageReference Include="joshika39.Core" Version="1.2.0" />
-        <PackageReference Include="joshika39.GameFramework.Core" Version="1.4.2" />
+        <PackageReference Include="joshika39.Core" Version="1.3.3" />
+        <PackageReference Include="joshika39.GameFramework.Core" Version="1.5.0" />
     </ItemGroup>
 
 

@@ -7,8 +7,8 @@ using GameFramework.Core;
 using GameFramework.Entities;
 using GameFramework.GameFeedback;
 using GameFramework.Map.MapObject;
-using GameFramework.Time.Listeners;
 using GameFramework.Visuals;
+using Infrastructure.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
 {
@@ -21,6 +21,10 @@ namespace Bomber.BL.Impl.Entities
         private readonly CancellationToken _stoppingToken;
         private int _countDownPeriod = 2000;
         public IPosition2D Position { get; }
+        public IScreenSpacePosition ScreenSpacePosition
+        {
+            get;
+        }
         public bool IsObstacle => false;
         public int Radius { get; }
         public IBombView View { get; }
@@ -47,8 +51,8 @@ namespace Bomber.BL.Impl.Entities
                 Dispose();
             }
 
-            var map = configurationService.GetActiveMap<IBomberMap>();
-            _affectedObjects = map!.MapPortion(position, radius);
+            // var map = configurationService.GetActiveMap<IBomberMap>();
+            // _affectedObjects = map!.MapPortion(position, radius);
             View.Attach(this);
         }
 
@@ -126,6 +130,18 @@ namespace Bomber.BL.Impl.Entities
         public void OnLoaded()
         {
             View.UpdatePosition(Position);
+        }
+        public void OnHovered()
+        {
+            throw new NotImplementedException();
+        }
+        public void OnHoverLost()
+        {
+            throw new NotImplementedException();
+        }
+        public bool IsHovered
+        {
+            get;
         }
     }
 }

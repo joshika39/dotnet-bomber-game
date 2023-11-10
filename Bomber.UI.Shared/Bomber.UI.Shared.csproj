@@ -16,7 +16,7 @@
 
 
     <ItemGroup>
-      <PackageReference Include="joshika39.GameFramework.Core" Version="1.4.2" />
+      <PackageReference Include="joshika39.GameFramework.Core" Version="1.5.0" />
       <PackageReference Include="joshika39.UiFramework.Forms" Version="1.0.1-pre0001" />
     </ItemGroup>
 

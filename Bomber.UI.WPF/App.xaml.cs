@@ -17,10 +17,13 @@ namespace Bomber.UI.WPF
     {
         protected override IServiceProvider LoadModules(ServiceCollection collection)
         {
-            new CoreModule().LoadModules(collection, "Bomber");
-            new GameModule().LoadModules(collection, new CancellationTokenSource());
-            new BusinessLogicModule().LoadModules(collection);
-            new WpfModule().LoadModules(collection);
+            var source = new CancellationTokenSource();
+            var core = new CoreModule(collection, source);
+            core.RegisterServices("Bomber");
+            core
+                .RegisterOtherServices(new GameFrameworkCore(collection, source))
+                .RegisterOtherServices(new BusinessLogicModule(collection))
+                .RegisterOtherServices(new WpfModule(collection));
 
             return collection.BuildServiceProvider();
         }

@@ -35,7 +35,7 @@ namespace Bomber.BL.Impl.Models
         public IBomberMap OpenMap(string mapFileName, IMapView2D mapView2D)
         {
             var source = new BomberMapSource(_provider, mapFileName);
-            var map = new Map.Map(source, mapView2D, _factory, _provider.GetRequiredService<IEntityFactory>(), _provider.GetRequiredService<IEntityViewFactory>());
+            var map = new Map.Map(source, mapView2D, _factory, _configurationService);
 
             _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"), map);
             return map;

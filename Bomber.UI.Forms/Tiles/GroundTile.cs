@@ -13,6 +13,10 @@ namespace Bomber.UI.Forms.Tiles
         }
         
         public IPosition2D Position { get; }
+        public IScreenSpacePosition ScreenSpacePosition
+        {
+            get;
+        }
         public bool IsObstacle => false;
         
         public async void IndicateBomb(double waitTime)
@@ -37,6 +41,21 @@ namespace Bomber.UI.Forms.Tiles
             Height = configurationService.Dimension;
             BackColor = Color.Green;
             SendToBack();
+        }
+        
+        public void OnHovered()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public void OnHoverLost()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public bool IsHovered
+        {
+            get;
         }
     }
 }

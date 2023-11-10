@@ -19,6 +19,10 @@ namespace Bomber.BL.Impl.Entities
         private bool _isAlive = true;
         private bool _disposed;
         public IPosition2D Position { get; private set; }
+        public IScreenSpacePosition ScreenSpacePosition
+        {
+            get;
+        }
         public bool IsObstacle => false;
         public Guid Id { get; }
         public IDynamicMapObjectView View { get; }
@@ -139,6 +143,21 @@ namespace Bomber.BL.Impl.Entities
         public void OnLoaded()
         {
             View.UpdatePosition(Position);
+        }
+        
+        public void OnHovered()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public void OnHoverLost()
+        {
+            throw new NotImplementedException();
+        }
+        
+        public bool IsHovered
+        {
+            get;
         }
     }
 }

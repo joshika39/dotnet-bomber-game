@@ -3,7 +3,7 @@ using Implementation.Repositories;
 
 namespace Bomber.BL.Impl.MapGenerator.DomainModels
 {
-    public class DraftLayoutModel : AEntity, IDraftLayoutModel
+    public class DraftLayoutModel : AEntity
     {
         public string Name { get; set; } = "";
         public string Description { get; set; } = "";

@@ -11,13 +11,18 @@ using Bomber.UI.Forms.Views.Main;
 using Bomber.UI.Forms.Views.Main._Interfaces;
 using Bomber.UI.Shared.Entities;
 using Bomber.UI.Shared.Feedback;
+using Implementation.Module;
+using Infrastructure.Module;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.UI.Forms.Core
 {
-    public class BomberModule
+    public class BomberModule : AModule, IBaseModule
     {
-        public void LoadModules(IServiceCollection collection)
+        public BomberModule(IServiceCollection collection) : base(collection)
+        { }
+        
+        public override IModule RegisterServices(IServiceCollection collection)
         {
             collection.AddSingleton<IMainWindowPresenter, MainWindowPresenter>();
             collection.AddSingleton<IMapGeneratorWindowPresenter, MapGeneratorWindowPresenter>();
@@ -29,6 +34,7 @@ namespace Bomber.UI.Forms.Core
             collection.AddSingleton<ITileFactory, FormsTileFactory>();
             collection.AddSingleton<IEntityViewFactory, EntityViewFactory>();
             collection.AddSingleton<IFeedbackPopup, FormsFeedbackPopup>();
+            return this;
         }
     }
 }

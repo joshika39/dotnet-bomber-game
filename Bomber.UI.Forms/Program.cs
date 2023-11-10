@@ -34,11 +34,13 @@ namespace Bomber.UI.Forms
         private static IServiceProvider LoadModules()
         {
             var collection = new ServiceCollection();
-            
-            new CoreModule().LoadModules(collection, "Bomber");
-            new GameModule().LoadModules(collection, new CancellationTokenSource());
-            new BusinessLogicModule().LoadModules(collection);
-            new BomberModule().LoadModules(collection);
+            var source = new CancellationTokenSource();
+            var core = new CoreModule(collection, source);
+            core.RegisterServices("Bomber");
+            core
+                .RegisterOtherServices(new GameFrameworkCore(collection, source))
+                .RegisterOtherServices(new BusinessLogicModule(collection))
+                .RegisterOtherServices(new BomberModule(collection));
 
             return collection.BuildServiceProvider();
         }

@@ -6,19 +6,23 @@ using Bomber.UI.WPF.Main;
 using Bomber.UI.WPF.Tiles.Factories;
 using Bomber.UI.WPF.ViewModels;
 using Bomber.UI.WPF.Views;
+using Implementation.Module;
 using Infrastructure.Module;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.UI.WPF
 {
-    public class WpfModule : IModule
+    public class WpfModule : AModule, IBaseModule
     {
-        public void LoadModules(IServiceCollection collection)
+        public WpfModule(IServiceCollection collection) : base(collection)
+        { }
+        public override IModule RegisterServices(IServiceCollection collection)
         {
             collection.AddSingleton<IMainWindowViewModel, MainWindowViewModel>();
             collection.AddSingleton<IMainWindow, MainWindow>();
             collection.AddSingleton<ITileFactory, WpfTileFactory>();
             collection.AddSingleton<IEntityViewFactory, WpfEntityFactory>();
+            return this;
         }
     }
 }

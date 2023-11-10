@@ -1,4 +1,3 @@
-using Bomber.BL.Impl.Map;
 using Bomber.BL.Impl.MapGenerator.DomainModels;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
@@ -16,7 +15,7 @@ namespace Bomber.BL.Impl.MapGenerator
     {
         private readonly IServiceProvider _provider;
         private readonly IConfigurationQuery _query;
-        private readonly IRepository<IDraftLayoutModel> _draftsRepository;
+        private readonly IRepository<DraftLayoutModel> _draftsRepository;
         private IMapLayoutDraft _selectedDraft;
 
         public IMapLayoutDraft SelectedDraft
@@ -37,7 +36,7 @@ namespace Bomber.BL.Impl.MapGenerator
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             var path = Path.Join(_provider.GetRequiredService<IApplicationSettings>().ConfigurationFolder, "generator-config.json");
             _query = configurationQueryFactory.CreateConfigurationQuery(path);
-            _draftsRepository = repositoryFactory.CreateJsonRepository<IDraftLayoutModel, DraftLayoutModel>("drafts");
+            _draftsRepository = repositoryFactory.CreateRepository<DraftLayoutModel>("drafts");
             _selectedDraft = GetSelectedDraftAsync();
         }
 
@@ -123,7 +122,7 @@ namespace Bomber.BL.Impl.MapGenerator
             {
                 var layoutModel = new DraftLayoutModel();
                 var layout = new MapLayoutDraft(_provider.GetRequiredService<IServiceProvider>(), layoutModel);
-                _ = _draftsRepository.Create(layoutModel).SaveChanges();
+                _draftsRepository.Create(layoutModel).SaveChanges();
                 _query.SetAttribute("selected-draft", layout.Id.ToString());
                 return layout;
             }

@@ -1,4 +1,5 @@
 using System.Text;
+using Bomber.BL.Impl.MapGenerator.DomainModels;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
@@ -28,7 +29,7 @@ namespace Bomber.BL.Impl.MapGenerator
         public ICollection<DummyEntity> Entities { get; }
         public IPosition2D PlayerStartPosition { get; set; }
 
-        public MapLayoutDraft(IServiceProvider serviceProvider, IDraftLayoutModel model)
+        public MapLayoutDraft(IServiceProvider serviceProvider, DraftLayoutModel model)
         {
             _reader = serviceProvider.GetRequiredService<IReader>();
             var settings = serviceProvider.GetRequiredService<IApplicationSettings>();
