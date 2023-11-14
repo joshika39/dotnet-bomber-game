@@ -1,6 +1,7 @@
 ﻿using Bomber.BL.Tiles;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Entities;
 using GameFramework.Map.MapObject;
 using GameFramework.Tiles;

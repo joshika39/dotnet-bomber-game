@@ -1,4 +1,5 @@
-﻿using Bomber.BL.Entities;
+﻿using System.Collections.ObjectModel;
+using Bomber.BL.Entities;
 using Bomber.BL.Feedback;
 using Bomber.BL.Impl.Entities;
 using Bomber.BL.Impl.Map;
@@ -6,12 +7,14 @@ using Bomber.BL.Map;
 using Bomber.UI.Forms.Main;
 using Bomber.UI.Forms.Views.Entities;
 using Bomber.UI.Forms.Views.Main._Interfaces;
+using Bomber.UI.Shared.Entities;
 using GameFramework.Board;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.GameFeedback;
 using GameFramework.Manager;
+using GameFramework.Map.MapObject;
 using GameFramework.Visuals;
 using Infrastructure.Application;
 using Infrastructure.Time.Listeners;
@@ -20,7 +23,7 @@ using DialogResult = UiFramework.Shared.DialogResult;
 
 namespace Bomber.UI.Forms.Views.Main
 {
-    public sealed partial class MainWindow : Form, IMainWindow, ITickListener
+    public sealed partial class MainWindow : Form, IMainWindow, ITickListener, IBomberMapView
     {
         public IMainWindowPresenter Presenter { get; }
 
@@ -94,7 +97,13 @@ namespace Bomber.UI.Forms.Views.Main
 
             var source = new BomberMapSource(_provider, openDialog.FileName);
             // TODO: Think about how to pull Winforms in the infrastructure
-            var map = new Map(source, null, _positionFactory, _service);
+            var map = new BomberMap(
+                source, 
+                null,
+                _positionFactory, 
+                _service, 
+                _provider.GetRequiredService<IEntityFactory>(), 
+                _provider.GetRequiredService<IEntityViewFactory>());
 
             
             _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
@@ -103,7 +112,7 @@ namespace Bomber.UI.Forms.Views.Main
             // _service.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
 
             var view = new PlayerView(_service);
-            _player = new PlayerModel(view, _positionFactory.CreatePosition(0, 0), _service, "TestPlayer", "test@email.com", _gameManager, _lifeCycleManager);
+            _player = new PlayerModel(view, _positionFactory.CreatePosition(0, 0), "TestPlayer", "test@email.com", _gameManager, _lifeCycleManager, _boardService);
             bomberMap.Controls.Add(view);
             map.Units.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
@@ -131,19 +140,7 @@ namespace Bomber.UI.Forms.Views.Main
             mapName.Text = map.MapSource.Name;
             description.Text = map.MapSource.Description;
         }
-
-        public void BombExploded(IBomb bomb)
-        {
-            if (_player is null)
-            {
-                return;
-            }
-
-            Presenter.BombExploded(bomb, _player);
-            explodedEnemiesText.Text = _player.Score.ToString();
-        }
-
-
+        
         public void RaiseTick(int round)
         {
             Invoke(() =>
@@ -164,25 +161,42 @@ namespace Bomber.UI.Forms.Views.Main
                 return;
             }
 
-            Presenter.HandleKeyPress(e.KeyChar, _player);
-
-            if (e.KeyChar == 'b')
-            {
-                var view = new BombView(_service);
-                _player.PutBomb(view, this);
-                bomberMap.Controls.Add(view);
-            }
+            Presenter.HandleKeyPress(e.KeyChar);
         }
 
         private void OnSaveClicked(object sender, EventArgs e)
         {
-            var map = _boardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
+            var map = _boardService.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>();
             if (_player is null || map is null)
             {
                 return;
             }
 
             map.SaveProgress();
+        }
+        public void Attach(IMouseHandler mouseHandler)
+        {
+            
+        }
+        
+        public ObservableCollection<IMapObject2D> MapObjects { get; set; }
+        
+        public ObservableCollection<IDynamicMapObjectView> EntityViews { get; set; }
+        
+        public void PlantBomb(IBombView bombView)
+        {
+            if (bombView is Control control)
+            {
+                bomberMap.Controls.Add(control);
+            }
+        }
+        
+        public void DeleteBomb(IBombView bombView)
+        {
+            if (bombView is Control control)
+            {
+                bomberMap.Controls.Remove(control);
+            }
         }
     }
 }

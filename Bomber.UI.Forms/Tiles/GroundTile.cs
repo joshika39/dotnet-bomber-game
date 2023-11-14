@@ -1,6 +1,7 @@
 ﻿using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Entities;
 
 namespace Bomber.UI.Forms.Tiles

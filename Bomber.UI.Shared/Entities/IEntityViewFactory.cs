@@ -4,5 +4,6 @@ namespace Bomber.UI.Shared.Entities
     {
         IEnemyView CreateEnemyView();
         IBombView CreateBombView();
+        IPlayerView CreatePlayerView();
     }
 }

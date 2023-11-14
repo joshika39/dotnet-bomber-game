@@ -3,6 +3,7 @@ using Bomber.UI.Forms.MapGenerator._Interfaces;
 using Bomber.UI.Forms.Views.Main._Interfaces;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.GameFeedback;
 using GameFramework.Manager.State;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +22,16 @@ namespace Bomber.UI.Forms.Views.Main
         {
             var generatorWindow = _provider.GetRequiredService<IMapGeneratorWindow>();
             generatorWindow.ShowOnTop();
+        }
+        
+        public void OnGameStarted(IGameplayFeedback feedback)
+        {
+            
+        }
+        
+        public void OnGameReset()
+        {
+            
         }
     }
 }

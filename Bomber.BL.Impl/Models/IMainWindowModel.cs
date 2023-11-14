@@ -1,4 +1,3 @@
-using Bomber.BL.Entities;
 using Bomber.BL.Map;
 using GameFramework.Visuals;
 
@@ -6,10 +5,8 @@ namespace Bomber.BL.Impl.Models
 {
     public interface IMainWindowModel
     {
-        IBomberMap OpenMap(string mapFileName, IMapView2D mapView2D);
-        void BombExploded(IBomb bomb, IBomber bomber);
-        void HandleKeyPress(char keyChar, IBomber bomber);
-        void PutBomb();
+        IBomberMap OpenMap(string mapFileName, IBomberMapView mapView2D);
+        void HandleKeyPress(char keyChar);
         void PauseGame();
     }
 }

@@ -8,7 +8,6 @@ using Bomber.UI.WPF.GameCanvas;
 using Bomber.UI.WPF.ViewModels;
 using CommunityToolkit.Mvvm.Input;
 using GameFramework.GameFeedback;
-using GameFramework.Visuals;
 using Infrastructure.Time.Listeners;
 using Microsoft.Win32;
 using Path = System.IO.Path;
@@ -21,8 +20,8 @@ namespace Bomber.UI.WPF.Main
         public GameCanvasControl MapCanvas { get; set; }
 
         public object DataContext => this;
-        public double CanvasWidth => ConfigurationService.Dimension * BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>()?.SizeX ?? 0d;
-        public double CanvasHeight => ConfigurationService.Dimension * BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>()?.SizeY ?? 0d;
+        public double CanvasWidth => ConfigurationService.Dimension * BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>()?.SizeX ?? 0d;
+        public double CanvasHeight => ConfigurationService.Dimension * BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>()?.SizeY ?? 0d;
         
         public TimeSpan ElapsedTime { get; set; }
         public string CurrentTime
@@ -59,13 +58,15 @@ namespace Bomber.UI.WPF.Main
 
             var map = OpenMap(openDialog.FileName, MapCanvas);
             
-            var view = new PlayerControl(ConfigurationService);
-            var player = new PlayerModel(view, PositionFactory.CreatePosition(3, 1), ConfigurationService, "TestPlayer", "test@email.com", GameManager, LifeCycleManager);
-            view.ViewLoaded();
-            map.Units.Add(player);
-            
             GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
-            BoardService.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
+            BoardService.SetActiveMap(map);
+        }
+
+        [RelayCommand]
+        private void OnSave()
+        {
+            var map = BoardService.GetActiveMap<IBomberMap>();
+            map?.SaveProgress();
         }
     }
 }

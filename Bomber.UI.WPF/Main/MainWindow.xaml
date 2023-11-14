@@ -17,6 +17,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <Button Content="Open New Map" Command="{Binding OpenCommand}"></Button>
+            <Button Content="Save state" Command="{Binding SaveCommand}"></Button>
         </StackPanel>
         <UserControl Content="{Binding MapCanvas}" Grid.Row="1" />
         <StackPanel Grid.Row="2">

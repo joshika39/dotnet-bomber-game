@@ -1,10 +1,9 @@
-using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Map;
-using GameFramework.Visuals;
 
 namespace Bomber.BL.Map
 {
-    public interface IBomberMap : IMap2D<IBomberMapSource, IMapView2D>
+    public interface IBomberMap : IMap2D<IBomberMapSource, IBomberMapView>
     {
         bool HasEnemy(IPosition2D position);
     }

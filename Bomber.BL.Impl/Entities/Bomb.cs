@@ -1,7 +1,10 @@
 using Bomber.BL.Entities;
+using Bomber.BL.Map;
 using Bomber.UI.Shared.Entities;
 using Bomber.UI.Shared.Views;
+using GameFramework.Board;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Entities;
 using GameFramework.Manager;
 using GameFramework.Map.MapObject;
@@ -15,6 +18,7 @@ namespace Bomber.BL.Impl.Entities
     {
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
         private readonly IGameManager _gameManager;
+        private readonly IBoardService _boardService;
         private readonly IEnumerable<IMapObject2D> _affectedObjects = new List<IMapObject2D>();
         private bool _disposed;
         private readonly CancellationToken _stoppingToken;
@@ -28,12 +32,14 @@ namespace Bomber.BL.Impl.Entities
         private bool _isDetonated;
 
 
-        public Bomb(IBombView view, IPosition2D position, IEnumerable<IBombWatcher> bombWatchers, int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager)
+        public Bomb(IBombView view, IPosition2D position, IEnumerable<IBombWatcher> bombWatchers, int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
+            _boardService = boardService ?? throw new ArgumentNullException(nameof(boardService));
             Position = position ?? throw new ArgumentNullException(nameof(position));
+            lifeCycleManager = lifeCycleManager ?? throw new ArgumentNullException(nameof(lifeCycleManager));
             _stoppingToken = lifeCycleManager.Token;
             if (radius <= 0)
             {
@@ -42,13 +48,13 @@ namespace Bomber.BL.Impl.Entities
 
             Radius = radius;
 
-            if (_gameManager.State == GameState.InProgress)
+            if (_gameManager.State != GameState.InProgress)
             {
                 Dispose();
             }
 
-            // var map = configurationService.GetActiveMap<IBomberMap>();
-            // _affectedObjects = map!.MapPortion(position, radius);
+            var map = _boardService.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>();
+            _affectedObjects = map!.MapPortion(position, radius);
             View.Attach(this);
         }
 

@@ -6,6 +6,7 @@ using Bomber.BL.Tiles;
 using Bomber.BL.Tiles.Factories;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
+using GameFramework.Core.Position;
 using Infrastructure.Application;
 using Infrastructure.IO;
 using Microsoft.Extensions.DependencyInjection;

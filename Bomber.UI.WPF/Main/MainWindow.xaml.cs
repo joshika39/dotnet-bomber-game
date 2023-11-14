@@ -30,12 +30,7 @@ namespace Bomber.UI.WPF.Main
         {
             base.OnPreviewKeyDown(e);
             
-            // _viewModel.HandleKeyPress(GetCharFromKey(e.Key), _player);
-
-            if (e.Key == Key.B)
-            {
-                _viewModel.PutBomb();
-            }
+            _viewModel.HandleKeyPress(GetCharFromKey(e.Key));
         }
         
         private enum MapType : uint

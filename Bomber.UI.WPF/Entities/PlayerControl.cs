@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Bomber.UI.Shared.Entities;
-using Bomber.UI.WPF.Tiles;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Position;
+using GameFramework.UI.WPF;
 using GameFramework.Visuals;
 
 namespace Bomber.UI.WPF.Entities
@@ -28,8 +29,11 @@ namespace Bomber.UI.WPF.Entities
 
         public void UpdatePosition(IPosition2D position)
         {
-            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
-            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
+            Dispatcher.Invoke(() =>
+            {
+                Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
+                Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
+            });
         }
 
         public void ViewLoaded()

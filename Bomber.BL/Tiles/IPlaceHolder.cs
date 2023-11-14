@@ -1,5 +1,4 @@
-using Bomber.BL.Map;
-using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Map.MapObject;
 
 namespace Bomber.BL.Tiles

@@ -3,19 +3,18 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
-using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Entities;
+using GameFramework.UI.WPF;
 
 namespace Bomber.UI.WPF.Tiles
 {
     internal class GroundTile : ATile, IBomberMapTileView
     {
         public override bool IsObstacle => false;
-
-        public GroundTile(IPosition2D position, IConfigurationService2D configurationService) : base(position, configurationService)
-        {
-            Fill = new SolidColorBrush(Colors.Green);
-        }
+        
+        public GroundTile(IPosition2D position, IConfigurationService2D configurationService) : base(position, configurationService, Colors.Green, false)
+        { }
 
         public override void SteppedOn(IUnit2D unit2D)
         {
@@ -39,6 +38,5 @@ namespace Bomber.UI.WPF.Tiles
                 Fill = new SolidColorBrush(Colors.Green);
             });
         }
-        
     }
 }

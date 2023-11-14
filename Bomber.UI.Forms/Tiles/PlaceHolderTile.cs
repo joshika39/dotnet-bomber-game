@@ -2,6 +2,7 @@ using Bomber.BL.Impl;
 using Bomber.BL.Tiles;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Map.MapObject;
 
 namespace Bomber.UI.Forms.Tiles

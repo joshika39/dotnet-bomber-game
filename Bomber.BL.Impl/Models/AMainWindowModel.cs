@@ -3,6 +3,7 @@ using Bomber.BL.Entities;
 using Bomber.BL.Feedback;
 using Bomber.BL.Impl.Map;
 using Bomber.BL.Map;
+using Bomber.UI.Shared.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
 using GameFramework.Board;
 using GameFramework.Configuration;
@@ -11,13 +12,14 @@ using GameFramework.Core.Factories;
 using GameFramework.Core.Motion;
 using GameFramework.GameFeedback;
 using GameFramework.Manager;
+using GameFramework.Manager.State;
 using GameFramework.Visuals;
 using Infrastructure.Application;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.BL.Impl.Models
 {
-    public class AMainWindowModel : ObservableObject, IMainWindowModel, IRunningGameListener
+    public class AMainWindowModel : ObservableObject, IMainWindowModel, IGameStateChangedListener, IBombWatcher, IViewDisposedSubscriber
     {
         protected readonly IServiceProvider Provider;
         protected readonly IPositionFactory PositionFactory;
@@ -25,6 +27,11 @@ namespace Bomber.BL.Impl.Models
         protected readonly IGameManager GameManager;
         protected readonly IBoardService BoardService;
         protected readonly ILifeCycleManager LifeCycleManager;
+        protected readonly IEntityViewFactory EntityViewFactory;
+        protected readonly IEntityFactory EntityFactory;
+        
+        private string? _previousFile;
+        private BomberMap? _map;
 
         protected AMainWindowModel(IServiceProvider provider)
         {
@@ -33,23 +40,55 @@ namespace Bomber.BL.Impl.Models
             GameManager = Provider.GetRequiredService<IGameManager>();
             BoardService = Provider.GetRequiredService<IBoardService>();
             PositionFactory = Provider.GetRequiredService<IPositionFactory>();
+            EntityFactory = Provider.GetRequiredService<IEntityFactory>();
+            EntityViewFactory = Provider.GetRequiredService<IEntityViewFactory>();
             LifeCycleManager = Provider.GetRequiredService<ILifeCycleManager>();
+            GameManager.AttachListener(this);
         }
 
-        public IBomberMap OpenMap(string mapFileName, IMapView2D mapView2D)
+        public IBomberMap OpenMap(string mapFileName, IBomberMapView mapView2D)
         {
+            var folder = Path.GetDirectoryName(mapFileName) ?? throw new InvalidOperationException("Cannot get directory name.");
+            _previousFile = Path.Join(folder, Path.GetRandomFileName());
+            File.Copy(mapFileName, _previousFile, true);
+            
             var source = new BomberMapSource(Provider, mapFileName);
-            var map = new Map.Map(source, mapView2D, PositionFactory, ConfigurationService);
+            _map = new BomberMap(source, mapView2D, PositionFactory, ConfigurationService, Provider.GetRequiredService<IEntityFactory>(), EntityViewFactory);
 
+            if (GameManager.State == GameState.InProgress)
+            {
+                GameManager.ResetGame();
+            }
+
+            var view = EntityViewFactory.CreatePlayerView();
+            var player = EntityFactory.CreatePlayer(view, PositionFactory.CreatePosition(3, 1), "TestPlayer", "test@email.com");
+            view.ViewLoaded();
+            _map.Units.Add(player);
+            
             GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
-            BoardService.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
-            return map;
+            
+            BoardService.SetActiveMap(_map);
+            
+            foreach (var unit in _map.Units)
+            {
+                unit.View.ViewLoaded();
+                if(unit is IEnemy enemy)
+                {
+                    Task.Run(async () =>
+                    {
+                        await enemy.ExecuteAsync();
+                    });
+                }
+            }
+            
+            return _map;
         }
-        
-        public void BombExploded(IBomb bomb, IBomber bomber)
+
+        public virtual void BombExploded(IBomb bomb)
         {
-            var map = BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
-            if (map is null)
+            var map = BoardService.GetActiveMap<IBomberMap>();
+            var unit = map?.Units.FirstOrDefault(b => b is IBomber);
+            if (map is null || unit is not IBomber bomber)
             {
                 return;
             }
@@ -64,11 +103,11 @@ namespace Bomber.BL.Impl.Models
                 {
                     bomber.Score += 1;
                 }
-                if(entity is IBomber)
+                if (entity is IBomber)
                 {
                     GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "You lost! You got exploded!"), GameResolution.Loss);
                 }
-                
+
                 entity.Kill();
             }
 
@@ -77,73 +116,82 @@ namespace Bomber.BL.Impl.Models
                 GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {GameManager.Timer.Elapsed:g}"), GameResolution.Win);
                 GameManager.Timer.Reset();
             }
-    
+
         }
-        
-        public void HandleKeyPress(char keyChar, IBomber bomber)
+
+        public void HandleKeyPress(char keyChar)
         {
-            var map = BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
+            var map = BoardService.GetActiveMap<IBomberMap>();
+            var unit = map?.Units.FirstOrDefault(b => b is IBomber);
+            if (map is null || unit is not IBomber bomber)
+            {
+                return;
+            }
 
             switch (keyChar)
             {
                 case 'd':
-                    map?.MoveUnit(bomber, Move2D.Right);
+                    map.MoveUnit(bomber, Move2D.Right);
                     break;
                 case 'a':
-                    map?.MoveUnit(bomber, Move2D.Left);
+                    map.MoveUnit(bomber, Move2D.Left);
                     break;
                 case 'w':
-                    map?.MoveUnit(bomber, Move2D.Forward);
+                    map.MoveUnit(bomber, Move2D.Forward);
                     break;
                 case 's':
-                    map?.MoveUnit(bomber, Move2D.Backward);
+                    map.MoveUnit(bomber, Move2D.Backward);
+                    break;
+                case 'p':
+                    PauseGame();
+                    break;
+                case 'r':
+                    GameManager.ResetGame();
+                    break;
+                case 'b':
+                    var bombView = EntityViewFactory.CreateBombView();
+                    bomber.PutBomb(bombView, this);
+                    bombView.Attach(this);
+                    map.View.PlantBomb(bombView);
+                    bombView.ViewLoaded();
                     break;
             }
-            
+
             if (int.TryParse(keyChar.ToString(), out var bombIndex))
             {
                 bomber.DetonateBombAt(bombIndex - 1);
             }
 
         }
-        
-        public void PutBomb()
-        {
-            
-        }
 
-        public void OnGameStarted(IGameplayFeedback feedback)
-        {
-            Debug.WriteLine("Game started");
-        }
-        
         public void OnGameFinished(IGameplayFeedback feedback, GameResolution resolution)
         {
-            var map = BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
+            var map = BoardService.GetActiveMap<IBomberMap>();
             if (map is null)
             {
                 return;
             }
-            
+
             foreach (var unit in map.Units)
             {
-                // TODO: Uncomment when update is released to the game framework 
-                // unit.Dispose();
+                unit.Dispose();
+            }
+            
+            map.Units.Clear();
+            
+            if (_previousFile is not null)
+            {
+                File.Delete(_previousFile);
             }
         }
-        
+
         public void OnGamePaused()
         {
             Debug.WriteLine("Game paused");
         }
+
         public void OnGameResumed()
-        {
-            throw new NotImplementedException();
-        }
-        public void OnGameReset()
-        {
-            throw new NotImplementedException();
-        }
+        { }
 
         public void PauseGame()
         {
@@ -155,6 +203,40 @@ namespace Bomber.BL.Impl.Models
             {
                 GameManager.PauseGame();
             }
+        }
+
+        public void OnViewDisposed(IDynamicMapObjectView view)
+        {
+            var map = BoardService.GetActiveMap<IBomberMap>();
+            if (map is null || view is not IBombView bombView)
+            {
+                return;
+            }
+
+            map.View.DeleteBomb(bombView);
+        }
+        
+        public virtual void OnGameReset()
+        {
+            if (_previousFile is null || _map is null)
+            {
+                return;
+            }
+            
+            _map.Units.Clear();
+            _map.MapObjects.Clear();
+
+            var tmpMap = OpenMap(_previousFile, _map.View);
+            
+            if(tmpMap is BomberMap map)
+            {
+                _map = map;
+            }
+        }
+        
+        public void OnGameStarted(IGameplayFeedback feedback)
+        {
+            
         }
     }
 }

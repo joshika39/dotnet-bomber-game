@@ -2,7 +2,9 @@
 using System.Threading;
 using System.Windows;
 using Bomber.BL.Impl;
+using Bomber.UI.Shared.Feedback;
 using Bomber.UI.WPF.Views;
+using GameFramework.Core;
 using GameFramework.Impl.Core;
 using GameFramework.UI.WPF.Core;
 using Implementation.Module;
@@ -32,6 +34,8 @@ namespace Bomber.UI.WPF
         {
             base.OnStartup(e);
             var mainWindow = Services.GetRequiredService<IMainWindow>();
+            var gameManager = Services.GetRequiredService<IGameManager>();
+            gameManager.AttachListener(Services.GetRequiredService<IFeedbackPopup>());
             mainWindow.ShowOnTop();
         }
     }

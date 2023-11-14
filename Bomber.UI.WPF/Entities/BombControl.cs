@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Bomber.UI.Shared.Entities;
-using Bomber.UI.WPF.Tiles;
 using GameFramework.Configuration;
-using GameFramework.Core;
+using GameFramework.Core.Position;
+using GameFramework.UI.WPF;
 using GameFramework.Visuals;
 
 namespace Bomber.UI.WPF.Entities
@@ -23,15 +23,18 @@ namespace Bomber.UI.WPF.Entities
 
         ~BombControl()
         {
-            Dispose(true);
+            Dispose(false);
         }
-        
+
         public void UpdatePosition(IPosition2D position)
         {
-            Canvas.SetLeft(this, position.X * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
-            Canvas.SetTop(this, position.Y * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
+            Dispatcher.Invoke(() =>
+            {
+                Canvas.SetLeft(this, position.X * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
+                Canvas.SetTop(this, position.Y * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
+            });
         }
-        
+
         public void ViewLoaded()
         {
             foreach (var subscriber in _subscribers)
@@ -39,7 +42,7 @@ namespace Bomber.UI.WPF.Entities
                 subscriber.OnLoaded();
             }
         }
-        
+
         public void Attach(IViewLoadedSubscriber subscriber)
         {
             _subscribers.Add(subscriber);

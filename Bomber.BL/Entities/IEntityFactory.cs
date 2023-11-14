@@ -1,6 +1,7 @@
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 
 namespace Bomber.BL.Entities
 {

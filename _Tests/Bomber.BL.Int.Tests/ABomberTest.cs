@@ -4,6 +4,7 @@ using Bomber.UI.Shared.Views;
 using GameFramework.Board;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
+using GameFramework.Core.Position;
 using GameFramework.Impl.Core;
 using GameFramework.Map.MapObject;
 using GameFramework.Visuals;
@@ -27,7 +28,7 @@ namespace Bomber.BL.Int.Tests
         protected static Mock<IBoardService> GetBoardServiceMock()
         {
             var configMock = new Mock<IBoardService>();
-            configMock.Setup(c => c.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>()).Returns(GetMapMock().Object);
+            configMock.Setup(c => c.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>()).Returns(GetMapMock().Object);
             return configMock;
         }
 

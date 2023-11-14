@@ -1,6 +1,7 @@
 using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 using GameFramework.Entities;
 using Infrastructure.Repositories;
 using Newtonsoft.Json;

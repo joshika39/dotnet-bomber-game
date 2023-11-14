@@ -21,5 +21,10 @@ namespace Bomber.UI.WPF.Entities
         {
             return new BombControl(_configurationService);
         }
+        
+        public IPlayerView CreatePlayerView()
+        {
+            return new PlayerControl(_configurationService);
+        }
     }
 }

@@ -1,7 +1,9 @@
 using Bomber.BL.Impl.Entities;
 using Bomber.UI.Shared.Entities;
+using GameFramework.Board;
 using GameFramework.Configuration;
 using GameFramework.Core;
+using GameFramework.Core.Position;
 using Infrastructure.Application;
 using Moq;
 
@@ -56,7 +58,7 @@ namespace Bomber.BL.Int.Tests
         [MemberData(nameof(GetMemberData_0001))]
         public void BT_0001_Given_NullArgument_WhenConstructorIsCalled_Then_ThrowsException(
             IEnemyView view,
-            IConfigurationService2D configurationService,
+            IBoardService configurationService,
             IPosition2D position,
             IGameManager gameManager,
             ILifeCycleManager lifeCycleManager)
@@ -73,7 +75,7 @@ namespace Bomber.BL.Int.Tests
         [Fact]
         public void BT_0021_Given_Enemy_IsObstacleCalled_Then_ReturnsFalse()
         {
-            var enemy = new Enemy(Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), Mock.Of<IGameManager>(), Mock.Of<ILifeCycleManager>());
+            var enemy = new Enemy(Mock.Of<IEnemyView>(), Mock.Of<IBoardService>(), Mock.Of<IPosition2D>(), Mock.Of<IGameManager>(), Mock.Of<ILifeCycleManager>());
             Assert.NotNull(enemy);
             Assert.False(enemy.IsObstacle);
         }
