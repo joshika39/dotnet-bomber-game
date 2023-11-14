@@ -1,5 +1,6 @@
 using Bomber.UI.Shared.Feedback;
 using GameFramework.GameFeedback;
+using GameFramework.Manager;
 
 namespace Bomber.UI.Forms.Feedback
 {
@@ -24,11 +25,6 @@ namespace Bomber.UI.Forms.Feedback
         {
             MessageBox.Show(message, title, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
-        public void OnGameStarted(IGameplayFeedback feedback)
-        {
-            
-        }
         
         public void OnGameFinished(IGameplayFeedback feedback, GameResolution resolution)
         {
@@ -43,7 +39,7 @@ namespace Bomber.UI.Forms.Feedback
         
         public void OnGamePaused()
         {
-            
+            throw new NotImplementedException();
         }
         
         public void OnGameResumed()
@@ -51,10 +47,14 @@ namespace Bomber.UI.Forms.Feedback
             throw new NotImplementedException();
         }
         
+        public void OnGameStarted(IGameplayFeedback feedback)
+        {
+            
+        }
+        
         public void OnGameReset()
         {
             throw new NotImplementedException();
         }
-
     }
 }

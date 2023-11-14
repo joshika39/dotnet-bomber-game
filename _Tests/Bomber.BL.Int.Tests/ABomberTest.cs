@@ -1,12 +1,13 @@
 ﻿using Bomber.BL.Entities;
 using Bomber.BL.Map;
 using Bomber.UI.Shared.Views;
-using GameFramework.Configuration;
+using GameFramework.Board;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.Impl.Core;
 using GameFramework.Map.MapObject;
-using GameFramework.Time;
+using GameFramework.Visuals;
+using Infrastructure.Time;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 
@@ -18,24 +19,15 @@ namespace Bomber.BL.Int.Tests
         protected ABomberTest()
         {
             var collection = new ServiceCollection();
-            new GameModule().LoadModules(collection, new CancellationTokenSource());
+            new GameFrameworkCore(collection, new CancellationTokenSource()).RegisterServices(collection);
             var provider = collection.BuildServiceProvider();
             PositionFactory = provider.GetRequiredService<IPositionFactory>();
         }
         
-        protected static Mock<IConfigurationService2D> GetConfigurationMock()
+        protected static Mock<IBoardService> GetBoardServiceMock()
         {
-            var configMock = new Mock<IConfigurationService2D>();
-            configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
-            configMock.Setup(c => c.CancellationTokenSource).Returns(new CancellationTokenSource());
-            return configMock;
-        }
-        
-        protected static Mock<IConfigurationService2D> GetConfigurationMock(bool initValue)
-        {
-            var configMock = new Mock<IConfigurationService2D>();
-            configMock.Setup(c => c.GetActiveMap<IBomberMap>()).Returns(GetMapMock().Object);
-            configMock.Setup(c => c.CancellationTokenSource).Returns(new CancellationTokenSource());
+            var configMock = new Mock<IBoardService>();
+            configMock.Setup(c => c.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>()).Returns(GetMapMock().Object);
             return configMock;
         }
 
@@ -103,7 +95,7 @@ namespace Bomber.BL.Int.Tests
         protected static IMapObject2D GetMapObjectMockObject<T>(int x, int y) where T : class, IMapObject2D
         {
             var collection = new ServiceCollection();
-            new GameModule().LoadModules(collection, new CancellationTokenSource());
+            new GameFrameworkCore(collection, new CancellationTokenSource()).RegisterServices(collection);
             var positionFactory = collection.BuildServiceProvider().GetRequiredService<IPositionFactory>();
             var mapObjectMock = new Mock<T>();
             mapObjectMock.Setup(p => p.Position).Returns(positionFactory.CreatePosition(x, y));

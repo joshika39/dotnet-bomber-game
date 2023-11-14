@@ -7,10 +7,8 @@ using Bomber.UI.WPF.Entities;
 using Bomber.UI.WPF.GameCanvas;
 using Bomber.UI.WPF.ViewModels;
 using CommunityToolkit.Mvvm.Input;
-using GameFramework.Configuration;
-using GameFramework.Core;
-using GameFramework.Core.Factories;
 using GameFramework.GameFeedback;
+using GameFramework.Visuals;
 using Infrastructure.Time.Listeners;
 using Microsoft.Win32;
 using Path = System.IO.Path;
@@ -19,15 +17,12 @@ namespace Bomber.UI.WPF.Main
 {
     internal partial class MainWindowViewModel : AMainWindowModel, IMainWindowViewModel, ITickListener
     {
-        private readonly IConfigurationService2D _configurationService;
-        private readonly IGameManager _gameManager;
-        private readonly IPositionFactory _positionFactory;
         private string _currentTime;
         public GameCanvasControl MapCanvas { get; set; }
 
         public object DataContext => this;
-        public double CanvasWidth => _configurationService.Dimension * _configurationService.GetActiveMap<IBomberMap>()?.SizeX ?? 0d;
-        public double CanvasHeight => _configurationService.Dimension * _configurationService.GetActiveMap<IBomberMap>()?.SizeY ?? 0d;
+        public double CanvasWidth => ConfigurationService.Dimension * BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>()?.SizeX ?? 0d;
+        public double CanvasHeight => ConfigurationService.Dimension * BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>()?.SizeY ?? 0d;
         
         public TimeSpan ElapsedTime { get; set; }
         public string CurrentTime
@@ -36,12 +31,9 @@ namespace Bomber.UI.WPF.Main
             private set => SetProperty(ref _currentTime, value);
         }
 
-        public MainWindowViewModel(IServiceProvider provider, IConfigurationService2D configurationService, IGameManager gameManager, IPositionFactory positionFactory) : base(provider, configurationService, gameManager)
+        public MainWindowViewModel(IServiceProvider provider) : base(provider)
         {
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-            _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
-            _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
-            _gameManager.Timer.PeriodicOperation(1000, this, _configurationService.CancellationTokenSource.Token);
+            GameManager.Timer.PeriodicOperation(1000, this, LifeCycleManager.Token);
             _currentTime = "";
             CurrentTime = ElapsedTime.ToString("g");
             MapCanvas = new GameCanvasControl();
@@ -49,7 +41,7 @@ namespace Bomber.UI.WPF.Main
 
         public void RaiseTick(int round)
         {
-            CurrentTime = _gameManager.Timer.Elapsed.ToString("g");
+            CurrentTime = GameManager.Timer.Elapsed.ToString("g");
         }
 
         [RelayCommand]
@@ -67,12 +59,13 @@ namespace Bomber.UI.WPF.Main
 
             var map = OpenMap(openDialog.FileName, MapCanvas);
             
-            var view = new PlayerControl(_configurationService);
-            var player = new PlayerModel(view, _positionFactory.CreatePosition(3, 1), _configurationService, "TestPlayer", "test@email.com", _gameManager);
+            var view = new PlayerControl(ConfigurationService);
+            var player = new PlayerModel(view, PositionFactory.CreatePosition(3, 1), ConfigurationService, "TestPlayer", "test@email.com", GameManager, LifeCycleManager);
             view.ViewLoaded();
             map.Units.Add(player);
             
-            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"), map);
+            GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
+            BoardService.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
         }
     }
 }

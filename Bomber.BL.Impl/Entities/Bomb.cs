@@ -1,13 +1,12 @@
 using Bomber.BL.Entities;
-using Bomber.BL.Map;
 using Bomber.UI.Shared.Entities;
 using Bomber.UI.Shared.Views;
-using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
-using GameFramework.GameFeedback;
+using GameFramework.Manager;
 using GameFramework.Map.MapObject;
 using GameFramework.Visuals;
+using Infrastructure.Application;
 using Infrastructure.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
@@ -16,29 +15,26 @@ namespace Bomber.BL.Impl.Entities
     {
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
         private readonly IGameManager _gameManager;
-        private readonly IEnumerable<IMapObject2D> _affectedObjects;
+        private readonly IEnumerable<IMapObject2D> _affectedObjects = new List<IMapObject2D>();
         private bool _disposed;
         private readonly CancellationToken _stoppingToken;
         private int _countDownPeriod = 2000;
         public IPosition2D Position { get; }
-        public IScreenSpacePosition ScreenSpacePosition
-        {
-            get;
-        }
+        public IScreenSpacePosition ScreenSpacePosition { get; }
+        
         public bool IsObstacle => false;
         public int Radius { get; }
         public IBombView View { get; }
         private bool _isDetonated;
 
 
-        public Bomb(IBombView view, IPosition2D position, IConfigurationService2D configurationService, IEnumerable<IBombWatcher> bombWatchers, int radius, IGameManager gameManager)
+        public Bomb(IBombView view, IPosition2D position, IEnumerable<IBombWatcher> bombWatchers, int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             Position = position ?? throw new ArgumentNullException(nameof(position));
-            configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-            _stoppingToken = configurationService.CancellationTokenSource.Token;
+            _stoppingToken = lifeCycleManager.Token;
             if (radius <= 0)
             {
                 throw new InvalidOperationException("Radius cannot be zero or negative");

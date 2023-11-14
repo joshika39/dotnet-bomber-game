@@ -16,7 +16,5 @@ using GameFramework.UI.WPF.Map;
 namespace Bomber.UI.WPF.GameCanvas
 {
     public class GameCanvasControl : WpfMapControl
-    {
-        
-    }
+    { }
 }

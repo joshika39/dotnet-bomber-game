@@ -6,12 +6,15 @@ using Bomber.BL.Map;
 using Bomber.UI.Forms.Main;
 using Bomber.UI.Forms.Views.Entities;
 using Bomber.UI.Forms.Views.Main._Interfaces;
-using Bomber.UI.Shared.Entities;
+using GameFramework.Board;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.GameFeedback;
-using GameFramework.Time.Listeners;
+using GameFramework.Manager;
+using GameFramework.Visuals;
+using Infrastructure.Application;
+using Infrastructure.Time.Listeners;
 using Microsoft.Extensions.DependencyInjection;
 using DialogResult = UiFramework.Shared.DialogResult;
 
@@ -27,18 +30,23 @@ namespace Bomber.UI.Forms.Views.Main
         private readonly IGameManager _gameManager;
         private readonly IPositionFactory _positionFactory;
         private readonly IServiceProvider _provider;
+        private readonly IBoardService _boardService;
+        private readonly ILifeCycleManager _lifeCycleManager;
 
         public TimeSpan ElapsedTime { get; set; }
 
-        public MainWindow(IConfigurationService2D service, IMainWindowPresenter presenter, IGameManager gameManager, IPositionFactory positionFactory, IServiceProvider provider)
+        public MainWindow(IConfigurationService2D service, IMainWindowPresenter presenter, IGameManager gameManager, IPositionFactory positionFactory, IServiceProvider provider, IBoardService boardService)
         {
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             _positionFactory = positionFactory ?? throw new ArgumentNullException(nameof(positionFactory));
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            _boardService = boardService ?? throw new ArgumentNullException(nameof(boardService));
             Presenter = presenter ?? throw new ArgumentNullException(nameof(presenter));
+            _lifeCycleManager = provider.GetRequiredService<ILifeCycleManager>();
             KeyPreview = true;
             InitializeComponent();
+            
             openToolStripMenuItem.Click += OnOpenMap;
             openMapGeneratorToolStripMenuItem.Click += openMapGeneratorToolStripMenuItem_Click;
             KeyPress += OnKeyPressed;
@@ -86,12 +94,16 @@ namespace Bomber.UI.Forms.Views.Main
 
             var source = new BomberMapSource(_provider, openDialog.FileName);
             // TODO: Think about how to pull Winforms in the infrastructure
-            var map = new Map(source, null, _positionFactory, _provider.GetRequiredService<IEntityFactory>(), _provider.GetRequiredService<IEntityViewFactory>());
+            var map = new Map(source, null, _positionFactory, _service);
 
-            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"), map);
+            
+            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
+            
+            // TODO: Think about how to pull Winforms in the infrastructure
+            // _service.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
 
             var view = new PlayerView(_service);
-            _player = new PlayerModel(view, _positionFactory.CreatePosition(0, 0), _service, "TestPlayer", "test@email.com", _gameManager);
+            _player = new PlayerModel(view, _positionFactory.CreatePosition(0, 0), _service, "TestPlayer", "test@email.com", _gameManager, _lifeCycleManager);
             bomberMap.Controls.Add(view);
             map.Units.Add(_player);
             foreach (var mapMapObject in map.MapObjects)
@@ -112,11 +124,12 @@ namespace Bomber.UI.Forms.Views.Main
 
                 bomberMap.Controls.Add(control);
             }
-
-            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "The game is started"), map);
-            _gameManager.Timer.PeriodicOperation(1000, this, _service.CancellationTokenSource.Token);
-            mapName.Text = map.BomberMapSource.Name;
-            description.Text = map.BomberMapSource.Description;
+            
+            // TODO: Think about how to pull Winforms in the infrastructure
+            // _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "The game is started"), map);
+            _gameManager.Timer.PeriodicOperation(1000, this, _lifeCycleManager.Token);
+            mapName.Text = map.MapSource.Name;
+            description.Text = map.MapSource.Description;
         }
 
         public void BombExploded(IBomb bomb)
@@ -163,7 +176,7 @@ namespace Bomber.UI.Forms.Views.Main
 
         private void OnSaveClicked(object sender, EventArgs e)
         {
-            var map = _service.GetActiveMap<IBomberMap>();
+            var map = _boardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
             if (_player is null || map is null)
             {
                 return;

@@ -7,9 +7,11 @@ using GameFramework.Core;
 using GameFramework.Core.Motion;
 using GameFramework.Entities;
 using GameFramework.GameFeedback;
+using GameFramework.Manager;
 using GameFramework.Map.MapObject;
 using GameFramework.Tiles;
 using GameFramework.Visuals;
+using Infrastructure.Application;
 using Infrastructure.Time.Listeners;
 
 namespace Bomber.BL.Impl.Entities
@@ -32,13 +34,13 @@ namespace Bomber.BL.Impl.Entities
         }
         public bool IsObstacle => false;
 
-        public Enemy(IEnemyView view, IConfigurationService2D service, IPosition2D position, IGameManager gameManager)
+        public Enemy(IEnemyView view, IConfigurationService2D service, IPosition2D position, IGameManager gameManager, ILifeCycleManager lifeCycleManager)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _service = service ?? throw new ArgumentNullException(nameof(service));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             Position = position ?? throw new ArgumentNullException(nameof(position));
-            _stoppingToken = service.CancellationTokenSource.Token;
+            _stoppingToken = lifeCycleManager.Token;
             _direction = GetRandomMove();
             View.Attach(this);
         }

@@ -6,9 +6,11 @@ using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Entities;
 using GameFramework.GameFeedback;
+using GameFramework.Manager;
 using GameFramework.Map.MapObject;
 using GameFramework.Tiles;
 using GameFramework.Visuals;
+using Infrastructure.Application;
 
 namespace Bomber.BL.Impl.Entities
 {
@@ -16,6 +18,7 @@ namespace Bomber.BL.Impl.Entities
     {
         private readonly IConfigurationService2D _configurationService2D;
         private readonly IGameManager _gameManager;
+        private readonly ILifeCycleManager _lifeCycleManager;
         private bool _isAlive = true;
         private bool _disposed;
         public IPosition2D Position { get; private set; }
@@ -85,15 +88,16 @@ namespace Bomber.BL.Impl.Entities
                 bombWatchers.Add(this);
             }
             
-            var bomb = new Bomb(bombView, Position, _configurationService2D, bombWatchers, 3, _gameManager);
+            var bomb = new Bomb(bombView, Position, bombWatchers, 3, _gameManager, _lifeCycleManager);
             PlantedBombs.Add(bomb);
         }
 
-        public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, IGameManager gameManager)
+        public PlayerModel(IPlayerView view, IPosition2D position, IConfigurationService2D configurationService2D, string name, string email, IGameManager gameManager, ILifeCycleManager lifeCycleManager)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
             _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
+            _lifeCycleManager = lifeCycleManager ?? throw new ArgumentNullException(nameof(lifeCycleManager));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Email = email ?? throw new ArgumentNullException(nameof(email));

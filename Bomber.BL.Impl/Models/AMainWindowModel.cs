@@ -3,47 +3,52 @@ using Bomber.BL.Entities;
 using Bomber.BL.Feedback;
 using Bomber.BL.Impl.Map;
 using Bomber.BL.Map;
-using Bomber.UI.Shared.Entities;
 using CommunityToolkit.Mvvm.ComponentModel;
+using GameFramework.Board;
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Factories;
 using GameFramework.Core.Motion;
-using GameFramework.Entities;
 using GameFramework.GameFeedback;
-using GameFramework.Impl.Map.Source;
+using GameFramework.Manager;
 using GameFramework.Visuals;
+using Infrastructure.Application;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.BL.Impl.Models
 {
-    public class AMainWindowModel : ObservableObject, IMainWindowModel, IGameManagerSubscriber
+    public class AMainWindowModel : ObservableObject, IMainWindowModel, IRunningGameListener
     {
-        private readonly IServiceProvider _provider;
-        private readonly IPositionFactory _factory;
-        private readonly IConfigurationService2D _configurationService;
-        private readonly IGameManager _gameManager;
+        protected readonly IServiceProvider Provider;
+        protected readonly IPositionFactory PositionFactory;
+        protected readonly IConfigurationService2D ConfigurationService;
+        protected readonly IGameManager GameManager;
+        protected readonly IBoardService BoardService;
+        protected readonly ILifeCycleManager LifeCycleManager;
 
-        protected AMainWindowModel(IServiceProvider provider, IConfigurationService2D configurationService, IGameManager gameManager)
+        protected AMainWindowModel(IServiceProvider provider)
         {
-            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
-            _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
-            _factory = _provider.GetRequiredService<IPositionFactory>();
+            Provider = provider ?? throw new ArgumentNullException(nameof(provider));
+            ConfigurationService = Provider.GetRequiredService<IConfigurationService2D>();
+            GameManager = Provider.GetRequiredService<IGameManager>();
+            BoardService = Provider.GetRequiredService<IBoardService>();
+            PositionFactory = Provider.GetRequiredService<IPositionFactory>();
+            LifeCycleManager = Provider.GetRequiredService<ILifeCycleManager>();
         }
 
         public IBomberMap OpenMap(string mapFileName, IMapView2D mapView2D)
         {
-            var source = new BomberMapSource(_provider, mapFileName);
-            var map = new Map.Map(source, mapView2D, _factory, _configurationService);
+            var source = new BomberMapSource(Provider, mapFileName);
+            var map = new Map.Map(source, mapView2D, PositionFactory, ConfigurationService);
 
-            _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"), map);
+            GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
+            BoardService.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
             return map;
         }
         
         public void BombExploded(IBomb bomb, IBomber bomber)
         {
-            var map = _configurationService.GetActiveMap<IBomberMap>();
+            var map = BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
             if (map is null)
             {
                 return;
@@ -61,7 +66,7 @@ namespace Bomber.BL.Impl.Models
                 }
                 if(entity is IBomber)
                 {
-                    _gameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "You lost! You got exploded!"), GameResolution.Loss);
+                    GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "You lost! You got exploded!"), GameResolution.Loss);
                 }
                 
                 entity.Kill();
@@ -69,15 +74,15 @@ namespace Bomber.BL.Impl.Models
 
             if (!map.Units.Any(entity => entity is IEnemy))
             {
-                _gameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {_gameManager.Timer.Elapsed:g}"), GameResolution.Win);
-                _gameManager.Timer.Reset();
+                GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {GameManager.Timer.Elapsed:g}"), GameResolution.Win);
+                GameManager.Timer.Reset();
             }
     
         }
         
         public void HandleKeyPress(char keyChar, IBomber bomber)
         {
-            var map = _configurationService.GetActiveMap<IBomberMap>();
+            var map = BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
 
             switch (keyChar)
             {
@@ -114,7 +119,7 @@ namespace Bomber.BL.Impl.Models
         
         public void OnGameFinished(IGameplayFeedback feedback, GameResolution resolution)
         {
-            var map = _configurationService.GetActiveMap<IBomberMap>();
+            var map = BoardService.GetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>();
             if (map is null)
             {
                 return;
@@ -142,13 +147,13 @@ namespace Bomber.BL.Impl.Models
 
         public void PauseGame()
         {
-            if (_gameManager.State == GameState.Paused)
+            if (GameManager.State == GameState.Paused)
             {
-                _gameManager.ResumeGame();
+                GameManager.ResumeGame();
             }
             else
             {
-                _gameManager.PauseGame();
+                GameManager.PauseGame();
             }
         }
     }

@@ -2,7 +2,7 @@ using Bomber.BL.Impl.Entities;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core;
-using GameFramework.Time;
+using Infrastructure.Application;
 using Moq;
 
 namespace Bomber.BL.Int.Tests
@@ -11,10 +11,46 @@ namespace Bomber.BL.Int.Tests
     {
         public static IEnumerable<object[]> GetMemberData_0001()
         {
-            yield return new[] { (object)null!, Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), Mock.Of<IGameManager>() };
-            yield return new[] { Mock.Of<IEnemyView>(), (object)null!, Mock.Of<IPosition2D>(), Mock.Of<IGameManager>() };
-            yield return new[] { Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), (object)null!, Mock.Of<IGameManager>() };
-            yield return new[] { Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), (object)null! };
+            yield return new[]
+            {
+                (object)null!,
+                Mock.Of<IConfigurationService2D>(),
+                Mock.Of<IPosition2D>(),
+                Mock.Of<IGameManager>(),
+                Mock.Of<ILifeCycleManager>()
+            };
+            yield return new[]
+            {
+                Mock.Of<IEnemyView>(),
+                (object)null!,
+                Mock.Of<IPosition2D>(),
+                Mock.Of<IGameManager>(),
+                Mock.Of<ILifeCycleManager>()
+            };
+            yield return new[]
+            {
+                Mock.Of<IEnemyView>(),
+                Mock.Of<IConfigurationService2D>(),
+                (object)null!,
+                Mock.Of<IGameManager>(),
+                Mock.Of<ILifeCycleManager>()
+            };
+            yield return new[]
+            {
+                Mock.Of<IEnemyView>(),
+                Mock.Of<IConfigurationService2D>(),
+                Mock.Of<IPosition2D>(),
+                (object)null!,
+                Mock.Of<ILifeCycleManager>()
+            };
+            yield return new[]
+            {
+                Mock.Of<IEnemyView>(),
+                Mock.Of<IConfigurationService2D>(),
+                Mock.Of<IPosition2D>(),
+                Mock.Of<IGameManager>(),
+                (object)null!
+            };
         }
         [Theory]
         [MemberData(nameof(GetMemberData_0001))]
@@ -22,21 +58,22 @@ namespace Bomber.BL.Int.Tests
             IEnemyView view,
             IConfigurationService2D configurationService,
             IPosition2D position,
-            IGameManager gameManager)
+            IGameManager gameManager,
+            ILifeCycleManager lifeCycleManager)
         {
             var exception = Record.Exception(() =>
             {
-                _ = new Enemy(view, configurationService, position, gameManager);
+                _ = new Enemy(view, configurationService, position, gameManager, lifeCycleManager);
             });
 
             Assert.NotNull(exception);
             Assert.IsType<ArgumentNullException>(exception);
         }
-        
+
         [Fact]
         public void BT_0021_Given_Enemy_IsObstacleCalled_Then_ReturnsFalse()
         {
-            var enemy = new Enemy(Mock.Of<IEnemyView>(), GetConfigurationMock().Object, Mock.Of<IPosition2D>(), Mock.Of<IGameManager>());
+            var enemy = new Enemy(Mock.Of<IEnemyView>(), Mock.Of<IConfigurationService2D>(), Mock.Of<IPosition2D>(), Mock.Of<IGameManager>(), Mock.Of<ILifeCycleManager>());
             Assert.NotNull(enemy);
             Assert.False(enemy.IsObstacle);
         }

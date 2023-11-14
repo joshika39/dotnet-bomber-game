@@ -1,6 +1,5 @@
 using Bomber.BL.Entities;
 using Bomber.BL.Map;
-using GameFramework.Time;
 using GameFramework.Visuals;
 
 namespace Bomber.BL.Impl.Models

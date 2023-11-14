@@ -1,3 +1,4 @@
+using Bomber.BL.Impl.Map;
 using Bomber.BL.Impl.MapGenerator.DomainModels;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
