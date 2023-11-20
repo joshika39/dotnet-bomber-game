@@ -2,6 +2,7 @@
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Position;
+using GameFramework.Impl.Core.Position;
 using GameFramework.Visuals;
 
 namespace Bomber.UI.Forms.Views.Entities
@@ -12,6 +13,8 @@ namespace Bomber.UI.Forms.Views.Entities
         private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
         private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
         
+        public IScreenSpacePosition PositionOnScreen { get; private set; }
+        
         public EnemyView(IConfigurationService2D configurationService2D)
         {
             _configurationService2D = configurationService2D ?? throw new ArgumentNullException(nameof(configurationService2D));
@@ -20,6 +23,7 @@ namespace Bomber.UI.Forms.Views.Entities
             Height = _configurationService2D.Dimension - 4;
             BackColor = Color.Red;
             Disposed += OnDisposed;
+            PositionOnScreen = new ScreenSpacePosition(0, 0);
         }
         
         private void OnDisposed(object? sender, EventArgs e)
@@ -43,7 +47,11 @@ namespace Bomber.UI.Forms.Views.Entities
                 BringToFront();
                 Top = position.Y * _configurationService2D.Dimension + 2;
                 Left = position.X * _configurationService2D.Dimension + 2; 
-                
+                PositionOnScreen =
+                    new ScreenSpacePosition(
+                        position.X * _configurationService2D.Dimension + 2,
+                        position.Y * _configurationService2D.Dimension + 2
+                        );
             });
         }
         

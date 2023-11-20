@@ -37,6 +37,8 @@ namespace Bomber.UI.Forms.Views.Main
         private readonly ILifeCycleManager _lifeCycleManager;
 
         public TimeSpan ElapsedTime { get; set; }
+        public ObservableCollection<IMapObject2D> MapObjects { get; set; }
+        public ObservableCollection<IDynamicMapObjectView> EntityViews { get; set; }
 
         public MainWindow(IConfigurationService2D service, IMainWindowPresenter presenter, IGameManager gameManager, IPositionFactory positionFactory, IServiceProvider provider, IBoardService boardService)
         {
@@ -50,10 +52,13 @@ namespace Bomber.UI.Forms.Views.Main
             KeyPreview = true;
             InitializeComponent();
             
-            openToolStripMenuItem.Click += OnOpenMap;
-            openMapGeneratorToolStripMenuItem.Click += openMapGeneratorToolStripMenuItem_Click;
-            KeyPress += OnKeyPressed;
-            saveToolStripMenuItem.Click += OnSaveClicked;
+            openToolStripMenuItem.Click += OnOpenMap!;
+            openMapGeneratorToolStripMenuItem.Click += openMapGeneratorToolStripMenuItem_Click!;
+            KeyPress += OnKeyPressed!;
+            saveToolStripMenuItem.Click += OnSaveClicked!;
+            
+            MapObjects = new ObservableCollection<IMapObject2D>();
+            EntityViews = new ObservableCollection<IDynamicMapObjectView>();
         }
 
         public DialogResult ShowOnTop()
@@ -96,10 +101,10 @@ namespace Bomber.UI.Forms.Views.Main
             }
 
             var source = new BomberMapSource(_provider, openDialog.FileName);
-            // TODO: Think about how to pull Winforms in the infrastructure
+            // TODO: Think about how to pull WinForms in the infrastructure
             var map = new BomberMap(
                 source, 
-                null,
+                null!,
                 _positionFactory, 
                 _service, 
                 _provider.GetRequiredService<IEntityFactory>(), 
@@ -108,7 +113,7 @@ namespace Bomber.UI.Forms.Views.Main
             
             _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
             
-            // TODO: Think about how to pull Winforms in the infrastructure
+            // TODO: Think about how to pull WinForms in the infrastructure
             // _service.SetActiveMap<IBomberMap, IBomberMapSource, IMapView2D>(map);
 
             var view = new PlayerView(_service);
@@ -134,7 +139,7 @@ namespace Bomber.UI.Forms.Views.Main
                 bomberMap.Controls.Add(control);
             }
             
-            // TODO: Think about how to pull Winforms in the infrastructure
+            // TODO: Think about how to pull WinForms in the infrastructure
             // _gameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "The game is started"), map);
             _gameManager.Timer.PeriodicOperation(1000, this, _lifeCycleManager.Token);
             mapName.Text = map.MapSource.Name;
@@ -174,14 +179,11 @@ namespace Bomber.UI.Forms.Views.Main
 
             map.SaveProgress();
         }
+        
         public void Attach(IMouseHandler mouseHandler)
         {
-            
+            throw new NotImplementedException();
         }
-        
-        public ObservableCollection<IMapObject2D> MapObjects { get; set; }
-        
-        public ObservableCollection<IDynamicMapObjectView> EntityViews { get; set; }
         
         public void PlantBomb(IBombView bombView)
         {

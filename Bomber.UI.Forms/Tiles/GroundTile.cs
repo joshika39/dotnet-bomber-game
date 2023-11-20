@@ -1,8 +1,8 @@
 ﻿using Bomber.UI.Shared.Views;
 using GameFramework.Configuration;
-using GameFramework.Core;
 using GameFramework.Core.Position;
 using GameFramework.Entities;
+using GameFramework.Impl.Core.Position;
 
 namespace Bomber.UI.Forms.Tiles
 {
@@ -42,21 +42,7 @@ namespace Bomber.UI.Forms.Tiles
             Height = configurationService.Dimension;
             BackColor = Color.Green;
             SendToBack();
-        }
-        
-        public void OnHovered()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public void OnHoverLost()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public bool IsHovered
-        {
-            get;
+            ScreenSpacePosition = new ScreenSpacePosition(position.X * configurationService.Dimension, position.Y * configurationService.Dimension);
         }
     }
 }

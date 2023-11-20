@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core.Position;
+using GameFramework.Impl.Core.Position;
 using GameFramework.UI.WPF;
 using GameFramework.Visuals;
 
@@ -15,9 +16,12 @@ namespace Bomber.UI.WPF.Entities
         private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
         private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
 
+        public IScreenSpacePosition PositionOnScreen { get; private set; }
+
         public EnemyControl(IConfigurationService2D configurationService) : base(configurationService)
         {
-            Fill = new SolidColorBrush(Colors.Red); 
+            Fill = new SolidColorBrush(Colors.Red);
+            PositionOnScreen = new ScreenSpacePosition(0, 0);
         }
 
         public void Dispose()
@@ -34,9 +38,14 @@ namespace Bomber.UI.WPF.Entities
             {
                 Canvas.SetLeft(this, position.X * ConfigurationService.Dimension);
                 Canvas.SetTop(this, position.Y * ConfigurationService.Dimension);
+                PositionOnScreen =
+                    new ScreenSpacePosition(
+                        position.X * ConfigurationService.Dimension,
+                        position.Y * ConfigurationService.Dimension
+                        );
             });
         }
-        
+
         public void ViewLoaded()
         {
             foreach (var subscriber in _subscribers)
@@ -44,7 +53,7 @@ namespace Bomber.UI.WPF.Entities
                 subscriber.OnLoaded();
             }
         }
-        
+
         public void Attach(IViewLoadedSubscriber subscriber)
         {
             _subscribers.Add(subscriber);

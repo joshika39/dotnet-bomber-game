@@ -2,6 +2,7 @@
 using GameFramework.Core;
 using GameFramework.Core.Position;
 using GameFramework.Entities;
+using GameFramework.Impl.Core.Position;
 using GameFramework.Map.MapObject;
 
 namespace Bomber.UI.Forms.Tiles
@@ -13,10 +14,7 @@ namespace Bomber.UI.Forms.Tiles
             throw new NotImplementedException();
         }
         public IPosition2D Position { get; }
-        public IScreenSpacePosition ScreenSpacePosition
-        {
-            get;
-        }
+        public IScreenSpacePosition ScreenSpacePosition { get; }
         public bool IsObstacle => true;
 
         public WallTile(IPosition2D position, IConfigurationService2D configurationService)
@@ -29,19 +27,8 @@ namespace Bomber.UI.Forms.Tiles
             Height = configurationService.Dimension;
             BackColor = Color.Gray;
             SendToBack();
+            ScreenSpacePosition = new ScreenSpacePosition(position.X * configurationService.Dimension, position.Y * configurationService.Dimension);
         }
-        
-        public void OnHovered()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public void OnHoverLost()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public bool IsHovered { get; }
     }
 }
 

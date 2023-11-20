@@ -18,8 +18,7 @@ namespace Bomber.BL.Impl.Entities
     {
         private readonly IEnumerable<IBombWatcher> _bombWatchers;
         private readonly IGameManager _gameManager;
-        private readonly IBoardService _boardService;
-        private readonly IEnumerable<IMapObject2D> _affectedObjects = new List<IMapObject2D>();
+        private readonly IEnumerable<IMapObject2D> _affectedObjects;
         private bool _disposed;
         private readonly CancellationToken _stoppingToken;
         private int _countDownPeriod = 2000;
@@ -37,7 +36,7 @@ namespace Bomber.BL.Impl.Entities
             View = view ?? throw new ArgumentNullException(nameof(view));
             _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
-            _boardService = boardService ?? throw new ArgumentNullException(nameof(boardService));
+            var boardService1 = boardService ?? throw new ArgumentNullException(nameof(boardService));
             Position = position ?? throw new ArgumentNullException(nameof(position));
             lifeCycleManager = lifeCycleManager ?? throw new ArgumentNullException(nameof(lifeCycleManager));
             _stoppingToken = lifeCycleManager.Token;
@@ -46,6 +45,8 @@ namespace Bomber.BL.Impl.Entities
                 throw new InvalidOperationException("Radius cannot be zero or negative");
             }
 
+            ScreenSpacePosition = view.PositionOnScreen;
+
             Radius = radius;
 
             if (_gameManager.State != GameState.InProgress)
@@ -53,7 +54,7 @@ namespace Bomber.BL.Impl.Entities
                 Dispose();
             }
 
-            var map = _boardService.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>();
+            var map = boardService1.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>();
             _affectedObjects = map!.MapPortion(position, radius);
             View.Attach(this);
         }
@@ -132,18 +133,6 @@ namespace Bomber.BL.Impl.Entities
         public void OnLoaded()
         {
             View.UpdatePosition(Position);
-        }
-        public void OnHovered()
-        {
-            throw new NotImplementedException();
-        }
-        public void OnHoverLost()
-        {
-            throw new NotImplementedException();
-        }
-        public bool IsHovered
-        {
-            get;
         }
     }
 }

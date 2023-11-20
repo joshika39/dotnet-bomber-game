@@ -103,6 +103,7 @@ namespace Bomber.BL.Impl.Entities
             Id = Guid.NewGuid();
             PlantedBombs = new ObservableCollection<IBomb>();
             View.Attach(this);
+            ScreenSpacePosition = view.PositionOnScreen;
         }
 
         private void Dispose(bool disposing)

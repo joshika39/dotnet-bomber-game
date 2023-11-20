@@ -1,18 +1,15 @@
 ﻿using Bomber.BL.Impl.Models;
 using Bomber.UI.Forms.MapGenerator._Interfaces;
 using Bomber.UI.Forms.Views.Main._Interfaces;
-using GameFramework.Configuration;
 using GameFramework.Core;
-using GameFramework.GameFeedback;
-using GameFramework.Manager.State;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Bomber.UI.Forms.Views.Main
 {
-    internal class MainWindowPresenter : AMainWindowModel, IMainWindowPresenter, IGameStateChangedListener
+    internal class MainWindowPresenter : AMainWindowModel, IMainWindowPresenter
     {
         private readonly IServiceProvider _provider;
-        public MainWindowPresenter(IServiceProvider provider, IConfigurationService2D configurationService, IGameManager gameManager) : base(provider)
+        public MainWindowPresenter(IServiceProvider provider, IGameManager gameManager) : base(provider)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             gameManager.AttachListener(this);
@@ -22,16 +19,6 @@ namespace Bomber.UI.Forms.Views.Main
         {
             var generatorWindow = _provider.GetRequiredService<IMapGeneratorWindow>();
             generatorWindow.ShowOnTop();
-        }
-        
-        public void OnGameStarted(IGameplayFeedback feedback)
-        {
-            
-        }
-        
-        public void OnGameReset()
-        {
-            
         }
     }
 }

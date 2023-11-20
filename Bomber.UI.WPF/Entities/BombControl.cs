@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Configuration;
 using GameFramework.Core.Position;
+using GameFramework.Impl.Core.Position;
 using GameFramework.UI.WPF;
 using GameFramework.Visuals;
 
@@ -15,10 +16,13 @@ namespace Bomber.UI.WPF.Entities
         private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
         private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
 
+        public IScreenSpacePosition PositionOnScreen { get; private set; }
+
         public BombControl(IConfigurationService2D configurationService) : base(configurationService)
         {
             Width = (double)ConfigurationService.Dimension / 2;
             Height = (double)ConfigurationService.Dimension / 2;
+            PositionOnScreen = new ScreenSpacePosition(0, 0);
         }
 
         ~BombControl()
@@ -32,6 +36,11 @@ namespace Bomber.UI.WPF.Entities
             {
                 Canvas.SetLeft(this, position.X * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
                 Canvas.SetTop(this, position.Y * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4);
+                PositionOnScreen =
+                    new ScreenSpacePosition(
+                        position.X * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4,
+                        position.Y * ConfigurationService.Dimension + (double)ConfigurationService.Dimension / 4
+                        );
             });
         }
 

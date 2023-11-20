@@ -2,6 +2,7 @@
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Position;
+using GameFramework.Impl.Core.Position;
 using GameFramework.Visuals;
 
 namespace Bomber.UI.Forms.Views.Entities
@@ -12,6 +13,8 @@ namespace Bomber.UI.Forms.Views.Entities
         private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
         private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
 
+        public IScreenSpacePosition PositionOnScreen { get; private set; }
+        
         public PlayerView(IConfigurationService2D configurationService)
         {
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
@@ -19,6 +22,7 @@ namespace Bomber.UI.Forms.Views.Entities
             Width = _configurationService.Dimension - 4;
             Height = _configurationService.Dimension - 4;
             Disposed += OnDisposed;
+            PositionOnScreen = new ScreenSpacePosition(0, 0);
         }
         
         private void OnDisposed(object? sender, EventArgs e)
@@ -63,6 +67,11 @@ namespace Bomber.UI.Forms.Views.Entities
             
             Top = position.Y * _configurationService.Dimension + 2;
             Left = position.X * _configurationService.Dimension + 2;
+            PositionOnScreen =
+                new ScreenSpacePosition(
+                    position.X * _configurationService.Dimension + 2,
+                    position.Y * _configurationService.Dimension + 2
+                    );
             BringToFront();
         }
     }

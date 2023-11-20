@@ -1,7 +1,6 @@
 using Bomber.BL.Entities;
 using Bomber.UI.Shared.Entities;
 using GameFramework.Board;
-using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Position;
 using Infrastructure.Application;
@@ -10,13 +9,11 @@ namespace Bomber.BL.Impl.Entities.Factories
 {
     internal class EntityFactory : IEntityFactory
     {
-        private readonly IConfigurationService2D _configurationService;
         private readonly IGameManager _gameManager;
         private readonly ILifeCycleManager _lifeCycleManager;
         private readonly IBoardService _boardService;
-        public EntityFactory(IConfigurationService2D configurationService, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
+        public EntityFactory(IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
         {
-            _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             _lifeCycleManager = lifeCycleManager ?? throw new ArgumentNullException(nameof(lifeCycleManager));
             _boardService = boardService ?? throw new ArgumentNullException(nameof(boardService));

@@ -2,6 +2,7 @@
 using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Position;
+using GameFramework.Impl.Core.Position;
 using GameFramework.Visuals;
 
 namespace Bomber.UI.Forms.Views.Entities
@@ -11,6 +12,9 @@ namespace Bomber.UI.Forms.Views.Entities
         private readonly IConfigurationService2D _configurationService;
         private readonly ICollection<IViewLoadedSubscriber> _subscribers = new List<IViewLoadedSubscriber>();
         private readonly ICollection<IViewDisposedSubscriber> _disposedSubscribers = new List<IViewDisposedSubscriber>();
+        
+        public IScreenSpacePosition PositionOnScreen { get; }
+        
         public BombView(IConfigurationService2D configurationService)
         {
             _configurationService = configurationService ?? throw new ArgumentNullException(nameof(configurationService));
@@ -28,6 +32,8 @@ namespace Bomber.UI.Forms.Views.Entities
                 Top = padding / 4,
                 Left = padding / 4
             };
+
+            PositionOnScreen = new ScreenSpacePosition(padding / 4f, padding / 4f);
             
             var line1 = new Panel
             {

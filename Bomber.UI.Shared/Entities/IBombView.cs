@@ -3,6 +3,6 @@ using GameFramework.Visuals;
 
 namespace Bomber.UI.Shared.Entities
 {
-    public interface IBombView : IDynamicMapObjectView
+    public interface IBombView : IEnemyView
     { }
 }

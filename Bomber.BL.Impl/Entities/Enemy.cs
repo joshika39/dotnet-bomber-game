@@ -41,6 +41,7 @@ namespace Bomber.BL.Impl.Entities
             _stoppingToken = lifeCycleManager.Token;
             _direction = GetRandomMove();
             View.Attach(this);
+            ScreenSpacePosition = view.PositionOnScreen;
         }
 
         public async Task ExecuteAsync()

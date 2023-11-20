@@ -3,22 +3,20 @@ using GameFramework.Configuration;
 using GameFramework.Core;
 using GameFramework.Core.Position;
 using GameFramework.Entities;
+using GameFramework.Impl.Core.Position;
 using GameFramework.Map.MapObject;
 using GameFramework.Tiles;
 
 namespace Bomber.UI.Forms.Tiles
 {
-    public sealed partial class Hole : UserControl, IMapObject2D, IDeadlyTile
+    public sealed partial class Hole : UserControl, IDeadlyTile
     {
         public void SteppedOn(IUnit2D unit2D)
         {
             unit2D.Step(this);
         }
         public IPosition2D Position { get; }
-        public IScreenSpacePosition ScreenSpacePosition
-        {
-            get;
-        }
+        public IScreenSpacePosition ScreenSpacePosition { get; }
         public bool IsObstacle => false;
         
         public Hole(IPosition2D position, IConfigurationService2D configurationService)
@@ -31,23 +29,7 @@ namespace Bomber.UI.Forms.Tiles
             Height = configurationService.Dimension;
             BackColor = Color.Black;
             SendToBack();
-        }
-        public bool InstantDeath { get; }
-        public int Damage { get; }
-        
-        public void OnHovered()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public void OnHoverLost()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public bool IsHovered
-        {
-            get;
+            ScreenSpacePosition = new ScreenSpacePosition(position.X * configurationService.Dimension, position.Y * configurationService.Dimension);
         }
     }
 }

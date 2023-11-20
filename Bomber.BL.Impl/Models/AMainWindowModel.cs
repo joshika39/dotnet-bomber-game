@@ -191,7 +191,14 @@ namespace Bomber.BL.Impl.Models
         }
 
         public void OnGameResumed()
-        { }
+        {
+            Debug.WriteLine("Game resumed");
+        }
+        
+        public void OnGameStarted(IGameplayFeedback feedback)
+        {
+            Debug.WriteLine("Game started");
+        }
 
         public void PauseGame()
         {
@@ -232,11 +239,6 @@ namespace Bomber.BL.Impl.Models
             {
                 _map = map;
             }
-        }
-        
-        public void OnGameStarted(IGameplayFeedback feedback)
-        {
-            
         }
     }
 }
