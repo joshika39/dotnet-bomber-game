@@ -22,5 +22,10 @@ namespace Bomber.UI.Forms.Views.Entities
         {
             return new BombView(_configurationService);
         }
+        
+        public IPlayerView CreatePlayerView()
+        {
+            return new PlayerView(_configurationService);
+        }
     }
 }
