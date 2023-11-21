@@ -1,0 +1,89 @@
+@startuml
+
+!startsub BL
+
+' Map related diagrams
+interface IBomberMapView extends GameFramework.IMapView2D {
+    + PlantBomb(IBombView bombView): void
+    + DeleteBomb(IBombView bombView): void
+}
+
+interface IBomberMapSource extends GameFramework.IMapSource2D {
+    + <<get,set>> Name: string 
+    + <<get,set>> Description: string
+    + <<get,set>> Enemies: IEnumerable<DummyEntity>
+}
+
+interface IBomberMap extends GameFramework.IMap2D {        
+	+ HasEnemy(position: IPosition2D): bool
+	+ MapPortion(topLeft, bottomRight: IPosition2D): IEnumerable<IMapObject2D>
+	+ MapPortion(center: IPosition2D, radius: int): IEnumerable<IMapObject2D>
+}
+
+class BomberMap implements IBomberMap {
+
+}
+
+class BomberMapSource implements IBomberMapSource {
+
+}
+
+' Tiles related diagrams
+enum TileType {
+	Ground
+	Wall
+	Hole
+}
+
+interface ITileFactory {
+	+ CreatePlaceHolder(position: IPosition2D, configurationService :IConfigurationService2D, tileType: TileType): IPlaceHolder
+	+ CreateGround(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
+	+ CreateWall(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
+	+ CreateHole(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
+}
+
+interface IPlaceHolder {
+	+ <<get>> Type: TileType
+	+ <<get>> Position: IPosition2D
+}
+
+' Entities related diagrams
+interface IBomb extends GameFramework.IMapObject2D, IDisposable
+{
+    int Radius { get; }
+    Task Detonate();
+    IBombView View { get; }
+}
+
+interface IBomber extends GameFramework.IPlayer2D, IBombWatcher
+{
+    + <<get,set>> PlantedBombs: ICollection<IBomb>
+    + <<get,set>>Score: int
+    + PutBomb(IBombView bombView, IBombWatcher bombWatcher): void
+    + DetonateBombAt(int bombIndex);
+}
+
+interface IEnemy extends GameFramework.IUnit2D {
+
+}
+
+class PlayerModel implements IBomber {
+	- _view: IPlayerView
+	-  _configurationService2D: IConfigurationService2D
+	- _cancellationToken: CancellationToken
+	- _isAlive: bool
+}
+
+
+
+class Enemy implements IEnemy {
+
+}
+
+class Bomb implements IBomb {
+
+}
+
+!endsub
+
+@enduml

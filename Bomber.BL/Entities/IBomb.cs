@@ -1,5 +1,4 @@
 using Bomber.UI.Shared.Entities;
-using GameFramework.Core;
 using GameFramework.Map.MapObject;
 
 namespace Bomber.BL.Entities

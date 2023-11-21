@@ -1,0 +1,71 @@
+@startuml
+
+namespace BL {
+
+!includesub bl.puml!BL
+
+}
+
+class WpfEntityFactory implements BL.IEntityFactory {
+
+}
+
+' App Structure
+
+interface IMainWindowViewModel {
+
+}
+
+interface IMainWindow {
+
+}
+
+class MainWindowViewModel implements IMainWindowViewModel {
+
+}
+
+class MainWindow implements IMainWindow {
+
+}
+
+class WpfFeedbackPopup {
+
+}
+
+' Tiles
+
+class GroundTile extends GameFrameWork_UI_WPF.ATile implements IBomberMapTileView {
+
+}
+
+class HoleTile extends GameFrameWork_UI_WPF.ATile {
+
+}
+
+class WallTile extends GameFrameWork_UI_WPF.ATile {
+
+}
+
+class WpfTileFactory implements BL.ITileFactory {
+
+}
+
+' Map
+
+class GameCanvasControl extends GameFrameWork_UI_WPF.WpfMapControl implements BL.IBomberMapView
+
+' Entities
+
+class BombControl extends GameFrameWork_UI_WPF.ACustomShape implements SharedUI.IBombView {
+
+}
+
+class EnemyControl extends GameFrameWork_UI_WPF.ACustomShape implements SharedUI.IEnemyView {
+
+}
+
+class PlayerControl extends GameFrameWork_UI_WPF.ACustomShape implements SharedUI.IPlayerView {
+
+}
+
+@enduml

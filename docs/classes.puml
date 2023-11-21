@@ -96,69 +96,6 @@ namespace UI.WPF {
 
 }
 
-namespace BL {
-
-enum TileType {
-	Ground
-	Wall
-	Hole
-}
-
-interface IBomberMap {
-	+ <<get>> NPCs: ICollection<INpc>
-        
-	+ HasEnemy(position: IPosition2D): bool
-	+ MapPortion(topLeft, bottomRight: IPosition2D): IEnumerable<IMapObject2D>
-	+ MapPortion(center: IPosition2D, radius: int): IEnumerable<IMapObject2D>
-}
-
-interface ITileFactory {
-	+ CreatePlaceHolder(position: IPosition2D, configurationService :IConfigurationService2D, tileType: TileType): IPlaceHolder
-	+ CreateGround(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
-	+ CreateWall(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
-	+ CreateHole(position: IPosition2D, configurationService :IConfigurationService2D): IMapObject2D
-}
-
-interface IDeadlyTile extends GameFramework.IMapObject2D {
-
-}
-
-interface IPlaceHolder {
-	+ <<get>> Type: TileType
-	+ <<get>> Position: IPosition2D
-}
-
-interface IBomb extends GameFramework.IMapObject2D {
-	+ <<get>> Radius: int
-	+ <<async>> Detonate(): Task
-}
-
-interface IBomber extends GameFramework.IPlayer2D {
-	+ PutBomb(bombView: IBombView): void
-}
-
-interface INpc extends GameFramework.IUnit2D {
-
-}
-
-
-class PlayerModel implements IBomber {
-	- _view: IPlayerView
-	-  _configurationService2D: IConfigurationService2D
-	- _cancellationToken: CancellationToken
-	- _isAlive: bool
-}
-
-class Enemy implements INpc {
-
-}
-
-class Bomb implements IBomb {
-
-}
-
-}
-
 class UI.Forms.FormsTileFactory implements BL.ITileFactory {
 	
 }

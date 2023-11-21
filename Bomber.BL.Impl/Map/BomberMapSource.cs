@@ -11,6 +11,7 @@ namespace Bomber.BL.Impl.Map
         public string Name { get; set; }
         public string Description { get; set; }
         public IEnumerable<DummyEntity> Enemies { get; set; }
+        
         public BomberMapSource(IServiceProvider provider, string filePath, int[,] data, ICollection<IUnit2D> units, int col, int row, string name, string description) : base(provider, filePath, data, units, col, row)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
