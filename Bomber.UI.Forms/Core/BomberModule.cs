@@ -1,6 +1,4 @@
-﻿using Bomber.BL.Impl.Entities.Factories;
-using Bomber.BL.Tiles.Factories;
-using Bomber.UI.Forms._Interface;
+﻿using Bomber.BL.Tiles.Factories;
 using Bomber.UI.Forms.Feedback;
 using Bomber.UI.Forms.Main;
 using Bomber.UI.Forms.MapGenerator;
@@ -11,6 +9,7 @@ using Bomber.UI.Forms.Views.Main;
 using Bomber.UI.Forms.Views.Main._Interfaces;
 using Bomber.UI.Shared.Entities;
 using Bomber.UI.Shared.Feedback;
+using GameFramework.Map.MapObject;
 using Implementation.Module;
 using Infrastructure.Module;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,12 +27,13 @@ namespace Bomber.UI.Forms.Core
             collection.AddSingleton<IMapGeneratorWindowPresenter, MapGeneratorWindowPresenter>();
             
             collection.AddSingleton<IMainWindow, MainWindow>();
-            collection.AddSingleton<IAboutWindow, AboutWindow>();
             collection.AddSingleton<IMapGeneratorWindow, MapGeneratorWindow>();
             
             collection.AddSingleton<ITileFactory, FormsTileFactory>();
             collection.AddSingleton<IEntityViewFactory, EntityViewFactory>();
             collection.AddSingleton<IFeedbackPopup, FormsFeedbackPopup>();
+            collection.AddSingleton<IMapObject2DConverter, FormsObject2DConverter>();
+            
             return this;
         }
     }

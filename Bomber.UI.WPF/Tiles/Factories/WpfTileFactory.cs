@@ -21,7 +21,7 @@ namespace Bomber.UI.WPF.Tiles.Factories
         
         public IPlaceHolder CreatePlaceHolder(IPosition2D position, TileType tileType = TileType.Ground)
         {
-            throw new System.NotImplementedException();
+            throw new NotSupportedException();
         }
         
         public IMapObject2D CreateGround(IPosition2D position)

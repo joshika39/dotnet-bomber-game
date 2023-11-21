@@ -23,14 +23,12 @@
       <Compile Update="Objects\Hole.cs">
         <SubType>UserControl</SubType>
       </Compile>
-      <Compile Update="Views\About\AboutWindow.cs">
-        <SubType>Form</SubType>
-      </Compile>
     </ItemGroup>
 
 
     <ItemGroup>
       <PackageReference Include="joshika39.Core" Version="1.3.3" />
+      <PackageReference Include="joshika39.GameFramework.UI.Forms" Version="1.0.0" />
       <PackageReference Include="joshika39.UiFramework.Forms" Version="1.0.1-pre0001" />
     </ItemGroup>
 

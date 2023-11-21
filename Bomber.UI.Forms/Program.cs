@@ -1,8 +1,6 @@
 using Bomber.BL.Impl;
-using Bomber.UI.Forms._Interface;
 using Bomber.UI.Forms.Core;
 using Bomber.UI.Forms.Main;
-using Bomber.UI.Forms.MapGenerator._Interfaces;
 using Bomber.UI.Forms.Views.Main;
 using Bomber.UI.Shared.Feedback;
 using GameFramework.Core;

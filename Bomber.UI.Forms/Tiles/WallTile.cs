@@ -11,7 +11,7 @@ namespace Bomber.UI.Forms.Tiles
     {
         public void SteppedOn(IUnit2D unit2D)
         {
-            throw new NotImplementedException();
+            throw new NotSupportedException();
         }
         public IPosition2D Position { get; }
         public IScreenSpacePosition ScreenSpacePosition { get; }

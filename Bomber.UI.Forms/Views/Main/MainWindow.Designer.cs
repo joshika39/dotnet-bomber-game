@@ -30,7 +30,6 @@ namespace Bomber.UI.Forms.Views.Main
         /// </summary>
         private void InitializeComponent()
         {
-            this.bomberMap = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,16 +48,6 @@ namespace Bomber.UI.Forms.Views.Main
             this.explodedEnemiesText = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // bomberMap
-            // 
-            this.bomberMap.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.bomberMap.Location = new System.Drawing.Point(14, 49);
-            this.bomberMap.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.bomberMap.Name = "bomberMap";
-            this.bomberMap.Size = new System.Drawing.Size(664, 577);
-            this.bomberMap.TabIndex = 1;
             // 
             // menuStrip1
             // 
@@ -210,7 +199,6 @@ namespace Bomber.UI.Forms.Views.Main
             this.Controls.Add(this.currentTime);
             this.Controls.Add(this.description);
             this.Controls.Add(this.mapName);
-            this.Controls.Add(this.bomberMap);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
@@ -224,7 +212,6 @@ namespace Bomber.UI.Forms.Views.Main
         }
 
         #endregion
-        private Panel bomberMap;
         private MenuStrip menuStrip1;
         private ToolStripMenuItem fileToolStripMenuItem;
         private ToolStripMenuItem quitToolStripMenuItem;

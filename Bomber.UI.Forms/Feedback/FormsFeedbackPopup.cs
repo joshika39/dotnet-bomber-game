@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Bomber.UI.Shared.Feedback;
 using GameFramework.GameFeedback;
 using GameFramework.Manager;
@@ -39,22 +40,22 @@ namespace Bomber.UI.Forms.Feedback
         
         public void OnGamePaused()
         {
-            throw new NotImplementedException();
+            Debug.WriteLine("Game paused!");
         }
         
         public void OnGameResumed()
         {
-            throw new NotImplementedException();
+            Debug.WriteLine("Game resumed!");
         }
         
         public void OnGameStarted(IGameplayFeedback feedback)
         {
-            
+            Debug.WriteLine("Game started!");
         }
         
         public void OnGameReset()
         {
-            throw new NotImplementedException();
+            Debug.WriteLine("Game reset!");
         }
     }
 }

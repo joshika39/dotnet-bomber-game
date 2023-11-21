@@ -148,20 +148,5 @@ namespace Bomber.BL.Impl.Entities
         {
             View.UpdatePosition(Position);
         }
-        
-        public void OnHovered()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public void OnHoverLost()
-        {
-            throw new NotImplementedException();
-        }
-        
-        public bool IsHovered
-        {
-            get;
-        }
     }
 }
