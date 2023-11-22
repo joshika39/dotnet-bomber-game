@@ -26,13 +26,6 @@ namespace Bomber.UI.WPF.Main
             return ShowDialog() ?? false ? UiFramework.Shared.DialogResult.Resolved : UiFramework.Shared.DialogResult.Cancelled;
         }
         
-        protected override void OnPreviewKeyDown(KeyEventArgs e)
-        {
-            base.OnPreviewKeyDown(e);
-            
-            _viewModel.HandleKeyPress(GetCharFromKey(e.Key));
-        }
-        
         private enum MapType : uint
         {
             MapvkVkToVsc = 0x0,

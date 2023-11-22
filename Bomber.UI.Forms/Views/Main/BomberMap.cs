@@ -21,5 +21,10 @@ namespace Bomber.UI.Forms.Views.Main
                 Controls.Remove(control);
             }
         }
+        
+        public void Clear()
+        {
+            Controls.Clear();
+        }
     }
 }

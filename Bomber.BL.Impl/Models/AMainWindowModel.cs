@@ -29,9 +29,8 @@ namespace Bomber.BL.Impl.Models
         protected readonly ILifeCycleManager LifeCycleManager;
         protected readonly IEntityViewFactory EntityViewFactory;
         protected readonly IEntityFactory EntityFactory;
-        
-        private string? _previousFile;
         private BomberMap? _map;
+        private string? _previousFile;
 
         protected AMainWindowModel(IServiceProvider provider)
         {
@@ -48,10 +47,9 @@ namespace Bomber.BL.Impl.Models
 
         public IBomberMap OpenMap(string mapFileName, IBomberMapView mapView2D)
         {
-            var folder = Path.GetDirectoryName(mapFileName) ?? throw new InvalidOperationException("Cannot get directory name.");
-            _previousFile = Path.Join(folder, Path.GetRandomFileName());
-            File.Copy(mapFileName, _previousFile, true);
-            
+            _previousFile = mapFileName;
+            GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, "Game ended"), GameResolution.Nothing);
+
             var source = new BomberMapSource(Provider, mapFileName);
             _map = new BomberMap(source, mapView2D, PositionFactory, ConfigurationService, Provider.GetRequiredService<IEntityFactory>(), EntityViewFactory);
 
@@ -61,18 +59,18 @@ namespace Bomber.BL.Impl.Models
             }
 
             var view = EntityViewFactory.CreatePlayerView();
-            var player = EntityFactory.CreatePlayer(view, PositionFactory.CreatePosition(3, 1), "TestPlayer", "test@email.com");
+            var player = EntityFactory.CreatePlayer(view, _map.MapSource.PlayerPosition, "TestPlayer", "test@email.com");
             view.ViewLoaded();
             _map.Units.Add(player);
-            
+
             GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
-            
+
             BoardService.SetActiveMap(_map);
-            
+
             foreach (var unit in _map.Units)
             {
                 unit.View.ViewLoaded();
-                if(unit is IEnemy enemy)
+                if (unit is IEnemy enemy)
                 {
                     Task.Run(async () =>
                     {
@@ -80,7 +78,7 @@ namespace Bomber.BL.Impl.Models
                     });
                 }
             }
-            
+
             return _map;
         }
 
@@ -94,7 +92,6 @@ namespace Bomber.BL.Impl.Models
             }
 
             var affectedObjects = map.MapPortion(bomb.Position, bomb.Radius);
-
             var entities = map.GetUnitsAtPortion(affectedObjects);
             foreach (var entity in entities)
             {
@@ -176,13 +173,8 @@ namespace Bomber.BL.Impl.Models
             {
                 unit.Dispose();
             }
-            
+
             map.Units.Clear();
-            
-            if (_previousFile is not null)
-            {
-                File.Delete(_previousFile);
-            }
         }
 
         public void OnGamePaused()
@@ -194,7 +186,7 @@ namespace Bomber.BL.Impl.Models
         {
             Debug.WriteLine("Game resumed");
         }
-        
+
         public void OnGameStarted(IGameplayFeedback feedback)
         {
             Debug.WriteLine("Game started");
@@ -222,20 +214,20 @@ namespace Bomber.BL.Impl.Models
 
             map.View.DeleteBomb(bombView);
         }
-        
+
         public virtual void OnGameReset()
         {
-            if (_previousFile is null || _map is null)
+            if (_map is null || _previousFile is null)
             {
                 return;
             }
-            
+
             _map.Units.Clear();
             _map.MapObjects.Clear();
 
             var tmpMap = OpenMap(_previousFile, _map.View);
-            
-            if(tmpMap is BomberMap map)
+
+            if (tmpMap is BomberMap map)
             {
                 _map = map;
             }

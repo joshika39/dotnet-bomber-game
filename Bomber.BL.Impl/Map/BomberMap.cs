@@ -71,7 +71,7 @@ namespace Bomber.BL.Impl.Map
         {
             _entityFactory = entityFactory ?? throw new ArgumentNullException(nameof(entityFactory));
             _entityViewFactory = entityViewFactory ?? throw new ArgumentNullException(nameof(entityViewFactory));
-
+            
             FillEntities(mapSource);
         }
     }

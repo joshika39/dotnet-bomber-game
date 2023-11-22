@@ -33,10 +33,15 @@ namespace Bomber.UI.WPF
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            var mainWindow = Services.GetRequiredService<IMainWindow>();
-            var gameManager = Services.GetRequiredService<IGameManager>();
-            gameManager.AttachListener(Services.GetRequiredService<IFeedbackPopup>());
-            mainWindow.ShowOnTop();
+            using (var scope = Services.CreateScope())
+            {
+                var provider = scope.ServiceProvider;
+                
+                var mainWindow = provider.GetRequiredService<IMainWindow>();
+                var gameManager = provider.GetRequiredService<IGameManager>();
+                gameManager.AttachListener(provider.GetRequiredService<IFeedbackPopup>());
+                mainWindow.ShowOnTop();
+            }
         }
     }
 }

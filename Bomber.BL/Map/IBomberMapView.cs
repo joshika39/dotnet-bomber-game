@@ -7,5 +7,6 @@ namespace Bomber.BL.Map
     {
         void PlantBomb(IBombView bombView);
         void DeleteBomb(IBombView bombView);
+        void Clear();
     }
 }

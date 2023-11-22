@@ -56,6 +56,7 @@ namespace Bomber.UI.WPF.Main
                 return;
             }
 
+            MapCanvas.Clear();
             var map = OpenMap(openDialog.FileName, MapCanvas);
             
             GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
@@ -67,6 +68,12 @@ namespace Bomber.UI.WPF.Main
         {
             var map = BoardService.GetActiveMap<IBomberMap>();
             map?.SaveProgress();
+        }
+
+        [RelayCommand]
+        private void OnKeyPress()
+        {
+            // HandleKeyPress(GetCharFromKey(e.Key));
         }
     }
 }

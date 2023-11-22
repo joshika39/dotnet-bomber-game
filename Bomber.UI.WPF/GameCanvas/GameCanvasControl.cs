@@ -22,5 +22,10 @@ namespace Bomber.UI.WPF.GameCanvas
                 Dispatcher.Invoke(() => Children.Remove(shape));
             }
         }
+        
+        public void Clear()
+        {
+            Children.Clear();
+        }
     }
 }
