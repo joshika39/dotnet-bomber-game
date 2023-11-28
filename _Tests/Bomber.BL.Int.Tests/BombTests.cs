@@ -18,20 +18,11 @@ namespace Bomber.BL.Int.Tests
             {
                 (object)null!,
                 Mock.Of<IPosition2D>(),
-                Mock.Of<IEnumerable<IBombWatcher>>(),
                 Mock.Of<ILifeCycleManager>()
             };
             yield return new[]
             {
                 Mock.Of<IBombView>(),
-                (object)null!,
-                Mock.Of<IEnumerable<IBombWatcher>>(),
-                Mock.Of<ILifeCycleManager>()
-            };
-            yield return new[]
-            {
-                Mock.Of<IBombView>(),
-                Mock.Of<IPosition2D>(),
                 (object)null!,
                 Mock.Of<ILifeCycleManager>()
             };
@@ -39,7 +30,6 @@ namespace Bomber.BL.Int.Tests
             {
                 Mock.Of<IBombView>(),
                 Mock.Of<IPosition2D>(),
-                Mock.Of<IEnumerable<IBombWatcher>>(),
                 (object)null!
             };
         }
@@ -48,12 +38,11 @@ namespace Bomber.BL.Int.Tests
         public void BT_0001_Given_NullArgument_WhenConstructorIsCalled_Then_ThrowsException(
             IBombView view,
             IPosition2D position,
-            IEnumerable<IBombWatcher> bombWatchers,
             ILifeCycleManager lifeCycleManager)
         {
             var exception = Record.Exception(() =>
             {
-                _ = new Bomb(view, position, bombWatchers, 0, GetGameManagerMock().Object, lifeCycleManager, Mock.Of<IBoardService>());
+                _ = new Bomb(view, position, 0, GetGameManagerMock().Object, lifeCycleManager, Mock.Of<IBoardService>());
             });
 
             Assert.NotNull(exception);
@@ -67,7 +56,7 @@ namespace Bomber.BL.Int.Tests
         {
             var exception = Record.Exception(() =>
             {
-                var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), Mock.Of<IEnumerable<IBombWatcher>>(), radius, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
+                var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), radius, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
                 Assert.Null(bomb);
             });
 
@@ -81,7 +70,7 @@ namespace Bomber.BL.Int.Tests
         [InlineData(7)]
         public void BT_0011_Given_ValidRadius_WhenConstructorIsCalled_Then_ReturnsCorrectRadius(int radius)
         {
-            var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), Mock.Of<IEnumerable<IBombWatcher>>(), radius, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
+            var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), radius, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
 
             Assert.NotNull(bomb);
             Assert.Equal(radius, bomb.Radius);
@@ -90,7 +79,7 @@ namespace Bomber.BL.Int.Tests
         [Fact(Skip = "Needs refactoring")]
         public void BT_0021_Given_Bomb_IsObstacleCalled_Then_ReturnsFalse()
         {
-            var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), Mock.Of<IEnumerable<IBombWatcher>>(), 5, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
+            var bomb = new Bomb(Mock.Of<IBombView>(), Mock.Of<IPosition2D>(), 5, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
             Assert.NotNull(bomb);
             Assert.False(bomb.IsObstacle);
         }
@@ -105,7 +94,10 @@ namespace Bomber.BL.Int.Tests
                 Mock.Of<IBombWatcher>()
             };
             var view = Mock.Of<IBombView>();
-            var bomb = new Bomb(view, Mock.Of<IPosition2D>(), watchers, 5, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
+            var bomb = new Bomb(view, Mock.Of<IPosition2D>(), 5, GetGameManagerMock().Object, Mock.Of<ILifeCycleManager>(), Mock.Of<IBoardService>());
+            bomb.Attach(watchers[0]);
+            bomb.Attach(watchers[1]);
+            bomb.Attach(watchers[2]);
             await bomb.Detonate();
             await bomb.Detonate();
             bomb.Dispose();

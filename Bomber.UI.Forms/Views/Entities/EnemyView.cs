@@ -41,7 +41,7 @@ namespace Bomber.UI.Forms.Views.Entities
                 return;
             }
             
-            Invoke(() =>
+            BeginInvoke(() =>
             {
               
                 BringToFront();
