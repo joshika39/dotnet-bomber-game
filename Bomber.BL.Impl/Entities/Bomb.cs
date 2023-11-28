@@ -18,11 +18,10 @@ namespace Bomber.BL.Impl.Entities
     {
         private readonly ICollection<IBombWatcher> _bombWatchers = new List<IBombWatcher>();
         private readonly IGameManager _gameManager;
-        private readonly IEnumerable<IMapObject2D> _affectedObjects;
+        private readonly IEnumerable<IMapObject2D> _affectedObjects = new List<IMapObject2D>();
         private bool _disposed;
         private readonly CancellationToken _stoppingToken;
-        private int _countDownPeriod = 2000;
-        
+
         public Guid Id { get; } = Guid.NewGuid();
         public IPosition2D Position { get; }
         public IScreenSpacePosition ScreenSpacePosition { get; }
@@ -30,12 +29,13 @@ namespace Bomber.BL.Impl.Entities
         public bool IsObstacle => false;
         public int Radius { get; }
         public IDynamicMapObjectView View { get; }
-        public double RemainingTime => _countDownPeriod;
+        public int RemainingTime { get; private set; }
         private bool _isDetonated;
 
 
-        public Bomb(IBombView view, IPosition2D position,int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
+        public Bomb(IBombView view, IPosition2D position, int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService, int timeToExplosion = 2000)
         {
+            RemainingTime = timeToExplosion;
             View = view ?? throw new ArgumentNullException(nameof(view));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             var boardService1 = boardService ?? throw new ArgumentNullException(nameof(boardService));
@@ -57,7 +57,10 @@ namespace Bomber.BL.Impl.Entities
             }
 
             var map = boardService1.GetActiveMap<IBomberMap, IBomberMapSource, IBomberMapView>();
-            _affectedObjects = map!.MapPortion(position, radius);
+            if (map is not null)
+            {
+                _affectedObjects = map.MapPortion(position, radius);
+            }
             View.Attach(this);
         }
 
@@ -71,18 +74,18 @@ namespace Bomber.BL.Impl.Entities
             _isDetonated = true;
             while (!_stoppingToken.IsCancellationRequested)
             {
-                _countDownPeriod -= 300;
+                RemainingTime -= 300;
 
-                if (_countDownPeriod <= 0)
+                if (RemainingTime <= 0)
                 {
+                    Dispose();
                     Explode();
                     break;
                 }
 
-                await _gameManager.Timer.WaitAsync(_countDownPeriod, this);
+                await _gameManager.Timer.WaitAsync(RemainingTime, this);
             }
 
-            Dispose();
         }
         
         public void Attach(IBombWatcher bombWatcher)
@@ -143,7 +146,7 @@ namespace Bomber.BL.Impl.Entities
             {
                 if (affectedObject is IBomberMapTileView bombMapObject)
                 {
-                    bombMapObject.IndicateBomb(_countDownPeriod / 1000d);
+                    bombMapObject.IndicateBomb(RemainingTime / 1000d);
                 }
             }
         }

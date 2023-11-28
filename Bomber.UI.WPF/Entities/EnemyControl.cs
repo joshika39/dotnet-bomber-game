@@ -28,7 +28,10 @@ namespace Bomber.UI.WPF.Entities
         {
             foreach (var subscriber in _disposedSubscribers)
             {
-                subscriber.OnViewDisposed(this);
+                Dispatcher.Invoke(() =>
+                {
+                    subscriber.OnViewDisposed(this);
+                });
             }
         }
 

@@ -6,7 +6,7 @@ namespace Bomber.BL.Entities
     {
         int Radius { get; }
         Task Detonate();
-        double RemainingTime { get; }
+        int RemainingTime { get; }
         void Attach(IBombWatcher bombWatcher);
     }
 }

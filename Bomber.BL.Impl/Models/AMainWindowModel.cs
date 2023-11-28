@@ -78,6 +78,16 @@ namespace Bomber.BL.Impl.Models
                     });
                 }
             }
+            
+            foreach (var bombDummy in _map.MapSource.Bombs)
+            {
+                var bomb = EntityFactory.CreateBomb(EntityViewFactory.CreateBombView(), PositionFactory.CreatePosition(bombDummy.X, bombDummy.Y), bombDummy.Radius, bombDummy.RemainingTime);
+                player.PlantedBombs.Add(bomb);
+                bomb.Attach(this);
+                bomb.Attach(player);
+                // bomb.View.ViewLoaded();
+                _map.Units.Add(bomb);
+            }
 
             return _map;
         }
@@ -95,6 +105,11 @@ namespace Bomber.BL.Impl.Models
             var entities = map.GetUnitsAtPortion(affectedObjects);
             foreach (var entity in entities)
             {
+                if (entity is IBomb)
+                {
+                    continue;
+                }
+                
                 map.Units.Remove(entity);
                 if (entity is IEnemy)
                 {
@@ -108,12 +123,12 @@ namespace Bomber.BL.Impl.Models
                 entity.Kill();
             }
 
+            map.Units.Remove(bomb);
             if (!map.Units.Any(entity => entity is IEnemy))
             {
                 GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {GameManager.Timer.Elapsed:g}"), GameResolution.Win);
                 GameManager.Timer.Reset();
             }
-
         }
 
         public void HandleKeyPress(char keyChar)
@@ -149,6 +164,7 @@ namespace Bomber.BL.Impl.Models
                     var bomb = bomber.PutBomb(EntityViewFactory.CreateBombView());
                     bomb.Attach(this);
                     map.Units.Add(bomb);
+                    bomb.View.ViewLoaded();
                     break;
             }
 

@@ -24,6 +24,11 @@ namespace Bomber.BL.Impl.Entities.Factories
             return new Bomb(view, position2D, radius, _gameManager, _lifeCycleManager, _boardService);
         }
         
+        public IBomb CreateBomb(IBombView view, IPosition2D position2D, int radius, int timeToExplosion)
+        {
+            return new Bomb(view, position2D, radius, _gameManager, _lifeCycleManager, _boardService, timeToExplosion);
+        }
+
         public IBomber CreatePlayer(IPlayerView view, IPosition2D position, string name, string email)
         {
             return new PlayerModel(view, position, name, email, _gameManager, _lifeCycleManager, _boardService);

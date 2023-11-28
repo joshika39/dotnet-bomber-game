@@ -25,11 +25,6 @@ namespace Bomber.UI.WPF.Entities
             PositionOnScreen = new ScreenSpacePosition(0, 0);
         }
 
-        ~BombControl()
-        {
-            Dispose(false);
-        }
-
         public void UpdatePosition(IPosition2D position)
         {
             Dispatcher.Invoke(() =>
@@ -59,31 +54,28 @@ namespace Bomber.UI.WPF.Entities
 
         public void Attach(IViewDisposedSubscriber subscriber)
         {
-            _disposedSubscribers.Add(subscriber);
+            if (!_disposedSubscribers.Contains(subscriber))
+            {
+                _disposedSubscribers.Add(subscriber);
+            }
         }
 
-        private void Dispose(bool disposing)
+        public void Dispose()
         {
             if (_disposed)
             {
                 return;
             }
 
-            if (disposing)
+            Dispatcher.Invoke(() =>
             {
                 foreach (var subscriber in _disposedSubscribers)
                 {
                     subscriber.OnViewDisposed(this);
                 }
-            }
+            });
 
             _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

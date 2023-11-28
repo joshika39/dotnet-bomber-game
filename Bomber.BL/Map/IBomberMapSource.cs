@@ -9,6 +9,7 @@ namespace Bomber.BL.Map
         string Name { get; set; }
         string Description { get; set; }
         IEnumerable<DummyEntity> Enemies { get; set; }
+        IEnumerable<DummyBomb> Bombs { get; set; }
         IPosition2D PlayerPosition { get; set; }
     }
 }

@@ -1,6 +1,4 @@
 using Bomber.UI.Shared.Entities;
-using GameFramework.Configuration;
-using GameFramework.Core;
 using GameFramework.Core.Position;
 
 namespace Bomber.BL.Entities
@@ -10,6 +8,11 @@ namespace Bomber.BL.Entities
         IBomb CreateBomb(IBombView view, 
             IPosition2D position2D, 
             int radius);
+        
+        IBomb CreateBomb(IBombView view, 
+            IPosition2D position2D, 
+            int radius,
+            int timeToExplosion);
         
         IBomber CreatePlayer(
             IPlayerView view, 

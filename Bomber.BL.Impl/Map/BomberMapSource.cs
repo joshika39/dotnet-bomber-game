@@ -53,7 +53,7 @@ namespace Bomber.BL.Impl.Map
             }
             
             Enemies = units.Where(u => u is IEnemy).Select(unit => new DummyEntity(unit.Position.X, unit.Position.Y));
-            Bombs = units.Where(u => u is IBomb).Select(unit => new DummyBomb(unit.Position.X, unit.Position.Y, (unit as IBomb)!.RemainingTime));
+            Bombs = units.Where(u => u is IBomb).Select(unit => new DummyBomb(unit.Position.X, unit.Position.Y, (unit as IBomb)!.Radius, (unit as IBomb)!.RemainingTime));
             Query.SetObject("enemies", Enemies);
             Query.SetObject("bombs", Bombs);
         }
