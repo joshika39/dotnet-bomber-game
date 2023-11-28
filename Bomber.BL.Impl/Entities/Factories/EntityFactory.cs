@@ -19,9 +19,9 @@ namespace Bomber.BL.Impl.Entities.Factories
             _boardService = boardService ?? throw new ArgumentNullException(nameof(boardService));
         }
 
-        public IBomb CreateBomb(IBombView view, IPosition2D position2D, IEnumerable<IBombWatcher> bombWatchers, int radius)
+        public IBomb CreateBomb(IBombView view, IPosition2D position2D, int radius)
         {
-            return new Bomb(view, position2D, bombWatchers, radius, _gameManager, _lifeCycleManager, _boardService);
+            return new Bomb(view, position2D, radius, _gameManager, _lifeCycleManager, _boardService);
         }
         
         public IBomber CreatePlayer(IPlayerView view, IPosition2D position, string name, string email)

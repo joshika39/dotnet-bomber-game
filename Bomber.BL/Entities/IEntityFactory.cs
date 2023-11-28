@@ -9,7 +9,7 @@ namespace Bomber.BL.Entities
     {
         IBomb CreateBomb(IBombView view, 
             IPosition2D position2D, 
-            IEnumerable<IBombWatcher> bombWatchers, int radius);
+            int radius);
         
         IBomber CreatePlayer(
             IPlayerView view, 

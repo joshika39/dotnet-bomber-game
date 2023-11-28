@@ -146,11 +146,9 @@ namespace Bomber.BL.Impl.Models
                     GameManager.ResetGame();
                     break;
                 case 'b':
-                    var bombView = EntityViewFactory.CreateBombView();
-                    bomber.PutBomb(bombView, this);
-                    bombView.Attach(this);
-                    map.View.PlantBomb(bombView);
-                    bombView.ViewLoaded();
+                    var bomb = bomber.PutBomb(EntityViewFactory.CreateBombView());
+                    bomb.Attach(this);
+                    map.Units.Add(bomb);
                     break;
             }
 

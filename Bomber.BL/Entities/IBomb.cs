@@ -1,12 +1,12 @@
-using Bomber.UI.Shared.Entities;
-using GameFramework.Map.MapObject;
+using GameFramework.Entities;
 
 namespace Bomber.BL.Entities
 {
-    public interface IBomb : IMapObject2D, IDisposable
+    public interface IBomb : IUnit2D
     {
         int Radius { get; }
         Task Detonate();
-        IBombView View { get; }
+        double RemainingTime { get; }
+        void Attach(IBombWatcher bombWatcher);
     }
 }

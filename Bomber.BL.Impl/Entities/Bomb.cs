@@ -16,25 +16,27 @@ namespace Bomber.BL.Impl.Entities
 {
     public sealed class Bomb : IBomb, ITickListener, IViewLoadedSubscriber
     {
-        private readonly IEnumerable<IBombWatcher> _bombWatchers;
+        private readonly ICollection<IBombWatcher> _bombWatchers = new List<IBombWatcher>();
         private readonly IGameManager _gameManager;
         private readonly IEnumerable<IMapObject2D> _affectedObjects;
         private bool _disposed;
         private readonly CancellationToken _stoppingToken;
         private int _countDownPeriod = 2000;
+        
+        public Guid Id { get; } = Guid.NewGuid();
         public IPosition2D Position { get; }
         public IScreenSpacePosition ScreenSpacePosition { get; }
         
         public bool IsObstacle => false;
         public int Radius { get; }
-        public IBombView View { get; }
+        public IDynamicMapObjectView View { get; }
+        public double RemainingTime => _countDownPeriod;
         private bool _isDetonated;
 
 
-        public Bomb(IBombView view, IPosition2D position, IEnumerable<IBombWatcher> bombWatchers, int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
+        public Bomb(IBombView view, IPosition2D position,int radius, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
         {
             View = view ?? throw new ArgumentNullException(nameof(view));
-            _bombWatchers = bombWatchers ?? throw new ArgumentNullException(nameof(bombWatchers));
             _gameManager = gameManager ?? throw new ArgumentNullException(nameof(gameManager));
             var boardService1 = boardService ?? throw new ArgumentNullException(nameof(boardService));
             Position = position ?? throw new ArgumentNullException(nameof(position));
@@ -82,6 +84,14 @@ namespace Bomber.BL.Impl.Entities
 
             Dispose();
         }
+        
+        public void Attach(IBombWatcher bombWatcher)
+        {
+            if (!_bombWatchers.Contains(bombWatcher))
+            {
+                _bombWatchers.Add(bombWatcher);
+            }
+        }
 
         private void Explode()
         {
@@ -92,6 +102,16 @@ namespace Bomber.BL.Impl.Entities
         }
 
         public void SteppedOn(IUnit2D unit2D)
+        {
+            
+        }
+        
+        public void Step(IMapObject2D mapObject)
+        {
+            throw new NotSupportedException();
+        }
+        
+        public void Kill()
         {
             throw new NotSupportedException();
         }

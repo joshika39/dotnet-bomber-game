@@ -6,7 +6,7 @@ namespace Bomber.BL.Entities
     public interface IBomber : IPlayer2D, IBombWatcher
     {
         ICollection<IBomb> PlantedBombs { get; }
-        void PutBomb(IBombView bombView, IBombWatcher bombWatcher);
+        IBomb PutBomb(IBombView bombView);
 
         void DetonateBombAt(int bombIndex);
         int Score { get; set; }

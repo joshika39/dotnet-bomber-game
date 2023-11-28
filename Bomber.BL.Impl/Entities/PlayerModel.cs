@@ -56,7 +56,11 @@ namespace Bomber.BL.Impl.Entities
         }
         
         public ICollection<IBomb> PlantedBombs { get; }
-        
+
+        public IBomb PutBomb(IBombView bombView, IBombWatcher bombWatcher)
+        {
+            throw new NotImplementedException();
+        }
         public void DetonateBombAt(int bombIndex)
         {
             if (!PlantedBombs.Any())
@@ -75,20 +79,12 @@ namespace Bomber.BL.Impl.Entities
         
         public int Score { get; set; }
 
-        public void PutBomb(IBombView bombView, IBombWatcher? bombWatcher)
+        public IBomb PutBomb(IBombView bombView)
         {
-            var bombWatchers = new List<IBombWatcher>
-            {
-                bombWatcher ?? this
-            };
-            
-            if (!bombWatchers.Contains(this))
-            {
-                bombWatchers.Add(this);
-            }
-            
-            var bomb = new Bomb(bombView, Position, bombWatchers, 3, _gameManager, _lifeCycleManager, _boardService);
+            var bomb = new Bomb(bombView, Position, 3, _gameManager, _lifeCycleManager, _boardService);
+            bomb.Attach(this);
             PlantedBombs.Add(bomb);
+            return bomb;
         }
 
         public PlayerModel(IPlayerView view, IPosition2D position, string name, string email, IGameManager gameManager, ILifeCycleManager lifeCycleManager, IBoardService boardService)
