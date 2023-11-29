@@ -57,16 +57,12 @@ namespace Bomber.BL.Impl.Models
             {
                 GameManager.ResetGame();
             }
-
             var view = EntityViewFactory.CreatePlayerView();
             var player = EntityFactory.CreatePlayer(view, _map.MapSource.PlayerPosition, "TestPlayer", "test@email.com");
             view.ViewLoaded();
             _map.Units.Add(player);
-
             GameManager.StartGame(new GameplayFeedback(FeedbackLevel.Info, "Game started!"));
-
             BoardService.SetActiveMap(_map);
-
             foreach (var unit in _map.Units)
             {
                 unit.View.ViewLoaded();
@@ -85,7 +81,7 @@ namespace Bomber.BL.Impl.Models
                 player.PlantedBombs.Add(bomb);
                 bomb.Attach(this);
                 bomb.Attach(player);
-                // bomb.View.ViewLoaded();
+                bomb.View.ViewLoaded();
                 _map.Units.Add(bomb);
             }
 
@@ -124,6 +120,7 @@ namespace Bomber.BL.Impl.Models
             }
 
             map.Units.Remove(bomb);
+            bomb.Dispose();
             if (!map.Units.Any(entity => entity is IEnemy))
             {
                 GameManager.EndGame(new GameplayFeedback(FeedbackLevel.Info, $"You won! The game lasted: {GameManager.Timer.Elapsed:g}"), GameResolution.Win);

@@ -46,6 +46,12 @@ namespace Bomber.UI.WPF.Main
             CurrentTime = GameManager.Timer.Elapsed.ToString("g");
         }
 
+        public override void OnGameReset()
+        {
+            base.OnGameReset();
+            CurrentTime = TimeSpan.Zero.ToString("g");
+        }
+
         [RelayCommand]
         private void OnOpen()
         {

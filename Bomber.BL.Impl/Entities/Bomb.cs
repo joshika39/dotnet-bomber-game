@@ -78,7 +78,6 @@ namespace Bomber.BL.Impl.Entities
 
                 if (RemainingTime <= 0)
                 {
-                    Dispose();
                     Explode();
                     break;
                 }
