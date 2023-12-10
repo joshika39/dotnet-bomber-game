@@ -95,11 +95,12 @@ namespace Bomber.BL.Impl.MapGenerator
             }
             var oldValues = MapObjects.ToArray();
             var array = new IPlaceHolder[RowCount * ColumnCount];
+            Data = new int[RowCount, ColumnCount];
             for (var i = 0; i < RowCount; i++)
             {
                 for (var j = 0; j < ColumnCount; j++)
                 {
-                    var pos = _positionFactory.CreatePosition(i, j);
+                    var pos = _positionFactory.CreatePosition(j, i);
                     if (i <= oldValues.Length / RowCount && j <= oldValues.Length / ColumnCount && i * ColumnCount + j < oldValues.Length)
                     {
                         array[i * ColumnCount + j] = _tileFactory.CreatePlaceHolder(pos, oldValues[i * ColumnCount + j].Type);
@@ -131,7 +132,7 @@ namespace Bomber.BL.Impl.MapGenerator
             {
                 for (var j = 0; j < ColumnCount; j++)
                 {
-                    var pos = _positionFactory.CreatePosition(i, j);
+                    var pos = _positionFactory.CreatePosition(j, i);
                     var success = false;
                     if (i < content.Length)
                     {
@@ -174,5 +175,7 @@ namespace Bomber.BL.Impl.MapGenerator
             }
             return stringBuilder.ToString();
         }
+        
+        
     }
 }

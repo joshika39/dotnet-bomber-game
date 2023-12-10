@@ -3,6 +3,7 @@ using Bomber.BL.Impl.MapGenerator.DomainModels;
 using Bomber.BL.MapGenerator;
 using Bomber.BL.MapGenerator.DomainModels;
 using Bomber.BL.Tiles;
+using GameFramework.Entities;
 using Infrastructure.Application;
 using Infrastructure.Configuration;
 using Infrastructure.Configuration.Factories;
@@ -75,17 +76,17 @@ namespace Bomber.BL.Impl.MapGenerator
 
         public void GenerateMapFromDraft(IMapLayoutDraft draft, string filename)
         {
-            // TODO: Implement unit view DomainModel in game framework
-            // _ = new BomberMapSource(
-            //     _provider,
-            //     filename,
-            //     draft.Data,
-            //     draft.Entities,
-            //     draft.ColumnCount,
-            //     draft.RowCount,
-            //     draft.Name,
-            //     draft.Description
-            // );
+            _ = new BomberMapSource(
+                _provider,
+                filename,
+                draft.Data,
+                new List<IUnit2D>(),
+                draft.Entities,
+                draft.ColumnCount,
+                draft.RowCount,
+                draft.Name,
+                draft.Description
+            );
             draft.Delete();
             _draftsRepository.Delete(draft.Id).SaveChanges();
         }
